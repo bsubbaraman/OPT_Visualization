@@ -1,6 +1,6 @@
 Android
 PlayerPath?
-/Users/daniele/Desktop/arcore/optar.apk
+/Users/remap/Desktop/optar/optar.apk
 SceneListBegin?
 Assets/GoogleARCore/Examples/AugmentedImage/Scenes/AugmentedImage.unity
 SceneListEnd?
