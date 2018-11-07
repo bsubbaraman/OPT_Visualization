@@ -14,25 +14,34 @@ limitations under the License.
 */
 
 using UnityEngine;
+using System;
 
 namespace RosSharp.RosBridgeClient
 {
-    public class PoseStampedPublisher
+    public class PoseStampedPublisher : MonoBehaviour
     {
         public Transform PublishedTransform;
-        public string FrameId = "arcore";
-
+        private string FrameId;
         private Messages.Geometry.PoseStamped message;
+        private RosConnector rosConnector;
+        private string publicationId;
+        public bool connectionEstablished = false;
 
-        public PoseStampedPublisher()
+
+        public PoseStampedPublisher(RosConnector rosConnectorInput)
         {
+            rosConnector = rosConnectorInput;
+        }
+
+        public void CreateTopic(string topic, String frame)
+        {
+            FrameId = frame;
+            publicationId = rosConnector.RosSocket.Advertise<Messages.Geometry.PoseStamped>(topic);
             InitializeMessage();
+            connectionEstablished = true;
+            Debug.Log("ROS: I created and " + connectionEstablished);
         }
 
-        private void FixedUpdate()
-        {
-            UpdateMessage();
-        }
 
         private void InitializeMessage()
         {
@@ -45,18 +54,27 @@ namespace RosSharp.RosBridgeClient
             };
         }
 
-        private void UpdateMessage()
+        public void SendMessage(Tuple<Vector3, Quaternion> tupleInput)
         {
-            message.header.Update();
-            message.pose.position = GetGeometryPoint(PublishedTransform.position.Unity2Ros());
-            message.pose.orientation = GetGeometryQuaternion(PublishedTransform.rotation.Unity2Ros());
+            UpdateMessage(tupleInput.Item1 , tupleInput.Item2);
+            rosConnector.RosSocket.Publish(publicationId, message);
         }
+
 
         private void UpdateMessage(Vector3 vectorInput, Quaternion quaternionInput)
         {
             message.header.Update();
             message.pose.position = GetGeometryPoint(vectorInput);
             message.pose.orientation = GetGeometryQuaternion(quaternionInput);
+        }
+
+        private void UpdateMessage()
+        {
+            message.header.Update();
+            message.pose.position = GetGeometryPoint(PublishedTransform.position.Unity2Ros());
+            message.pose.orientation = GetGeometryQuaternion(PublishedTransform.rotation.Unity2Ros());
+
+            rosConnector.RosSocket.Publish(publicationId, message);
         }
 
         private Messages.Geometry.Point GetGeometryPoint(Vector3 position)
@@ -78,13 +96,5 @@ namespace RosSharp.RosBridgeClient
             return geometryQuaternion;
         }
 
-        public void SetParameterPoseStampedMessage( Vector3 vectorInput, Quaternion quaternionInput)
-        {
-            UpdateMessage(vectorInput, quaternionInput);
-        }
-
-        public Messages.Geometry.PoseStamped GetPoseStampedObject(){
-            return message;
-        }
     }
 }

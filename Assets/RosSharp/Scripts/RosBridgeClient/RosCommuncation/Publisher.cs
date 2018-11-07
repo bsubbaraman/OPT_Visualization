@@ -17,7 +17,7 @@ using UnityEngine;
 
 namespace RosSharp.RosBridgeClient
 {
-    [RequireComponent(typeof(RosConnector))]
+    //[RequireComponent(typeof(RosConnector))]
     public abstract class Publisher<T> : MonoBehaviour where T: Message
     {
         public string Topic;

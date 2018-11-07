@@ -113,6 +113,96 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &221455180
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4311424362268976, guid: 5323c8a25dcb746619062c9f8c861737, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 833
+      objectReference: {fileID: 0}
+    - target: {fileID: 4311424362268976, guid: 5323c8a25dcb746619062c9f8c861737, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 449
+      objectReference: {fileID: 0}
+    - target: {fileID: 4311424362268976, guid: 5323c8a25dcb746619062c9f8c861737, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4311424362268976, guid: 5323c8a25dcb746619062c9f8c861737, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4311424362268976, guid: 5323c8a25dcb746619062c9f8c861737, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4311424362268976, guid: 5323c8a25dcb746619062c9f8c861737, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4311424362268976, guid: 5323c8a25dcb746619062c9f8c861737, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4311424362268976, guid: 5323c8a25dcb746619062c9f8c861737, type: 2}
+      propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 114456787887554012, guid: 5323c8a25dcb746619062c9f8c861737,
+        type: 2}
+      propertyPath: RosBridgeServerUrl
+      value: ws://131.179.142.106:9090
+      objectReference: {fileID: 0}
+    - target: {fileID: 114456787887554012, guid: 5323c8a25dcb746619062c9f8c861737,
+        type: 2}
+      propertyPath: connectionEstablished
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114062747225107160, guid: 5323c8a25dcb746619062c9f8c861737,
+        type: 2}
+      propertyPath: TimeStep
+      value: 30
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5323c8a25dcb746619062c9f8c861737, type: 2}
+  m_IsPrefabAsset: 0
+--- !u!114 &221455181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 114062747225107160, guid: 5323c8a25dcb746619062c9f8c861737,
+    type: 2}
+  m_PrefabInternal: {fileID: 221455180}
+  m_GameObject: {fileID: 1383443040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6cd27ba95adab14d85c327244d65eb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Topic: /arcore/origin
+  TimeStep: 30
+  PublishedTransform: {fileID: 0}
+  position: {x: 0, y: 0, z: 0}
+  rotation: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &221455182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 114456787887554012, guid: 5323c8a25dcb746619062c9f8c861737,
+    type: 2}
+  m_PrefabInternal: {fileID: 221455180}
+  m_GameObject: {fileID: 1383443040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff98778ae051cfd40a6e4effdf851ebd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Timeout: 10
+  Protocol: 0
+  RosBridgeServerUrl: ws://131.179.142.106:9090
+  connectionEstablished: 0
 --- !u!1001 &590588821
 Prefab:
   m_ObjectHideFlags: 0
@@ -279,6 +369,52 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &1383443040
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 1158093691767740, guid: 5323c8a25dcb746619062c9f8c861737,
+    type: 2}
+  m_PrefabInternal: {fileID: 221455180}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1383443042}
+  - component: {fileID: 221455182}
+  - component: {fileID: 221455181}
+  - component: {fileID: 1383443041}
+  m_Layer: 0
+  m_Name: PrefabSubscriber
+  m_TagString: RosSubscriber
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1383443041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1383443040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bebdaba3e00b24407aef46bf5298d564, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Topic: /tracker/tracks_smoothed
+  TimeStep: 1
+--- !u!4 &1383443042
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 4311424362268976, guid: 5323c8a25dcb746619062c9f8c861737,
+    type: 2}
+  m_PrefabInternal: {fileID: 221455180}
+  m_GameObject: {fileID: 1383443040}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 833, y: 449, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1436859208
 GameObject:
   m_ObjectHideFlags: 0
@@ -578,8 +714,14 @@ MonoBehaviour:
   anchorObject: {fileID: 1570161966154332, guid: 177741b966a464dfbae54e1bedee79dc,
     type: 2}
   emptyGameObject: {fileID: 1436859208}
+  originGameObject: {fileID: 1872698258158870, guid: a840d88aae98f4050b2860165f6a3888,
+    type: 2}
+  centroidObject: {fileID: 1317426671309370, guid: 94c447eb110654d62893dff7743cc562,
+    type: 2}
   FitToScanOverlay: {fileID: 1622737808}
-  inputText: 131.179.142.89
+  originSub: {fileID: 221455181}
+  centroidSub: {fileID: 1383443041}
+  inputText: 192.168.x.x
   style:
     m_Name: 
     m_Normal:

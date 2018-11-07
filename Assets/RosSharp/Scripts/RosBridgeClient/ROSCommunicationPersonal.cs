@@ -102,11 +102,11 @@ namespace RosSharp.ARCore
 
             id_vodom_pub = rosSocket.Advertise<geom_msgs.PoseStamped>("/arcore/vodom");
 
-            PoseStampedPublisher poseStamped = new PoseStampedPublisher();
+            //PoseStampedPublisher poseStamped = new PoseStampedPublisher();
 
-            poseStamped.SetParameterPoseStampedMessage(tupleInput.Item1, tupleInput.Item2);
+            //poseStamped.SetParameterPoseStampedMessage(tupleInput.Item1, tupleInput.Item2);
             
-            rosSocket.Publish(id_vodom_pub, poseStamped.GetPoseStampedObject());
+            //rosSocket.Publish(id_vodom_pub, poseStamped.GetPoseStampedObject());
         }
 
 
@@ -119,10 +119,10 @@ namespace RosSharp.ARCore
             CheckSocket();
 
             id_image_pub = rosSocket.Advertise<geom_msgs.PoseStamped>("/arcore/tag_arcore");
-            PoseStampedPublisher poseStamped = new PoseStampedPublisher();
+            //PoseStampedPublisher poseStamped = new PoseStampedPublisher();
 
-            poseStamped.SetParameterPoseStampedMessage(tupleInput.Item1, tupleInput.Item2);
-            rosSocket.Publish(id_image_pub, poseStamped.GetPoseStampedObject());
+            //poseStamped.SetParameterPoseStampedMessage(tupleInput.Item1, tupleInput.Item2);
+            //rosSocket.Publish(id_image_pub, poseStamped.GetPoseStampedObject());
         }
 
 
@@ -133,7 +133,8 @@ namespace RosSharp.ARCore
         public geom_msgs.PoseStamped SubscriptionTagPose()
         {
             CheckSocket();
-            id_sub_tag = rosSocket.Subscribe<geom_msgs.PoseStamped>("/arcore/world_tag_0", SubscriptionPoseStamped);
+            PrintDebugMessage("I: ciao");
+            id_sub_tag = rosSocket.Subscribe<geom_msgs.PoseStamped>("/arcore/origin", SubscriptionPoseStamped);
             //rosSocket.Unsubscribe(id_sub_tag);
             return tag_pose;
         }
@@ -145,7 +146,7 @@ namespace RosSharp.ARCore
         /// <param name="inputMessage">Input message.</param>
         private void SubscriptionPoseStamped(geom_msgs.PoseStamped inputMessage)
         {
-
+            PrintDebugMessage("I: " + inputMessage.pose.position.x);
             tag_pose = inputMessage;
         }
 

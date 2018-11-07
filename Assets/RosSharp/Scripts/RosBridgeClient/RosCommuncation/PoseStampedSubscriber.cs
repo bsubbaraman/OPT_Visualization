@@ -21,8 +21,8 @@ namespace RosSharp.RosBridgeClient
     {
         public Transform PublishedTransform;
 
-        private Vector3 position;
-        private Quaternion rotation;
+        public Vector3 position;
+        public Quaternion rotation;
         private bool isMessageReceived;
 
         protected override void Start()
@@ -38,8 +38,10 @@ namespace RosSharp.RosBridgeClient
 
         protected override void ReceiveMessage(Messages.Geometry.PoseStamped message)
         {
-            position = GetPosition(message).Ros2Unity();
-            rotation = GetRotation(message).Ros2Unity();
+            position = new Vector3(message.pose.position.x, message.pose.position.y, message.pose.position.z);
+            rotation = new Quaternion(message.pose.orientation.x, message.pose.orientation.y, message.pose.orientation.z, message.pose.orientation.w);
+            //position = GetPosition(message).Ros2Unity();
+            //rotation = GetRotation(message).Ros2Unity();
             isMessageReceived = true;
         }
 
@@ -49,7 +51,7 @@ namespace RosSharp.RosBridgeClient
             PublishedTransform.rotation = rotation;
         }
 
-        private Vector3 GetPosition(Messages.Geometry.PoseStamped message)
+        public Vector3 GetPosition(Messages.Geometry.PoseStamped message)
         {
             return new Vector3(
                 message.pose.position.x,
@@ -57,7 +59,7 @@ namespace RosSharp.RosBridgeClient
                 message.pose.position.z);
         }
 
-        private Quaternion GetRotation(Messages.Geometry.PoseStamped message)
+        public Quaternion GetRotation(Messages.Geometry.PoseStamped message)
         {
             return new Quaternion(
                 message.pose.orientation.x,

@@ -48,7 +48,10 @@ namespace GoogleARCore.Examples.AugmentedImage
         private GameObject anchorOriginObject;
 
         public GameObject emptyGameObject;
+        public GameObject originGameObject;
+        public GameObject centroidObject;
 
+        private GameObject originRosGameObject;
 
         /// <summary>
         /// The overlay containing the fit to scan user guide.
@@ -66,12 +69,6 @@ namespace GoogleARCore.Examples.AugmentedImage
         Anchor anchorOrigin = null;
 
 
-        /// <summary>
-        /// The position and rotation of camera.
-        /// </summary>
-        Vector3 positionCameraOffset;
-        Vector3 positionCameraOffsetPrevious;
-
         Vector3 positionCentreImage;
         Quaternion rotationCentreImage;
 
@@ -79,18 +76,25 @@ namespace GoogleARCore.Examples.AugmentedImage
         int counterErrorDistance = 0;
         bool controlDistance = false;
 
-        private ros_lib.ROSCommunicationPersonal ros;
+        private RosSharp.RosBridgeClient.RosConnector rosConnector;
+        private RosSharp.RosBridgeClient.PoseStampedPublisher publisher;
+        public RosSharp.RosBridgeClient.PoseStampedSubscriber originSub;
+        public RosSharp.RosBridgeClient.CentroidSubscriber centroidSub;
 
+        public Dictionary<int, GameObject> activeTracks = new Dictionary<int, GameObject>();
 
         private void Start()
         {
             PrintDebugMessage("D: -------- New execution --------");
-            ros = new ros_lib.ROSCommunicationPersonal();
-            ros.SetIpAddress(inputText);
+            //ros = new ros_lib.ROSCommunicationPersonal();
+            //ros.SetIpAddress(inputText);
+            SetupRosConnection();
         }
 
         public string inputText = "192.168.x.x";
         private TouchScreenKeyboard keyboard;
+
+        private Vector3 worldAbs;
 
         public GUIStyle style;
 
@@ -112,22 +116,17 @@ namespace GoogleARCore.Examples.AugmentedImage
             if (!keyboard.active)
             {
                 keyboard = null;
-                ros.SetIpAddress(inputText);
-                ros.TearDown();
+                rosConnector.SetAddress("ws://" + inputText + ":9090");
             }
 
         }
 
-        private void OnApplicationQuit()
-        {
-            ros.TearDown();
-        }
+        private void SetupRosConnection(){
+            rosConnector = new RosSharp.RosBridgeClient.RosConnector();
+            rosConnector.SetAddress("ws://" + inputText + ":9090");
+            rosConnector.Awake();
 
-        private void OnApplicationPause()
-        {
-            ros.TearDown();
         }
-
 
         /// <summary>
         /// The Unity Update method.
@@ -172,16 +171,111 @@ namespace GoogleARCore.Examples.AugmentedImage
             //}
 
 
+            if (!rosConnector.connectionEstablished){
+                Destroy(rosConnector);
+                PrintDebugMessage("ROS: E :  Server not running on IP: " + inputText);
+                SetupRosConnection();
+                return;
+            }
+
+            publisher = new RosSharp.RosBridgeClient.PoseStampedPublisher(rosConnector);
+            publisher.CreateTopic("arcore/vodom", "mobile-phone");
+            //PrintDebugMessage("I: Publisher Created!");
+
+
             GameObject arMarker = Instantiate(emptyGameObject, positionCentreImage, rotationCentreImage);
-            
+
             GameObject cameraObject = Instantiate(emptyGameObject, FirstPersonCamera.transform.position, FirstPersonCamera.transform.rotation);
             cameraObject.transform.SetParent(arMarker.transform);
+            //PrintDebugMessage("I: Object local  -> Position: " + messageToSend.position.ToString() + " * Quaternion: " + messageToSend.rotation.ToString());
+            //PrintDebugMessage("I: Camera local  -> Position: " + cameraObject.localPosition.ToString() + " * Quaternion: " + cameraObject.transform.localPosition.ToString());
 
-            ros.PublicationVodom(SwapCoordinates(cameraObject.transform.localPosition, cameraObject.transform.localRotation));
+            publisher.SendMessage(SwapCoordinates(cameraObject.transform.localPosition, cameraObject.transform.localRotation));
+            
 
-            PrintDebugMessage("I: Camera local  -> Position: " + cameraObject.transform.localPosition.ToString() + " * Quaternion: " + cameraObject.transform.localPosition.ToString());
+            if (originRosGameObject == null)
+            {
+                Tuple<Vector3, Quaternion> originPose = SwapCoordinates(originSub.position, originSub.rotation);
+                PrintDebugMessage("I: Origin  -> Position: " + originPose.Item1.ToString() + " * Quaternion: " + originPose.Item2.ToString());
 
-            PrintDebugMessage("I: Update complete correctly!");
+                originRosGameObject = Instantiate(originGameObject);
+                originRosGameObject.transform.SetParent(arMarker.transform);
+                originRosGameObject.transform.localPosition = originPose.Item1;
+                originRosGameObject.transform.localRotation = originPose.Item2;
+
+                worldAbs = originRosGameObject.transform.position;
+
+            }
+
+
+            //activeTracks.Clear();
+            var dataFromCentroidSub = centroidSub.processedTrackData;
+            foreach (KeyValuePair<int, Vector3> track in dataFromCentroidSub)
+            {
+                int id = track.Key;
+                Vector3 poseInput = track.Value;
+
+                //PrintDebugMessage("I: Centroid  -> Position: " + poseInput.ToString() + " * Id: " + id);
+
+                //add any people who have joined the scene
+                if (!activeTracks.ContainsKey(id))
+                {
+                    Color color = new Color(
+                          UnityEngine.Random.Range(0f, 1f),
+                          UnityEngine.Random.Range(0f, 1f),
+                          UnityEngine.Random.Range(0f, 1f),
+                                            1);
+
+                    if (originRosGameObject != null)
+                    {
+                        //Vector3 markeAbs = new Vector3(worldAbs.x + poseInput.x, worldAbs.y + poseInput.y , worldAbs.z + poseInput.z);
+
+                        //GameObject new_marker = Instantiate(centroidObject, markeAbs, Quaternion.identity);
+                        GameObject new_marker = Instantiate(centroidObject);
+
+                        new_marker.transform.SetParent(originRosGameObject.transform);
+                        new_marker.transform.localPosition = new Vector3(poseInput.x, poseInput.y, poseInput.z);
+
+                        new_marker.name = "centroid" + id;
+                        new_marker.GetComponent<Renderer>().material.color = color;
+
+                        activeTracks.Add(id, new_marker);
+
+                        PrintDebugMessage("I: Crete centroid -> Position: " + new_marker.transform.position.ToString() + " * Id: " + id);
+
+
+                    }
+
+                }
+                GameObject theMarker = activeTracks[id];
+                theMarker.SetActive(true);
+                //theMarker.transform.position = new Vector3(worldAbs.x + poseInput.x, worldAbs.y + poseInput.y, worldAbs.z + poseInput.z);
+                theMarker.transform.SetParent(originRosGameObject.transform);
+                theMarker.transform.localPosition = new Vector3(poseInput.x, poseInput.y, poseInput.z);
+
+                ////theMarker.transform.SetParent(originRosGameObject.transform);
+                //theMarker.transform.localPosition = poseInput;
+                //PrintDebugMessage("I: track.value -> Position: " + track.Value.ToString() + " id: " + id);
+                //PrintDebugMessage("I: poseInput   -> Position: " + poseInput.ToString() + " id: " + id);
+                //PrintDebugMessage("I: Centroid loc -> Position: " + theMarker.transform.localPosition.ToString() + " id: " + id);
+                //PrintDebugMessage("I: Centroid abs -> Position: " + theMarker.transform.position.ToString() + " id: " + id);
+                //PrintDebugMessage("I: World abs    -> Position: " + originRosGameObject.transform.position.ToString());
+            }
+
+            ////remove any people who are no longer present
+            foreach (KeyValuePair<int, GameObject> kvp in activeTracks)
+            {
+                if (!dataFromCentroidSub.ContainsKey(kvp.Key))
+                {
+                    activeTracks[kvp.Key].SetActive(false);
+                    //Destroy(activeTracks[kvp.Key]);
+                    //activeTracks.Remove(kvp.Key);
+                }
+            }
+
+
+
+                PrintDebugMessage("I: Update complete correctly!");
         }
 
         /// <summary>
@@ -192,6 +286,7 @@ namespace GoogleARCore.Examples.AugmentedImage
             PrintDebugMessage("E: Position Lost! " + message);
             Destroy(anchorOrigin);
             Destroy(anchorOriginObject);
+            Destroy(originRosGameObject);
             counterErrorDistance = 0;
         }
 
@@ -236,57 +331,37 @@ namespace GoogleARCore.Examples.AugmentedImage
                     // controlDistance = false;
 
                     PrintDebugMessage("I: " + image.ExtentX + " H: " + image.ExtentZ);
+
+
                 }
             }
         }
 
 
-        /// <summary>
+
+        ///<summary>
         /// Positions the camera lost.
         /// </summary>
         /// <returns><c>true</c>, if camera lost was positioned, <c>false</c> otherwise.</returns>
         private bool PositionCameraLost()
         {
 
-            float distance = Vector3.Distance(positionCameraOffset, positionCameraOffsetPrevious);
-            //Debug.Log("123 - Difference between positions: " + distance);
+            ////float distance = Vector3.Distance(positionCameraOffset, positionCameraOffsetPrevious);
+            ////Debug.Log("123 - Difference between positions: " + distance);
 
-            if (distance > 0.7 && controlDistance)
-            {
-                PrintDebugMessage("E: Distance control with value: " + distance);
-                return true;
-            }
-            else
-            {
-                positionCameraOffsetPrevious = positionCameraOffset;
-            }
+            //if (distance > 0.7 && controlDistance)
+            //{
+            //    PrintDebugMessage("E: Distance control with value: " + distance);
+            //    return true;
+            //}
+            //else
+            //{
+            //    //positionCameraOffsetPrevious = positionCameraOffset;
+            //}
 
             return false;
 
         }
-
-        ///// <summary>
-        ///// Analizes the pose message arrived from ROS
-        ///// </summary>
-        ///// <param name="input_tag_message">Input tag message.</param>
-        //private void AnalizeTagPoseMessage(geom_msgs.PoseStamped input_tag_message)
-        //{
-        
-        //    //pose_real_tag = new Vector3(input_tag_message.pose.position.x, input_tag_message.pose.position.y, input_tag_message.pose.position.z);
-        //    //quat_real_tag = new Quaternion(input_tag_message.pose.orientation.x, input_tag_message.pose.orientation.y, input_tag_message.pose.orientation.z, input_tag_message.pose.orientation.w);
-
-        //    //Vector3 angle = quat_real_tag.eulerAngles;
-        //    //Vector3 angle_reverse = new Vector3();
-
-
-        //    //angle_reverse[0] = angle[0];
-        //    //angle_reverse[1] = angle[2];
-        //    //angle_reverse[2] = angle[1];
-
-        //    //quat_real_tag = Quaternion.Euler(angle_reverse);
-
-        //    //PrintDebugMessage("I: After pose from ROS: " + pose_real_tag + " r: " + quat_real_tag);
-        //}
 
 
         private Tuple<Vector3, Quaternion> SwapCoordinates(Vector3 poseInput, Quaternion quaternionInput)

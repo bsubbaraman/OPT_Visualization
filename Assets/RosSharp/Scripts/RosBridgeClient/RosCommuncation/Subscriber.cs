@@ -25,10 +25,14 @@ namespace RosSharp.RosBridgeClient
 
         protected virtual void Start()
         {
-            GetComponent<RosConnector>().RosSocket.Subscribe<T>(Topic, ReceiveMessage, (int)(TimeStep * 1000)); // the rate(in ms in between messages) at which to throttle the topics
+            GetComponent<RosConnector>().RosSocket.Subscribe<T>(Topic, ReceiveMessage, (int)(TimeStep)); // the rate(in ms in between messages) at which to throttle the topics
         }
 
         protected abstract void ReceiveMessage(T message);
 
+        public void SetTopic(string topic)
+        {
+            Topic = topic;
+        }
     }
 }
