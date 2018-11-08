@@ -75,7 +75,7 @@ namespace GoogleARCore.Examples.AugmentedImage
 
 
         int counterErrorDistance = 0;
-        bool controlDistance = false;
+        //bool controlDistance = false;
 
         private RosSharp.RosBridgeClient.RosConnector rosConnector;
         private RosSharp.RosBridgeClient.PoseStampedPublisher publisher;
@@ -92,40 +92,40 @@ namespace GoogleARCore.Examples.AugmentedImage
             SetupRosConnection();
         }
 
-        public string inputText = "192.168.x.x";
+        public string inputText;
         private TouchScreenKeyboard keyboard;
 
         private Vector3 worldAbs;
         private Anchor worldAnchor;
 
-        public GUIStyle style;
+        //public GUIStyle style;
 
-        // Updates button's text while user is typing
-        void OnGUI()
-        {
-            style.fontSize = 50;
+        //// Updates button's text while user is typing
+        //void OnGUI()
+        //{
+        //    style.fontSize = 50;
 
-            if (GUI.Button(new Rect(30, 20, 250, 90), inputText, style))
-            {
-                keyboard = TouchScreenKeyboard.Open(inputText, TouchScreenKeyboardType.Default);
-            }
+        //    if (GUI.Button(new Rect(30, 20, 250, 90), inputText, style))
+        //    {
+        //        keyboard = TouchScreenKeyboard.Open(inputText, TouchScreenKeyboardType.Default);
+        //    }
 
-            if (keyboard != null)
-            {
-                inputText = keyboard.text;
-            }
+        //    if (keyboard != null)
+        //    {
+        //        inputText = keyboard.text;
+        //    }
 
-            if (!keyboard.active)
-            {
-                keyboard = null;
-                rosConnector.SetAddress("ws://" + inputText + ":9090");
-            }
+        //    if (!keyboard.active)
+        //    {
+        //        keyboard = null;
+        //        rosConnector.SetAddress("ws://" + inputText + ":9090");
+        //    }
 
-        }
+        //}
 
         private void SetupRosConnection(){
             rosConnector = new RosSharp.RosBridgeClient.RosConnector();
-            rosConnector.SetAddress("ws://" + inputText + ":9090");
+            rosConnector.SetAddress(inputText);
             rosConnector.Awake();
         }
 
@@ -172,12 +172,12 @@ namespace GoogleARCore.Examples.AugmentedImage
             //}
 
 
-            if (!rosConnector.connectionEstablished){
-                Destroy(rosConnector);
-                PrintDebugMessage("ROS: E :  Server not running on IP: " + inputText);
-                SetupRosConnection();
-                return;
-            }
+            //if (!rosConnector.connectionEstablished){
+            //    Destroy(rosConnector);
+            //    PrintDebugMessage("ROS: E :  Server not running on IP: " + inputText);
+            //    SetupRosConnection();
+            //    return;
+            //}
 
             publisher = new RosSharp.RosBridgeClient.PoseStampedPublisher(rosConnector);
             publisher.CreateTopic("arcore/vodom", "mobile-phone");
@@ -192,25 +192,8 @@ namespace GoogleARCore.Examples.AugmentedImage
             //PrintDebugMessage("I: Object local  -> Position: " + messageToSend.position.ToString() + " * Quaternion: " + messageToSend.rotation.ToString());
             //PrintDebugMessage("I: Camera local  -> Position: " + cameraObject.localPosition.ToString() + " * Quaternion: " + cameraObject.transform.localPosition.ToString());
 
-            //publisher.SendMessage(SwapCoordinates(cameraObject.transform.localPosition, cameraObject.transform.localRotation), "mobile_" + SystemInfo.deviceUniqueIdentifier);
-            publisher.SendMessage(SwapCoordinates(cameraObject.transform.localPosition, cameraObject.transform.localRotation), "mobile_phone");
+            publisher.SendMessage(SwapCoordinates(cameraObject.transform.localPosition, cameraObject.transform.localRotation), "ar_mobile");
 
-
-
-
-            //PETER ----------------------- >  ROS ORIGIN CREATION. I REPRESENT THE ROS ORIGIN WITH originRosGameObject INSIDE ARCORE AND IT IS IN THE CORRECT POSITION, WITH PARENT THE arMarker
-            if (originRosGameObject == null)
-            {
-                Tuple<Vector3, Quaternion> originPose = SwapCoordinates(originSub.position, originSub.rotation);
-
-                PrintDebugMessage("I: Origin  -> Position: " + originPose.Item1.ToString() + " * Quaternion: " + originPose.Item2.ToString());
-
-                originRosGameObject = Instantiate(originGameObject);
-                originRosGameObject.transform.SetParent(arMarker.transform);
-                originRosGameObject.transform.localPosition = originPose.Item1;
-                originRosGameObject.transform.localRotation = originPose.Item2;
-                originRosGameObject.name = "Ros_Origin";
-            }
 
 
             var dataFromCentroidSub = centroidSub.processedTrackData;
@@ -231,35 +214,25 @@ namespace GoogleARCore.Examples.AugmentedImage
                           UnityEngine.Random.Range(0f, 1f),
                                             1);
 
-                    if (originRosGameObject != null)
-                    {
-                        activeTracks.Add(id, Instantiate(centroidObject) as GameObject);
+                  
+                    activeTracks.Add(id, Instantiate(centroidObject) as GameObject);
 
-                        // PETER ----------------------- >    THE PROBLEM IS HERE! WITH PARENT originRosGameObject.transform I SEE ALL THE CENTROID IN (0, 0, 0) RESPECT THE originRosGameObject (picture 1)
-                        // PETER ----------------------- >    IF I SET arMarker.transform AS PARENT I SEE THE CENTROID IN AIR (with a wrong offset clearly) (picture 2)
-                        activeTracks[id].transform.SetParent(originRosGameObject.transform);
-                        activeTracks[id].transform.localPosition = new Vector3(track.Value.x, track.Value.y, track.Value.z);
+                    activeTracks[id].transform.SetParent(arMarker.transform);
+                    activeTracks[id].transform.localPosition = poseInput;
 
-
-                        // PETER ----------------------- >  AFTER THIS, IF I PRINT THE localPosition IT IS SET CORRECLY, BUT THE RAPPRESENTATION NO
+                    activeTracks[id].name = "centroid" + id;
+                    activeTracks[id].GetComponent<Renderer>().material.color = color;
 
 
-
-
-
-                        activeTracks[id].name = "centroid" + id;
-                        activeTracks[id].GetComponent<Renderer>().material.color = color;
-
-
-                        PrintDebugMessage("I: Crete centroid -> Parent: " + activeTracks[id].transform.parent.name + " | Position: " + activeTracks[id].transform.localPosition.ToString() + " | Id: " + id);
-                    }
+                    PrintDebugMessage("I: Crete centroid -> Parent: " + activeTracks[id].transform.parent.name + " | Position: " + activeTracks[id].transform.localPosition.ToString() + " | Id: " + id);
 
                 }
-
-                activeTracks[id].SetActive(true);
-                activeTracks[id].transform.localPosition = new Vector3(track.Value.x, track.Value.y, track.Value.z);
-                PrintDebugMessage("I: Update centroid  -> Parent: " + activeTracks[id].transform.parent.name + " | Position: " + activeTracks[id].transform.localPosition.ToString() + " | Id: " + id);
-
+                else
+                {
+                    activeTracks[id].SetActive(true);
+                    activeTracks[id].transform.localPosition = poseInput;
+                    PrintDebugMessage("I: Update centroid  -> Parent: " + activeTracks[id].transform.parent.name + " | Position: " + activeTracks[id].transform.localPosition.ToString() + " | Id: " + id);
+                }
 
             }
 
@@ -286,6 +259,12 @@ namespace GoogleARCore.Examples.AugmentedImage
             Destroy(anchorOrigin);
             Destroy(anchorOriginObject);
             Destroy(originRosGameObject);
+            foreach (KeyValuePair<int, GameObject> kvp in activeTracks)
+            {
+                Destroy(activeTracks[kvp.Key]);
+                PrintDebugMessage("I: Destroy centroid: " + kvp.Key);
+                activeTracks.Remove(kvp.Key);
+            }
             counterErrorDistance = 0;
         }
 

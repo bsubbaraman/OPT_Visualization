@@ -1,9 +1,9 @@
 ﻿<Properties StartupConfiguration="{37230AB7-AFFB-A915-C278-D20E8C1234A0}|">
   <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="Unity.Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/RosSharp/Scripts/RosBridgeClient/RosCommuncation/PoseStampedPublisher.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/GoogleARCore/Examples/AugmentedImage/Scripts/AugmentedImageExampleController.cs">
     <Files>
-      <File FileName="Assets/GoogleARCore/Examples/AugmentedImage/Scripts/AugmentedImageExampleController.cs" Line="209" Column="20" />
-      <File FileName="Assets/RosSharp/Scripts/RosBridgeClient/RosCommuncation/PoseStampedPublisher.cs" Line="57" Column="79" />
+      <File FileName="Assets/GoogleARCore/Examples/AugmentedImage/Scripts/AugmentedImageExampleController.cs" Line="224" Column="58" />
+      <File FileName="Assets/RosSharp/Scripts/RosBridgeClient/RosCommuncation/PoseStampedPublisher.cs" Line="67" Column="44" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
