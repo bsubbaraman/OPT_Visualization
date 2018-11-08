@@ -54,16 +54,17 @@ namespace RosSharp.RosBridgeClient
             };
         }
 
-        public void SendMessage(Tuple<Vector3, Quaternion> tupleInput)
+        public void SendMessage(Tuple<Vector3, Quaternion> tupleInput, string name)
         {
-            UpdateMessage(tupleInput.Item1 , tupleInput.Item2);
+            UpdateMessage(tupleInput.Item1 , tupleInput.Item2, name);
             rosConnector.RosSocket.Publish(publicationId, message);
         }
 
 
-        private void UpdateMessage(Vector3 vectorInput, Quaternion quaternionInput)
+        private void UpdateMessage(Vector3 vectorInput, Quaternion quaternionInput, string name)
         {
             message.header.Update();
+            message.header.frame_id = name;
             message.pose.position = GetGeometryPoint(vectorInput);
             message.pose.orientation = GetGeometryQuaternion(quaternionInput);
         }

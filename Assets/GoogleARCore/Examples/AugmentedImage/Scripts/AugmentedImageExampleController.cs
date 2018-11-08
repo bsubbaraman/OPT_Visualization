@@ -29,6 +29,7 @@ namespace GoogleARCore.Examples.AugmentedImage
     using UnityEngine;
     using UnityEngine.UI;
     using System;
+    using matr = System.Numerics;
 
     /// <summary>
     /// Controller for AugmentedImage example.
@@ -82,7 +83,7 @@ namespace GoogleARCore.Examples.AugmentedImage
         public RosSharp.RosBridgeClient.CentroidSubscriber centroidSub;
 
         public Dictionary<int, GameObject> activeTracks = new Dictionary<int, GameObject>();
-
+        private Dictionary<int, Color> colors = new Dictionary<int, Color>();
         private void Start()
         {
             PrintDebugMessage("D: -------- New execution --------");
@@ -95,6 +96,7 @@ namespace GoogleARCore.Examples.AugmentedImage
         private TouchScreenKeyboard keyboard;
 
         private Vector3 worldAbs;
+        private Anchor worldAnchor;
 
         public GUIStyle style;
 
@@ -125,7 +127,6 @@ namespace GoogleARCore.Examples.AugmentedImage
             rosConnector = new RosSharp.RosBridgeClient.RosConnector();
             rosConnector.SetAddress("ws://" + inputText + ":9090");
             rosConnector.Awake();
-
         }
 
         /// <summary>
@@ -184,40 +185,44 @@ namespace GoogleARCore.Examples.AugmentedImage
 
 
             GameObject arMarker = Instantiate(emptyGameObject, positionCentreImage, rotationCentreImage);
+            arMarker.name = "Marker";
 
             GameObject cameraObject = Instantiate(emptyGameObject, FirstPersonCamera.transform.position, FirstPersonCamera.transform.rotation);
             cameraObject.transform.SetParent(arMarker.transform);
             //PrintDebugMessage("I: Object local  -> Position: " + messageToSend.position.ToString() + " * Quaternion: " + messageToSend.rotation.ToString());
             //PrintDebugMessage("I: Camera local  -> Position: " + cameraObject.localPosition.ToString() + " * Quaternion: " + cameraObject.transform.localPosition.ToString());
 
-            publisher.SendMessage(SwapCoordinates(cameraObject.transform.localPosition, cameraObject.transform.localRotation));
-            
+            //publisher.SendMessage(SwapCoordinates(cameraObject.transform.localPosition, cameraObject.transform.localRotation), "mobile_" + SystemInfo.deviceUniqueIdentifier);
+            publisher.SendMessage(SwapCoordinates(cameraObject.transform.localPosition, cameraObject.transform.localRotation), "mobile_phone");
 
+
+
+
+            //PETER ----------------------- >  ROS ORIGIN CREATION. I REPRESENT THE ROS ORIGIN WITH originRosGameObject INSIDE ARCORE AND IT IS IN THE CORRECT POSITION, WITH PARENT THE arMarker
             if (originRosGameObject == null)
             {
                 Tuple<Vector3, Quaternion> originPose = SwapCoordinates(originSub.position, originSub.rotation);
+
                 PrintDebugMessage("I: Origin  -> Position: " + originPose.Item1.ToString() + " * Quaternion: " + originPose.Item2.ToString());
 
                 originRosGameObject = Instantiate(originGameObject);
                 originRosGameObject.transform.SetParent(arMarker.transform);
                 originRosGameObject.transform.localPosition = originPose.Item1;
                 originRosGameObject.transform.localRotation = originPose.Item2;
-
-                worldAbs = originRosGameObject.transform.position;
-
+                originRosGameObject.name = "Ros_Origin";
             }
 
 
-            //activeTracks.Clear();
             var dataFromCentroidSub = centroidSub.processedTrackData;
+            PrintDebugMessage("I: Received data from CentroidSub length: " + dataFromCentroidSub.Count);
+
             foreach (KeyValuePair<int, Vector3> track in dataFromCentroidSub)
             {
                 int id = track.Key;
                 Vector3 poseInput = track.Value;
 
-                //PrintDebugMessage("I: Centroid  -> Position: " + poseInput.ToString() + " * Id: " + id);
-
                 //add any people who have joined the scene
+
                 if (!activeTracks.ContainsKey(id))
                 {
                     Color color = new Color(
@@ -228,38 +233,34 @@ namespace GoogleARCore.Examples.AugmentedImage
 
                     if (originRosGameObject != null)
                     {
-                        //Vector3 markeAbs = new Vector3(worldAbs.x + poseInput.x, worldAbs.y + poseInput.y , worldAbs.z + poseInput.z);
+                        activeTracks.Add(id, Instantiate(centroidObject) as GameObject);
 
-                        //GameObject new_marker = Instantiate(centroidObject, markeAbs, Quaternion.identity);
-                        GameObject new_marker = Instantiate(centroidObject);
-
-                        new_marker.transform.SetParent(originRosGameObject.transform);
-                        new_marker.transform.localPosition = new Vector3(poseInput.x, poseInput.y, poseInput.z);
-
-                        new_marker.name = "centroid" + id;
-                        new_marker.GetComponent<Renderer>().material.color = color;
-
-                        activeTracks.Add(id, new_marker);
-
-                        PrintDebugMessage("I: Crete centroid -> Position: " + new_marker.transform.position.ToString() + " * Id: " + id);
+                        // PETER ----------------------- >    THE PROBLEM IS HERE! WITH PARENT originRosGameObject.transform I SEE ALL THE CENTROID IN (0, 0, 0) RESPECT THE originRosGameObject (picture 1)
+                        // PETER ----------------------- >    IF I SET arMarker.transform AS PARENT I SEE THE CENTROID IN AIR (with a wrong offset clearly) (picture 2)
+                        activeTracks[id].transform.SetParent(originRosGameObject.transform);
+                        activeTracks[id].transform.localPosition = new Vector3(track.Value.x, track.Value.y, track.Value.z);
 
 
+                        // PETER ----------------------- >  AFTER THIS, IF I PRINT THE localPosition IT IS SET CORRECLY, BUT THE RAPPRESENTATION NO
+
+
+
+
+
+                        activeTracks[id].name = "centroid" + id;
+                        activeTracks[id].GetComponent<Renderer>().material.color = color;
+
+
+                        PrintDebugMessage("I: Crete centroid -> Parent: " + activeTracks[id].transform.parent.name + " | Position: " + activeTracks[id].transform.localPosition.ToString() + " | Id: " + id);
                     }
 
                 }
-                GameObject theMarker = activeTracks[id];
-                theMarker.SetActive(true);
-                //theMarker.transform.position = new Vector3(worldAbs.x + poseInput.x, worldAbs.y + poseInput.y, worldAbs.z + poseInput.z);
-                theMarker.transform.SetParent(originRosGameObject.transform);
-                theMarker.transform.localPosition = new Vector3(poseInput.x, poseInput.y, poseInput.z);
 
-                ////theMarker.transform.SetParent(originRosGameObject.transform);
-                //theMarker.transform.localPosition = poseInput;
-                //PrintDebugMessage("I: track.value -> Position: " + track.Value.ToString() + " id: " + id);
-                //PrintDebugMessage("I: poseInput   -> Position: " + poseInput.ToString() + " id: " + id);
-                //PrintDebugMessage("I: Centroid loc -> Position: " + theMarker.transform.localPosition.ToString() + " id: " + id);
-                //PrintDebugMessage("I: Centroid abs -> Position: " + theMarker.transform.position.ToString() + " id: " + id);
-                //PrintDebugMessage("I: World abs    -> Position: " + originRosGameObject.transform.position.ToString());
+                activeTracks[id].SetActive(true);
+                activeTracks[id].transform.localPosition = new Vector3(track.Value.x, track.Value.y, track.Value.z);
+                PrintDebugMessage("I: Update centroid  -> Parent: " + activeTracks[id].transform.parent.name + " | Position: " + activeTracks[id].transform.localPosition.ToString() + " | Id: " + id);
+
+
             }
 
             ////remove any people who are no longer present
@@ -267,15 +268,13 @@ namespace GoogleARCore.Examples.AugmentedImage
             {
                 if (!dataFromCentroidSub.ContainsKey(kvp.Key))
                 {
-                    activeTracks[kvp.Key].SetActive(false);
-                    //Destroy(activeTracks[kvp.Key]);
-                    //activeTracks.Remove(kvp.Key);
-                }
+                    Destroy(activeTracks[kvp.Key]);
+                    PrintDebugMessage("I: Remove centroid: " + kvp.Key);
+                    activeTracks.Remove(kvp.Key);                }
             }
 
-
-
-                PrintDebugMessage("I: Update complete correctly!");
+           
+            PrintDebugMessage("I: Update complete correctly!");
         }
 
         /// <summary>

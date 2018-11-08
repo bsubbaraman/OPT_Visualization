@@ -725,6 +725,3 @@
 /Users/remap/Desktop/optar/obj/Debug/Assembly-CSharp.csproj.CopyComplete
 /Users/remap/Desktop/optar/obj/Debug/Assembly-CSharp.dll
 /Users/remap/Desktop/optar/obj/Debug/Assembly-CSharp.pdb
-/Users/remap/Desktop/optar/Temp/bin/Debug/UnityEditor.UI.dll
-/Users/remap/Desktop/optar/Temp/bin/Debug/UnityEditor.UI.dll.mdb
-/Users/remap/Desktop/optar/Temp/bin/Debug/UnityEditor.UI.xml

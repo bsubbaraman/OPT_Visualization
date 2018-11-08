@@ -155,7 +155,7 @@ Prefab:
     - target: {fileID: 114456787887554012, guid: 5323c8a25dcb746619062c9f8c861737,
         type: 2}
       propertyPath: RosBridgeServerUrl
-      value: ws://131.179.142.106:9090
+      value: ws://131.179.142.82:9090
       objectReference: {fileID: 0}
     - target: {fileID: 114456787887554012, guid: 5323c8a25dcb746619062c9f8c861737,
         type: 2}
@@ -201,7 +201,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Timeout: 10
   Protocol: 0
-  RosBridgeServerUrl: ws://131.179.142.106:9090
+  RosBridgeServerUrl: ws://131.179.142.82:9090
   connectionEstablished: 0
 --- !u!1001 &590588821
 Prefab:
@@ -721,7 +721,7 @@ MonoBehaviour:
   FitToScanOverlay: {fileID: 1622737808}
   originSub: {fileID: 221455181}
   centroidSub: {fileID: 1383443041}
-  inputText: 192.168.x.x
+  inputText: 131.179.142.82
   style:
     m_Name: 
     m_Normal:
