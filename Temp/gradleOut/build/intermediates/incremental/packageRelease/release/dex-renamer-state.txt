@@ -1,4 +1,4 @@
-#Thu Nov 08 14:07:46 PST 2018
+#Thu Nov 08 14:40:49 PST 2018
 base.0=/Users/remap/Desktop/optar/Temp/gradleOut/build/intermediates/transforms/dex/release/0
 path.0=classes.dex
 renamed.0=classes.dex

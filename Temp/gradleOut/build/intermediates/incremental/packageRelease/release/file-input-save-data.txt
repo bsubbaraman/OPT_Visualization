@@ -1,5 +1,5 @@
 #Internal package file, do not edit.
-#Thu Nov 08 14:07:46 PST 2018
+#Thu Nov 08 14:40:49 PST 2018
 60.set=ASSET
 52.set=ASSET
 53.base=/Users/remap/Desktop/optar/Temp/gradleOut/build/intermediates/assets/release

@@ -12,7 +12,7 @@
     </activity>
     <meta-data android:name="unity.tango-enable" android:value="True" />
     <meta-data android:name="unityplayer.SkipPermissionsDialog" android:value="true" />
-    <meta-data android:name="unity.build-id" android:value="deb437e2-b733-4545-adf4-0882216d3240" />
+    <meta-data android:name="unity.build-id" android:value="7e32a484-3f89-4636-bbe2-ddb11a33f103" />
     <meta-data android:name="unity.splash-mode" android:value="0" />
     <meta-data android:name="unity.splash-enable" android:value="True" />
   </application>
