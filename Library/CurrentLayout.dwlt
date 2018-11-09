@@ -45,7 +45,7 @@ MonoBehaviour:
   m_MinSize: {x: 683, y: 492}
   m_MaxSize: {x: 14004, y: 14042}
   vertical: 0
-  controlID: 97
+  controlID: 22
 --- !u!114 &3
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -210,7 +210,7 @@ MonoBehaviour:
   m_MinSize: {x: 406, y: 492}
   m_MaxSize: {x: 10002, y: 14042}
   vertical: 1
-  controlID: 98
+  controlID: 23
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -234,7 +234,7 @@ MonoBehaviour:
   m_MinSize: {x: 406, y: 221}
   m_MaxSize: {x: 8006, y: 4021}
   vertical: 0
-  controlID: 99
+  controlID: 79
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -354,19 +354,19 @@ MonoBehaviour:
     m_ShowAllHits: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/GoogleARCore/Examples/AugmentedImage/Scripts
+    - Assets/GoogleARCore/Examples/AugmentedImage/Images
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/GoogleARCore/Examples/AugmentedImage/Scripts
+  - Assets/GoogleARCore/Examples/AugmentedImage/Images
   m_LastFoldersGridSize: -1
   m_LastProjectPath: /Users/remap/Desktop/optar
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 158.0011}
-    m_SelectedIDs: 2e2e0000
-    m_LastClickedID: 11822
+    scrollPos: {x: 0, y: 159.99884}
+    m_SelectedIDs: fe2e0000
+    m_LastClickedID: 12030
     m_ExpandedIDs: 000000005a290000162c0000ba2c0000d42c00002a2d00003c2d0000922d0000b82d0000042e00000c2e0000202e0000242e0000582e0000fc2e00001e2f0000542f0000722f00009a2f0000ac2f00002031000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -422,7 +422,7 @@ MonoBehaviour:
   m_ListAreaState:
     m_SelectedInstanceIDs: 
     m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 0
+    m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c6230000402b0000222d0000fe2b00000a2d000000000000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -439,7 +439,7 @@ MonoBehaviour:
       m_IsRenaming: 0
       m_OriginalEventType: 11
       m_IsRenamingFilename: 1
-      m_ClientGUIView: {fileID: 0}
+      m_ClientGUIView: {fileID: 5}
     m_CreateAssetUtility:
       m_EndAction: {fileID: 0}
       m_InstanceID: 0
@@ -511,9 +511,9 @@ MonoBehaviour:
   m_PersistentViewDataDictionary: {fileID: 0}
   m_TreeViewState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 
+    m_SelectedIDs: 622d0000
     m_LastClickedID: 0
-    m_ExpandedIDs: 6674ffff2675ffffe076ffffe27fffffa280ffff5c82ffff168affffd68affff908cffffca97ffff9898ffff529affff6ea9ffff46aaffff00acffffb6c1ffff88c2ffff42c4ffff06dfffffd6dfffff94e1ffffe4fbffff00000000
+    m_ExpandedIDs: 0c15ffffcc15ffff8617ffff2e2ffffffe2fffffbc31fffff053ffffe054ffff9a56ffffaa60ffff9a61ffff5463ffff9876ffff8677ffff4079ffffa6ceffff74cfffff2ed1ffff42d9ffff10daffffcadbffff02e4ffffd0e4ffff8ae6ffffe4fbffff00000000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -563,14 +563,14 @@ MonoBehaviour:
     height: 436
   m_PersistentViewDataDictionary: {fileID: 0}
   m_SceneLighting: 1
-  lastFramingTime: 6400.869499087334
+  lastFramingTime: 3602.500382065773
   m_2DMode: 0
   m_isRotationLocked: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 0.7447485, y: 0.19742966, z: 0.33052415}
+    m_Target: {x: 0, y: 0, z: 0}
     speed: 2
-    m_Value: {x: 0.7447485, y: 0.19742966, z: 0.33052415}
+    m_Value: {x: 0, y: 0, z: 0}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -602,9 +602,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: -0.073465146, y: 0.88885146, z: -0.15349337, w: -0.42542416}
   m_Size:
-    m_Target: 1.3394845
+    m_Target: 22
     speed: 2
-    m_Value: 1.3394845
+    m_Value: 22
   m_Ortho:
     m_Target: 0
     speed: 2

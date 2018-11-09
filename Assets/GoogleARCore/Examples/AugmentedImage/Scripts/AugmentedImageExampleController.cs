@@ -24,12 +24,9 @@ using geom_msgs = RosSharp.RosBridgeClient.Messages.Geometry;
 namespace GoogleARCore.Examples.AugmentedImage
 {
     using System.Collections.Generic;
-    using System.Runtime.InteropServices;
     using GoogleARCore;
     using UnityEngine;
-    using UnityEngine.UI;
     using System;
-    using matr = System.Numerics;
 
     /// <summary>
     /// Controller for AugmentedImage example.
@@ -49,10 +46,8 @@ namespace GoogleARCore.Examples.AugmentedImage
         private GameObject anchorOriginObject;
 
         public GameObject emptyGameObject;
-        public GameObject originGameObject;
         public GameObject centroidObject;
 
-        private GameObject originRosGameObject;
 
         /// <summary>
         /// The overlay containing the fit to scan user guide.
@@ -73,26 +68,19 @@ namespace GoogleARCore.Examples.AugmentedImage
         Vector3 positionCentreImage;
         Quaternion rotationCentreImage;
 
-
         int counterErrorDistance = 0;
         //bool controlDistance = false;
 
-        private RosSharp.RosBridgeClient.RosConnector rosConnector;
-        private RosSharp.RosBridgeClient.PoseStampedPublisher publisher;
-        public RosSharp.RosBridgeClient.PoseStampedSubscriber originSub;
         public RosSharp.RosBridgeClient.CentroidSubscriber centroidSub;
+        public RosSharp.RosBridgeClient.PoseStampedPublisher posePub;
 
         public Dictionary<int, GameObject> activeTracks = new Dictionary<int, GameObject>();
         private Dictionary<int, Color> colors = new Dictionary<int, Color>();
         private void Start()
         {
             PrintDebugMessage("D: -------- New execution --------");
-            //ros = new ros_lib.ROSCommunicationPersonal();
-            //ros.SetIpAddress(inputText);
-            SetupRosConnection();
         }
 
-        public string inputText;
         private TouchScreenKeyboard keyboard;
 
         private Vector3 worldAbs;
@@ -123,11 +111,6 @@ namespace GoogleARCore.Examples.AugmentedImage
 
         //}
 
-        private void SetupRosConnection(){
-            rosConnector = new RosSharp.RosBridgeClient.RosConnector();
-            rosConnector.SetAddress(inputText);
-            rosConnector.Awake();
-        }
 
         /// <summary>
         /// The Unity Update method.
@@ -179,34 +162,29 @@ namespace GoogleARCore.Examples.AugmentedImage
             //    return;
             //}
 
-            publisher = new RosSharp.RosBridgeClient.PoseStampedPublisher(rosConnector);
-            publisher.CreateTopic("arcore/vodom", "mobile-phone");
-            //PrintDebugMessage("I: Publisher Created!");
-
 
             GameObject arMarker = Instantiate(emptyGameObject, positionCentreImage, rotationCentreImage);
-            arMarker.name = "Marker";
+            //arMarker.name = "Marker";
 
             GameObject cameraObject = Instantiate(emptyGameObject, FirstPersonCamera.transform.position, FirstPersonCamera.transform.rotation);
             cameraObject.transform.SetParent(arMarker.transform);
             //PrintDebugMessage("I: Object local  -> Position: " + messageToSend.position.ToString() + " * Quaternion: " + messageToSend.rotation.ToString());
             //PrintDebugMessage("I: Camera local  -> Position: " + cameraObject.localPosition.ToString() + " * Quaternion: " + cameraObject.transform.localPosition.ToString());
 
-            publisher.SendMessage(SwapCoordinates(cameraObject.transform.localPosition, cameraObject.transform.localRotation), "ar_mobile");
-
+            posePub.SendMessage(SwapCoordinates(cameraObject.transform.localPosition, cameraObject.transform.localRotation), "ar_mobile");
 
 
             var dataFromCentroidSub = centroidSub.processedTrackData;
-            PrintDebugMessage("I: Received data from CentroidSub length: " + dataFromCentroidSub.Count);
+            //PrintDebugMessage("I: Received data from CentroidSub length: " + dataFromCentroidSub.Count);
 
             foreach (KeyValuePair<int, Vector3> track in dataFromCentroidSub)
             {
-                int id = track.Key;
-                Vector3 poseInput = track.Value;
+                //int id = track.Key;
+                //Vector3 poseInput = track.Value;
 
                 //add any people who have joined the scene
 
-                if (!activeTracks.ContainsKey(id))
+                if (!activeTracks.ContainsKey(track.Key))
                 {
                     Color color = new Color(
                           UnityEngine.Random.Range(0f, 1f),
@@ -214,40 +192,46 @@ namespace GoogleARCore.Examples.AugmentedImage
                           UnityEngine.Random.Range(0f, 1f),
                                             1);
 
-                  
-                    activeTracks.Add(id, Instantiate(centroidObject) as GameObject);
+                    GameObject newCentroid = Instantiate(centroidObject);
 
-                    activeTracks[id].transform.SetParent(arMarker.transform);
-                    activeTracks[id].transform.localPosition = poseInput;
+                    newCentroid.transform.SetParent(arMarker.transform);
+                    newCentroid.transform.localPosition = track.Value;
 
-                    activeTracks[id].name = "centroid" + id;
-                    activeTracks[id].GetComponent<Renderer>().material.color = color;
+                    //activeTracks[id].name = "centroid" + track.Key;
+                    newCentroid.GetComponent<Renderer>().material.color = color;
 
+                    activeTracks.Add(track.Key, newCentroid);
 
-                    PrintDebugMessage("I: Crete centroid -> Parent: " + activeTracks[id].transform.parent.name + " | Position: " + activeTracks[id].transform.localPosition.ToString() + " | Id: " + id);
+                    //activeTracks[id].transform.SetParent(arMarker.transform);
+                    //activeTracks[id].transform.localPosition = track.Value;
+
+                    //activeTracks[id].name = "centroid" + track.Key;
+                    //activeTracks[id].GetComponent<Renderer>().material.color = color;
+
+                    //PrintDebugMessage("I: Crete centroid -> Parent: " + activeTracks[id].transform.parent.name + " | Position: " + activeTracks[id].transform.localPosition.ToString() + " | Id: " + id);
 
                 }
                 else
                 {
-                    activeTracks[id].SetActive(true);
-                    activeTracks[id].transform.localPosition = poseInput;
-                    PrintDebugMessage("I: Update centroid  -> Parent: " + activeTracks[id].transform.parent.name + " | Position: " + activeTracks[id].transform.localPosition.ToString() + " | Id: " + id);
+                    //activeTracks[id].SetActive(true);
+                    activeTracks[track.Key].transform.localPosition = track.Value;
+                    //PrintDebugMessage("I: Update centroid  -> Parent: " + activeTracks[id].transform.parent.name + " | Position: " + activeTracks[id].transform.localPosition.ToString() + " | Id: " + id);
                 }
 
             }
 
-            ////remove any people who are no longer present
+            //remove any people who are no longer present
             foreach (KeyValuePair<int, GameObject> kvp in activeTracks)
             {
                 if (!dataFromCentroidSub.ContainsKey(kvp.Key))
                 {
-                    Destroy(activeTracks[kvp.Key]);
-                    PrintDebugMessage("I: Remove centroid: " + kvp.Key);
-                    activeTracks.Remove(kvp.Key);                }
+                    activeTracks[kvp.Key].GetComponent<Renderer>().enabled = false;
+                    //PrintDebugMessage("I: Remove centroid: " + kvp.Key);
+                    activeTracks.Remove(kvp.Key);                
+                }
             }
 
-           
-            PrintDebugMessage("I: Update complete correctly!");
+            //PrintDebugMessage("I: Update complete correctly!");
         }
 
         /// <summary>
@@ -258,7 +242,6 @@ namespace GoogleARCore.Examples.AugmentedImage
             PrintDebugMessage("E: Position Lost! " + message);
             Destroy(anchorOrigin);
             Destroy(anchorOriginObject);
-            Destroy(originRosGameObject);
             foreach (KeyValuePair<int, GameObject> kvp in activeTracks)
             {
                 Destroy(activeTracks[kvp.Key]);

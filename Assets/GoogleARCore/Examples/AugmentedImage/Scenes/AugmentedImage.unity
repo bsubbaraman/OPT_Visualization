@@ -155,7 +155,7 @@ Prefab:
     - target: {fileID: 114456787887554012, guid: 5323c8a25dcb746619062c9f8c861737,
         type: 2}
       propertyPath: RosBridgeServerUrl
-      value: ws://192.168.0.3:9090
+      value: ws://131.179.142.82:9090
       objectReference: {fileID: 0}
     - target: {fileID: 114456787887554012, guid: 5323c8a25dcb746619062c9f8c861737,
         type: 2}
@@ -167,26 +167,14 @@ Prefab:
       propertyPath: TimeStep
       value: 30
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 1158093691767740, guid: 5323c8a25dcb746619062c9f8c861737, type: 2}
+      propertyPath: m_Name
+      value: RosCommunication
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 5323c8a25dcb746619062c9f8c861737, type: 2}
   m_IsPrefabAsset: 0
---- !u!114 &221455181
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 114062747225107160, guid: 5323c8a25dcb746619062c9f8c861737,
-    type: 2}
-  m_PrefabInternal: {fileID: 221455180}
-  m_GameObject: {fileID: 1383443040}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6cd27ba95adab14d85c327244d65eb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Topic: /arcore/origin
-  TimeStep: 30
-  PublishedTransform: {fileID: 0}
-  position: {x: 0, y: 0, z: 0}
-  rotation: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &221455182
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -201,7 +189,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Timeout: 10
   Protocol: 0
-  RosBridgeServerUrl: ws://192.168.0.3:9090
+  RosBridgeServerUrl: ws://131.179.142.82:9090
   connectionEstablished: 0
 --- !u!1001 &590588821
 Prefab:
@@ -379,10 +367,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1383443042}
   - component: {fileID: 221455182}
-  - component: {fileID: 221455181}
   - component: {fileID: 1383443041}
+  - component: {fileID: 1383443043}
   m_Layer: 0
-  m_Name: PrefabSubscriber
+  m_Name: RosCommunication
   m_TagString: RosSubscriber
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -415,6 +403,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1383443043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1383443040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db30844794bb74e77821baf36b08c8e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Topic: /arcore/vodom
+  PublishedTransform: {fileID: 0}
+  FrameId: ar_mobile
 --- !u!1 &1436859208
 GameObject:
   m_ObjectHideFlags: 0
@@ -719,9 +721,8 @@ MonoBehaviour:
   centroidObject: {fileID: 1317426671309370, guid: 94c447eb110654d62893dff7743cc562,
     type: 2}
   FitToScanOverlay: {fileID: 1622737808}
-  originSub: {fileID: 221455181}
   centroidSub: {fileID: 1383443041}
-  inputText: ws://192.168.0.3:9090
+  posePub: {fileID: 1383443043}
 --- !u!4 &2000013467
 Transform:
   m_ObjectHideFlags: 0

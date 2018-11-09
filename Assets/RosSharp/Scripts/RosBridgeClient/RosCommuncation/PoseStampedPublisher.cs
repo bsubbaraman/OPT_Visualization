@@ -18,30 +18,23 @@ using System;
 
 namespace RosSharp.RosBridgeClient
 {
-    public class PoseStampedPublisher : MonoBehaviour
+    public class PoseStampedPublisher : Publisher<Messages.Geometry.PoseStamped>
     {
         public Transform PublishedTransform;
-        private string FrameId;
+        public string FrameId = "ar_mobile";
+
         private Messages.Geometry.PoseStamped message;
-        private RosConnector rosConnector;
-        private string publicationId;
-        public bool connectionEstablished = false;
 
-
-        public PoseStampedPublisher(RosConnector rosConnectorInput)
+        protected override void Start()
         {
-            rosConnector = rosConnectorInput;
-        }
-
-        public void CreateTopic(string topic, String frame)
-        {
-            FrameId = frame;
-            publicationId = rosConnector.RosSocket.Advertise<Messages.Geometry.PoseStamped>(topic);
+            base.Start();
             InitializeMessage();
-            connectionEstablished = true;
-            Debug.Log("ROS: I created and " + connectionEstablished);
         }
 
+        private void FixedUpdate()
+        {
+            UpdateMessage();
+        }
 
         private void InitializeMessage()
         {
@@ -56,10 +49,8 @@ namespace RosSharp.RosBridgeClient
 
         public void SendMessage(Tuple<Vector3, Quaternion> tupleInput, string name)
         {
-            UpdateMessage(tupleInput.Item1 , tupleInput.Item2, name);
-            rosConnector.RosSocket.Publish(publicationId, message);
+            UpdateMessage(tupleInput.Item1, tupleInput.Item2, name);
         }
-
 
         private void UpdateMessage(Vector3 vectorInput, Quaternion quaternionInput, string name)
         {
@@ -67,15 +58,18 @@ namespace RosSharp.RosBridgeClient
             message.header.frame_id = name;
             message.pose.position = GetGeometryPoint(vectorInput);
             message.pose.orientation = GetGeometryQuaternion(quaternionInput);
+
+            Publish(message);
         }
 
         private void UpdateMessage()
         {
             message.header.Update();
+            message.header.frame_id = name;
             message.pose.position = GetGeometryPoint(PublishedTransform.position.Unity2Ros());
             message.pose.orientation = GetGeometryQuaternion(PublishedTransform.rotation.Unity2Ros());
 
-            rosConnector.RosSocket.Publish(publicationId, message);
+            Publish(message);
         }
 
         private Messages.Geometry.Point GetGeometryPoint(Vector3 position)
