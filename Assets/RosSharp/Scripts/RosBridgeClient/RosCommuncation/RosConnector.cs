@@ -29,23 +29,35 @@ namespace RosSharp.RosBridgeClient
         public enum Protocols { WebSocketSharp, WebSocketNET };
         public Protocols Protocol;
         public string RosBridgeServerUrl = "ws://192.168.0.1:9090";
-        public bool connectionEstablished = false;
+        private bool connectionEstablished = false;
 
         private ManualResetEvent isConnected = new ManualResetEvent(false);
 
         public void Awake()
         {
+            //PrintDebugMessage("entro qua 0");
             new Thread(ConnectAndWait).Start();
         }
 
-        private void ConnectAndWait()
+        public void ConnectAndWait()
         {
             RosSocket = ConnectToRos(Protocol, RosBridgeServerUrl, OnConnected, OnClosed);
-
+            //PrintDebugMessage("entro qua");
             if (!isConnected.WaitOne(Timeout * 1000))
-                Debug.LogWarning("Failed to connect to RosBridge at: " + RosBridgeServerUrl);
+            {
+                PrintDebugMessage("Failed to connect to RosBridge at: " + RosBridgeServerUrl);
+                connectionEstablished = false;
+            }
+            else
+            {
+                connectionEstablished = true;
+                //PrintDebugMessage("entro qua 2");
+            }
+        }
 
-            connectionEstablished = true;
+        public bool ConnectionStatus()
+        {
+            return connectionEstablished;
         }
         
         public static RosSocket ConnectToRos(Protocols protocolType, string serverUrl, EventHandler onConnected = null, EventHandler onClosed = null)
@@ -70,6 +82,12 @@ namespace RosSharp.RosBridgeClient
             }
         }
 
+        public void TearDown()
+        {
+            OnApplicationQuit();
+            connectionEstablished = false;
+        }
+
         private void OnApplicationQuit()
         {
             RosSocket.Close();
@@ -78,18 +96,28 @@ namespace RosSharp.RosBridgeClient
         private void OnConnected(object sender, EventArgs e)
         {
             isConnected.Set();
-            Debug.Log("Connected to RosBridge: " + RosBridgeServerUrl);
+            PrintDebugMessage("Connected to RosBridge: " + RosBridgeServerUrl);
         }
 
         private void OnClosed(object sender, EventArgs e)
         {
             isConnected.Reset();
-            Debug.Log("Disconnected from RosBridge: " + RosBridgeServerUrl);
+            PrintDebugMessage("Disconnected from RosBridge: " + RosBridgeServerUrl);
         }
 
         public void SetAddress(string address)
         {
             RosBridgeServerUrl = address;
+            PrintDebugMessage("New ip address setted: " + RosBridgeServerUrl);
+        }
+
+        /// <summary>
+        /// Prints the debug message.
+        /// </summary>
+        /// <param name="message">Message.</param>
+        private void PrintDebugMessage(string message)
+        {
+            Debug.Log("123 - ROS " + message);
         }
     }
 }

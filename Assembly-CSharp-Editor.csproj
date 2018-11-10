@@ -60,7 +60,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\GoogleARCore\Examples\Common\Scripts\Editor\ExamplePreprocessBuild.cs" />
     <Compile Include="Assets\GoogleARCore\SDK\Scripts\Editor\ARCoreIOSSupportHelper.cs" />
     <Compile Include="Assets\GoogleARCore\SDK\Scripts\Editor\ARCoreIOSSupportPreprocessBuild.cs" />
     <Compile Include="Assets\GoogleARCore\SDK\Scripts\Editor\ARCoreProjectSettingsWindow.cs" />
@@ -71,6 +70,7 @@
     <Compile Include="Assets\GoogleARCore\SDK\Scripts\Editor\BackgroundJobExecutor.cs" />
     <Compile Include="Assets\GoogleARCore\SDK\Scripts\Editor\CloudAnchorPreprocessBuild.cs" />
     <Compile Include="Assets\GoogleARCore\SDK\Scripts\Editor\RequiredOptionalPreprocessBuild.cs" />
+    <Compile Include="Assets\GoogleARCore\Visualization\Common\Scripts\Editor\ExamplePreprocessBuild.cs" />
     <Compile Include="Assets\RosSharp\Scripts\RosBridgeClient\Editor\JointStatePatcherEditor.cs" />
     <Compile Include="Assets\RosSharp\Scripts\RosBridgeClient\Editor\TransferFromRosEditorWindow.cs" />
     <Compile Include="Assets\RosSharp\Scripts\RosBridgeClient\Editor\TransferFromRosHandler.cs" />

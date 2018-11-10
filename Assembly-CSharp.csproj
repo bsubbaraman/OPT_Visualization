@@ -60,25 +60,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\GoogleARCore\Examples\AugmentedImage\Scripts\AugmentedImageExampleController.cs" />
-    <Compile Include="Assets\GoogleARCore\Examples\AugmentedImage\Scripts\AugmentedImageVisualizer.cs" />
-    <Compile Include="Assets\GoogleARCore\Examples\CloudAnchors\Scripts\AnchorIdFromRoomRequestMessage.cs" />
-    <Compile Include="Assets\GoogleARCore\Examples\CloudAnchors\Scripts\AnchorIdFromRoomResponseMessage.cs" />
-    <Compile Include="Assets\GoogleARCore\Examples\CloudAnchors\Scripts\ARKitHelper.cs" />
-    <Compile Include="Assets\GoogleARCore\Examples\CloudAnchors\Scripts\CloudAnchorController.cs" />
-    <Compile Include="Assets\GoogleARCore\Examples\CloudAnchors\Scripts\CloudAnchorUIController.cs" />
-    <Compile Include="Assets\GoogleARCore\Examples\CloudAnchors\Scripts\RoomSharingClient.cs" />
-    <Compile Include="Assets\GoogleARCore\Examples\CloudAnchors\Scripts\RoomSharingMsgType.cs" />
-    <Compile Include="Assets\GoogleARCore\Examples\CloudAnchors\Scripts\RoomSharingServer.cs" />
-    <Compile Include="Assets\GoogleARCore\Examples\Common\Scripts\DetectedPlaneGenerator.cs" />
-    <Compile Include="Assets\GoogleARCore\Examples\Common\Scripts\DetectedPlaneVisualizer.cs" />
-    <Compile Include="Assets\GoogleARCore\Examples\Common\Scripts\PointcloudVisualizer.cs" />
-    <Compile Include="Assets\GoogleARCore\Examples\ComputerVision\Scripts\ComputerVisionController.cs" />
-    <Compile Include="Assets\GoogleARCore\Examples\ComputerVision\Scripts\EdgeDetector.cs" />
-    <Compile Include="Assets\GoogleARCore\Examples\ComputerVision\Scripts\PointClickHandler.cs" />
-    <Compile Include="Assets\GoogleARCore\Examples\ComputerVision\Scripts\TextureReader.cs" />
-    <Compile Include="Assets\GoogleARCore\Examples\ComputerVision\Scripts\TextureReaderApi.cs" />
-    <Compile Include="Assets\GoogleARCore\Examples\HelloAR\Scripts\HelloARController.cs" />
     <Compile Include="Assets\GoogleARCore\SDK\InstantPreview\Scripts\InstantPreviewInput.cs" />
     <Compile Include="Assets\GoogleARCore\SDK\InstantPreview\Scripts\InstantPreviewManager.cs" />
     <Compile Include="Assets\GoogleARCore\SDK\InstantPreview\Scripts\InstantPreviewTrackedPoseDriver.cs" />
@@ -196,6 +177,24 @@
     <Compile Include="Assets\GoogleARCore\SDK\Scripts\XPSession.cs" />
     <Compile Include="Assets\GoogleARCore\SDK\Scripts\XPSessionStatus.cs" />
     <Compile Include="Assets\GoogleARCore\SDK\Scripts\XPTrackingState.cs" />
+    <Compile Include="Assets\GoogleARCore\Visualization\CloudAnchors\Scripts\AnchorIdFromRoomRequestMessage.cs" />
+    <Compile Include="Assets\GoogleARCore\Visualization\CloudAnchors\Scripts\AnchorIdFromRoomResponseMessage.cs" />
+    <Compile Include="Assets\GoogleARCore\Visualization\CloudAnchors\Scripts\ARKitHelper.cs" />
+    <Compile Include="Assets\GoogleARCore\Visualization\CloudAnchors\Scripts\CloudAnchorController.cs" />
+    <Compile Include="Assets\GoogleARCore\Visualization\CloudAnchors\Scripts\CloudAnchorUIController.cs" />
+    <Compile Include="Assets\GoogleARCore\Visualization\CloudAnchors\Scripts\RoomSharingClient.cs" />
+    <Compile Include="Assets\GoogleARCore\Visualization\CloudAnchors\Scripts\RoomSharingMsgType.cs" />
+    <Compile Include="Assets\GoogleARCore\Visualization\CloudAnchors\Scripts\RoomSharingServer.cs" />
+    <Compile Include="Assets\GoogleARCore\Visualization\Common\Scripts\DetectedPlaneGenerator.cs" />
+    <Compile Include="Assets\GoogleARCore\Visualization\Common\Scripts\DetectedPlaneVisualizer.cs" />
+    <Compile Include="Assets\GoogleARCore\Visualization\Common\Scripts\PointcloudVisualizer.cs" />
+    <Compile Include="Assets\GoogleARCore\Visualization\ComputerVision\Scripts\ComputerVisionController.cs" />
+    <Compile Include="Assets\GoogleARCore\Visualization\ComputerVision\Scripts\EdgeDetector.cs" />
+    <Compile Include="Assets\GoogleARCore\Visualization\ComputerVision\Scripts\PointClickHandler.cs" />
+    <Compile Include="Assets\GoogleARCore\Visualization\ComputerVision\Scripts\TextureReader.cs" />
+    <Compile Include="Assets\GoogleARCore\Visualization\ComputerVision\Scripts\TextureReaderApi.cs" />
+    <Compile Include="Assets\GoogleARCore\Visualization\Core\Scripts\VisaulizaionVisualizer.cs" />
+    <Compile Include="Assets\GoogleARCore\Visualization\Core\Scripts\Visualization.cs" />
     <Compile Include="Assets\RosSharp\Scripts\Extensions\StandardHeaderExtensions.cs" />
     <Compile Include="Assets\RosSharp\Scripts\Extensions\TransformExtensions.cs" />
     <Compile Include="Assets\RosSharp\Scripts\RosBridgeClient\MessageHandling\JointStatePatcher.cs" />
@@ -254,12 +253,12 @@
     <Compile Include="Assets\RosSharp\Scripts\Urdf\UrdfComponents\UrdfRobot.cs" />
     <Compile Include="Assets\RosSharp\Scripts\Urdf\UrdfComponents\UrdfVisual.cs" />
     <Compile Include="Assets\RosSharp\Scripts\Urdf\UrdfComponents\UrdfVisuals.cs" />
-    <None Include="Assets\GoogleARCore\Examples\Common\Materials\Shaders\PlaneGrid.shader" />
-    <None Include="Assets\GoogleARCore\Examples\Common\Materials\Shaders\MobileDiffuseWithLightEstimation.shader" />
+    <None Include="Assets\GoogleARCore\Visualization\Common\Materials\Shaders\PlaneGrid.shader" />
+    <None Include="Assets\GoogleARCore\Visualization\Common\Materials\Shaders\MobileDiffuseWithLightEstimation.shader" />
     <None Include="Assets\GoogleARCore\SDK\Materials\ARBackground.shader" />
-    <None Include="Assets\GoogleARCore\Examples\Common\Materials\Shaders\PointCloud.shader" />
-    <None Include="Assets\GoogleARCore\Examples\ComputerVision\Materials\EdgeDetectionBackground.shader" />
-    <None Include="Assets\GoogleARCore\Examples\Common\Materials\Shaders\MobileSpecularWithLightEstimation.shader" />
+    <None Include="Assets\GoogleARCore\Visualization\Common\Materials\Shaders\PointCloud.shader" />
+    <None Include="Assets\GoogleARCore\Visualization\ComputerVision\Materials\EdgeDetectionBackground.shader" />
+    <None Include="Assets\GoogleARCore\Visualization\Common\Materials\Shaders\MobileSpecularWithLightEstimation.shader" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>/Users/remap/Desktop/optar/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>

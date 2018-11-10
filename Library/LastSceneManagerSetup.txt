@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/GoogleARCore/Examples/AugmentedImage/Scenes/AugmentedImage.unity
+- path: Assets/GoogleARCore/Visualization/Core/Scenes/AugmentedImage.unity
   isLoaded: 1
   isActive: 1
