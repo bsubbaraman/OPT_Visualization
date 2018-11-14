@@ -235,8 +235,8 @@ namespace GoogleARCore.Visualization.Core
 
                     FitToScanOverlay.SetActive(false);
 
-                    //anchorOriginObject = Instantiate(anchorObject, image.CenterPose.position, image.CenterPose.rotation);
-                    //anchorOriginObject.transform.parent = anchorOrigin.transform;
+                    anchorOriginObject = Instantiate(anchorObject, image.CenterPose.position, image.CenterPose.rotation);
+                    anchorOriginObject.transform.parent = anchorOrigin.transform;
 
                     PrintDebugMessage("I: Anchor created!");
                     //PrintDebugMessage("I: " + image.ExtentX + " H: " + image.ExtentZ);
@@ -376,12 +376,6 @@ namespace GoogleARCore.Visualization.Core
                     newCentroid.GetComponent<Renderer>().material.color = color;
 
                     CreateParticleSystem(newCentroid, color);
-
-
-                    //newCentroid.GetComponent<ChangeColorParticleSystem>().SetColor(color);
-
-                    //ParticleSystem.MainModule settings = GetComponent<ParticleSystem>().main;
-                    //settings.startColor = color;
 
                     activeTracks.Add(track.Key, newCentroid);
 
