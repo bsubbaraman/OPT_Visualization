@@ -43,6 +43,8 @@ namespace GoogleARCore.Visualization.Core
         public GameObject centroidObject;
         private GameObject anchorOriginObject;
 
+        public ParticleSystem partSystem;
+        
         /// <summary>
         /// The overlay containing the fit to scan user guide.
         /// </summary>
@@ -62,9 +64,9 @@ namespace GoogleARCore.Visualization.Core
         private Vector3 positionCentreImage;
         private Quaternion rotationCentreImage;
 
-        //private TouchScreenKeyboard keyboard;
-        //public GUIStyle style;
-        //public String ipAddress;
+        private TouchScreenKeyboard keyboard;
+        public GUIStyle style;
+        public String ipAddress;
 
         int counterErrorDistance = 0;
 
@@ -82,6 +84,8 @@ namespace GoogleARCore.Visualization.Core
         //// Updates button's text while user is typing
         //void OnGUI()
         //{
+        //    style.fontSize = 50;
+
         //    if (GUI.Button(new Rect(0, 0, 350, 100), ipAddress, style))
         //    {
         //        keyboard = TouchScreenKeyboard.Open(ipAddress, TouchScreenKeyboardType.Default);
@@ -95,12 +99,21 @@ namespace GoogleARCore.Visualization.Core
         //    if (!keyboard.active)
         //    {
         //        keyboard = null;
-        //        rosConnector.TearDown();
-        //        rosConnector.SetAddress("ws://" + ipAddress + ":9090");
-        //        rosConnector.Awake();
+        //        ConnectionToRos();
         //    }
 
         //}
+
+        private void ConnectionToRos()
+        {
+            //Destroy(rosPrivate);
+            rosConnector.TearDown();
+            PrintDebugMessage("ROS - E :  Server not running on: " + rosConnector.RosBridgeServerUrl);
+            rosConnector.SetAddress("ws://" + ipAddress + ":9090");
+            rosConnector.Awake();
+            //rosPrivate = Instantiate(ros);
+        }
+
 
 
         /// <summary>
@@ -124,10 +137,7 @@ namespace GoogleARCore.Visualization.Core
             if (!rosConnector.ConnectionStatus())
             {
                 ServerConnection.SetActive(true);
-                //rosConnector.TearDown();
-                PrintDebugMessage("ROS - E :  Server not running on: " + rosConnector.RosBridgeServerUrl);
-                //rosConnector.SetAddress("ws://" + ipAddress + ":9090");
-                //rosConnector.ConnectAndWait();
+                //ConnectionToRos();
                 return;
             }
 
@@ -225,8 +235,8 @@ namespace GoogleARCore.Visualization.Core
 
                     FitToScanOverlay.SetActive(false);
 
-                    anchorOriginObject = Instantiate(anchorObject, image.CenterPose.position, image.CenterPose.rotation);
-                    anchorOriginObject.transform.parent = anchorOrigin.transform;
+                    //anchorOriginObject = Instantiate(anchorObject, image.CenterPose.position, image.CenterPose.rotation);
+                    //anchorOriginObject.transform.parent = anchorOrigin.transform;
 
                     PrintDebugMessage("I: Anchor created!");
                     //PrintDebugMessage("I: " + image.ExtentX + " H: " + image.ExtentZ);
@@ -267,7 +277,72 @@ namespace GoogleARCore.Visualization.Core
             GameObject cameraObject = Instantiate(emptyGameObject, FirstPersonCamera.transform.position, FirstPersonCamera.transform.rotation);
             cameraObject.transform.SetParent(anchorOrigin.transform);
 
-            posePub.SendMessage(SwapCoordinates(cameraObject.transform.localPosition, cameraObject.transform.localRotation), "ar_mobile");
+            posePub.SendMessage(SwapCoordinates(cameraObject.transform.localPosition, cameraObject.transform.localRotation), SystemInfo.deviceUniqueIdentifier);
+        }
+
+
+        private void CreateParticleSystem(GameObject newCentroid, Color color)
+        {
+            ParticleSystem newParticular = Instantiate(partSystem);
+            var mainPartSyst = newParticular.main;
+            mainPartSyst.duration = 5.00f;
+            mainPartSyst.startDelay = 0f;
+            mainPartSyst.startLifetime = 1.4f;
+            mainPartSyst.startSpeed = 0f;
+            mainPartSyst.simulationSpace = ParticleSystemSimulationSpace.World;
+            mainPartSyst.scalingMode = ParticleSystemScalingMode.Local;
+            mainPartSyst.simulationSpeed = 1f;
+            mainPartSyst.startRotation = 0f;
+            mainPartSyst.flipRotation = 0f;
+            mainPartSyst.startSize = 0.05f;
+            mainPartSyst.startColor = color;
+
+            var emissionPartSyst = newParticular.emission;
+            emissionPartSyst.enabled = true;
+            emissionPartSyst.rateOverTime = 0f;
+            emissionPartSyst.rateOverDistance = 10f;
+
+            var shapePartSyst = newParticular.shape;
+            shapePartSyst.enabled = true;
+            shapePartSyst.shapeType = ParticleSystemShapeType.Sphere;
+            shapePartSyst.radius = 0.01f;
+            shapePartSyst.radiusThickness = 1f;
+
+
+
+            Gradient gradient = new Gradient();
+            GradientColorKey[] colorKey;
+            GradientAlphaKey[] alphaKey;
+
+            // Populate the color keys at the relative time 0 and 1 (0 and 100%)
+            colorKey = new GradientColorKey[2];
+            colorKey[0].color = color;
+            colorKey[0].time = 0.0f;
+            colorKey[1].color = color;
+            colorKey[1].time = 1.0f;
+
+            // Populate the alpha  keys at relative time 0 and 1  (0 and 100%)
+            alphaKey = new GradientAlphaKey[2];
+            alphaKey[0].alpha = 1.0f;
+            alphaKey[0].time = 0.782f;
+            alphaKey[1].alpha = 0.0f;
+            alphaKey[1].time = 1.0f;
+            gradient.SetKeys(colorKey, alphaKey);
+
+            var colorOverTimePartSyst = newParticular.colorOverLifetime;
+            colorOverTimePartSyst.enabled = true;
+            colorOverTimePartSyst.color = gradient;
+
+            var sizeOverTimePartSyst = newParticular.sizeOverLifetime;
+            sizeOverTimePartSyst.enabled = true;
+            AnimationCurve curve = new AnimationCurve();
+            curve.AddKey(0.0f, 1.0f);
+            curve.AddKey(1.0f, 0.0f);
+            sizeOverTimePartSyst.size = new ParticleSystem.MinMaxCurve(1.5f, curve);
+
+
+            newParticular.transform.SetParent(newCentroid.transform);
+            newParticular.transform.localPosition = Vector3.zero;
         }
 
 
@@ -297,11 +372,19 @@ namespace GoogleARCore.Visualization.Core
 
                     newCentroid.transform.SetParent(anchorOrigin.transform);
                     newCentroid.transform.localPosition = track.Value;
-
-                    newCentroid.name = "centroid" + track.Key;
+                    newCentroid.name = "centroid_" + track.Key;
                     newCentroid.GetComponent<Renderer>().material.color = color;
 
+                    CreateParticleSystem(newCentroid, color);
+
+
+                    //newCentroid.GetComponent<ChangeColorParticleSystem>().SetColor(color);
+
+                    //ParticleSystem.MainModule settings = GetComponent<ParticleSystem>().main;
+                    //settings.startColor = color;
+
                     activeTracks.Add(track.Key, newCentroid);
+
                     //PrintDebugMessage("I: Crete centroid -> Parent: " + activeTracks[id].transform.parent.name + " | Position: " + activeTracks[id].transform.localPosition.ToString() + " | Id: " + id);
                 }
                 else

@@ -113,75 +113,61 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1001 &221455180
-Prefab:
+--- !u!1 &307661312
+GameObject:
   m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4311424362268976, guid: 5323c8a25dcb746619062c9f8c861737, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 833
-      objectReference: {fileID: 0}
-    - target: {fileID: 4311424362268976, guid: 5323c8a25dcb746619062c9f8c861737, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 449
-      objectReference: {fileID: 0}
-    - target: {fileID: 4311424362268976, guid: 5323c8a25dcb746619062c9f8c861737, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4311424362268976, guid: 5323c8a25dcb746619062c9f8c861737, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4311424362268976, guid: 5323c8a25dcb746619062c9f8c861737, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4311424362268976, guid: 5323c8a25dcb746619062c9f8c861737, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4311424362268976, guid: 5323c8a25dcb746619062c9f8c861737, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4311424362268976, guid: 5323c8a25dcb746619062c9f8c861737, type: 2}
-      propertyPath: m_RootOrder
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 114456787887554012, guid: 5323c8a25dcb746619062c9f8c861737,
-        type: 2}
-      propertyPath: RosBridgeServerUrl
-      value: ws://131.179.142.82:9090
-      objectReference: {fileID: 0}
-    - target: {fileID: 114456787887554012, guid: 5323c8a25dcb746619062c9f8c861737,
-        type: 2}
-      propertyPath: connectionEstablished
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114062747225107160, guid: 5323c8a25dcb746619062c9f8c861737,
-        type: 2}
-      propertyPath: TimeStep
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 1158093691767740, guid: 5323c8a25dcb746619062c9f8c861737, type: 2}
-      propertyPath: m_Name
-      value: RosCommunication
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 0}
-  m_SourcePrefab: {fileID: 100100000, guid: 5323c8a25dcb746619062c9f8c861737, type: 2}
-  m_IsPrefabAsset: 0
---- !u!114 &221455182
+  m_CorrespondingSourceObject: {fileID: 1310425805006458, guid: c356fb2a30089429ba752deb66c9b295,
+    type: 2}
+  m_PrefabInternal: {fileID: 1337940415}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 307661316}
+  - component: {fileID: 307661315}
+  - component: {fileID: 307661314}
+  - component: {fileID: 307661313}
+  m_Layer: 0
+  m_Name: RosCommunication
+  m_TagString: RosSubscriber
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &307661313
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 114456787887554012, guid: 5323c8a25dcb746619062c9f8c861737,
+  m_CorrespondingSourceObject: {fileID: 114011177993386824, guid: c356fb2a30089429ba752deb66c9b295,
     type: 2}
-  m_PrefabInternal: {fileID: 221455180}
-  m_GameObject: {fileID: 1383443040}
+  m_PrefabInternal: {fileID: 1337940415}
+  m_GameObject: {fileID: 307661312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db30844794bb74e77821baf36b08c8e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Topic: /arcore/vodom
+  PublishedTransform: {fileID: 0}
+  FrameId: ar_mobile
+--- !u!114 &307661314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 114992156830044168, guid: c356fb2a30089429ba752deb66c9b295,
+    type: 2}
+  m_PrefabInternal: {fileID: 1337940415}
+  m_GameObject: {fileID: 307661312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bebdaba3e00b24407aef46bf5298d564, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Topic: /arcore/centroid_mod
+  TimeStep: 30
+--- !u!114 &307661315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 114793947340731602, guid: c356fb2a30089429ba752deb66c9b295,
+    type: 2}
+  m_PrefabInternal: {fileID: 1337940415}
+  m_GameObject: {fileID: 307661312}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ff98778ae051cfd40a6e4effdf851ebd, type: 3}
@@ -190,6 +176,20 @@ MonoBehaviour:
   Timeout: 10
   Protocol: 0
   RosBridgeServerUrl: ws://131.179.142.82:9090
+--- !u!4 &307661316
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 4029535966400122, guid: c356fb2a30089429ba752deb66c9b295,
+    type: 2}
+  m_PrefabInternal: {fileID: 1337940415}
+  m_GameObject: {fileID: 307661312}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 833, y: 449, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &590588821
 Prefab:
   m_ObjectHideFlags: 0
@@ -372,6 +372,52 @@ Camera:
   m_CorrespondingSourceObject: {fileID: 20155940112608238, guid: c10877f7cd5764de18d46d7b777d1faa,
     type: 2}
   m_PrefabInternal: {fileID: 732595306}
+--- !u!1001 &1337940415
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4029535966400122, guid: c356fb2a30089429ba752deb66c9b295, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 833
+      objectReference: {fileID: 0}
+    - target: {fileID: 4029535966400122, guid: c356fb2a30089429ba752deb66c9b295, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 449
+      objectReference: {fileID: 0}
+    - target: {fileID: 4029535966400122, guid: c356fb2a30089429ba752deb66c9b295, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4029535966400122, guid: c356fb2a30089429ba752deb66c9b295, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4029535966400122, guid: c356fb2a30089429ba752deb66c9b295, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4029535966400122, guid: c356fb2a30089429ba752deb66c9b295, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4029535966400122, guid: c356fb2a30089429ba752deb66c9b295, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4029535966400122, guid: c356fb2a30089429ba752deb66c9b295, type: 2}
+      propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1310425805006458, guid: c356fb2a30089429ba752deb66c9b295, type: 2}
+      propertyPath: m_Name
+      value: RosCommunication
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: c356fb2a30089429ba752deb66c9b295, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1 &1338525102
 GameObject:
   m_ObjectHideFlags: 0
@@ -438,66 +484,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!1 &1383443040
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 1158093691767740, guid: 5323c8a25dcb746619062c9f8c861737,
-    type: 2}
-  m_PrefabInternal: {fileID: 221455180}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1383443042}
-  - component: {fileID: 221455182}
-  - component: {fileID: 1383443041}
-  - component: {fileID: 1383443043}
-  m_Layer: 0
-  m_Name: RosCommunication
-  m_TagString: RosSubscriber
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1383443041
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1383443040}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bebdaba3e00b24407aef46bf5298d564, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Topic: /arcore/centroid_mod
-  TimeStep: 30
---- !u!4 &1383443042
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 4311424362268976, guid: 5323c8a25dcb746619062c9f8c861737,
-    type: 2}
-  m_PrefabInternal: {fileID: 221455180}
-  m_GameObject: {fileID: 1383443040}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 833, y: 449, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1383443043
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1383443040}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db30844794bb74e77821baf36b08c8e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Topic: /arcore/vodom
-  PublishedTransform: {fileID: 0}
-  FrameId: ar_mobile
 --- !u!1 &1436859208
 GameObject:
   m_ObjectHideFlags: 0
@@ -526,7 +512,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1622737808
 GameObject:
@@ -800,11 +786,101 @@ MonoBehaviour:
   emptyGameObject: {fileID: 1436859208}
   centroidObject: {fileID: 1317426671309370, guid: 94c447eb110654d62893dff7743cc562,
     type: 2}
+  partSystem: {fileID: 198775328465513110, guid: 50c7238da49dc4036b401cbcfd1f7e6b,
+    type: 2}
   FitToScanOverlay: {fileID: 1622737808}
   ServerConnection: {fileID: 951556858}
-  rosConnector: {fileID: 221455182}
-  centroidSub: {fileID: 1383443041}
-  posePub: {fileID: 1383443043}
+  style:
+    m_Name: 
+    m_Normal:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds:
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      - {fileID: 0}
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Hover:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Active:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Focused:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnNormal:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnHover:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnActive:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnFocused:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Margin:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Padding:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Overflow:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Font: {fileID: 0}
+    m_FontSize: 20
+    m_FontStyle: 0
+    m_Alignment: 0
+    m_WordWrap: 0
+    m_RichText: 1
+    m_TextClipping: 0
+    m_ImagePosition: 0
+    m_ContentOffset: {x: 0, y: 0}
+    m_FixedWidth: 0
+    m_FixedHeight: 0
+    m_StretchWidth: 1
+    m_StretchHeight: 0
+  ipAddress: 131.179.142.82
+  rosConnector: {fileID: 307661315}
+  centroidSub: {fileID: 307661314}
+  posePub: {fileID: 307661313}
 --- !u!4 &2000013467
 Transform:
   m_ObjectHideFlags: 0

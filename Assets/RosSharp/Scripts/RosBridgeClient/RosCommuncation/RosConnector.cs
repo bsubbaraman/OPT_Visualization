@@ -35,8 +35,9 @@ namespace RosSharp.RosBridgeClient
 
         public void Awake()
         {
+            ConnectAndWait();
             //PrintDebugMessage("entro qua 0");
-            new Thread(ConnectAndWait).Start();
+            //new Thread(ConnectAndWait).Start();
         }
 
         public void ConnectAndWait()
@@ -84,8 +85,9 @@ namespace RosSharp.RosBridgeClient
 
         public void TearDown()
         {
-            OnApplicationQuit();
             connectionEstablished = false;
+            isConnected.Reset();
+            OnApplicationQuit();
         }
 
         private void OnApplicationQuit()

@@ -193,6 +193,7 @@
     <Compile Include="Assets\GoogleARCore\Visualization\ComputerVision\Scripts\PointClickHandler.cs" />
     <Compile Include="Assets\GoogleARCore\Visualization\ComputerVision\Scripts\TextureReader.cs" />
     <Compile Include="Assets\GoogleARCore\Visualization\ComputerVision\Scripts\TextureReaderApi.cs" />
+    <Compile Include="Assets\GoogleARCore\Visualization\Core\Scripts\ChangeColorParticleSystem.cs" />
     <Compile Include="Assets\GoogleARCore\Visualization\Core\Scripts\VisaulizaionVisualizer.cs" />
     <Compile Include="Assets\GoogleARCore\Visualization\Core\Scripts\Visualization.cs" />
     <Compile Include="Assets\RosSharp\Scripts\Extensions\StandardHeaderExtensions.cs" />

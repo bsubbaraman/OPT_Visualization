@@ -21,7 +21,7 @@ namespace RosSharp.RosBridgeClient
     public class PoseStampedPublisher : Publisher<Messages.Geometry.PoseStamped>
     {
         public Transform PublishedTransform;
-        public string FrameId = "ar_mobile";
+        public string FrameId = "";
 
         private Messages.Geometry.PoseStamped message;
 
@@ -47,6 +47,11 @@ namespace RosSharp.RosBridgeClient
             };
         }
 
+        public void SendMessage(Tuple<Vector3, Quaternion> tupleInput)
+        {
+            UpdateMessage(tupleInput.Item1, tupleInput.Item2);
+        }
+
         public void SendMessage(Tuple<Vector3, Quaternion> tupleInput, string name)
         {
             UpdateMessage(tupleInput.Item1, tupleInput.Item2, name);
@@ -56,6 +61,15 @@ namespace RosSharp.RosBridgeClient
         {
             message.header.Update();
             message.header.frame_id = name;
+            message.pose.position = GetGeometryPoint(vectorInput);
+            message.pose.orientation = GetGeometryQuaternion(quaternionInput);
+
+            Publish(message);
+        }
+
+        private void UpdateMessage(Vector3 vectorInput, Quaternion quaternionInput)
+        {
+            message.header.Update();
             message.pose.position = GetGeometryPoint(vectorInput);
             message.pose.orientation = GetGeometryQuaternion(quaternionInput);
 
