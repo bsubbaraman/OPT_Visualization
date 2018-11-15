@@ -415,6 +415,11 @@ Prefab:
       propertyPath: m_Name
       value: RosCommunication
       objectReference: {fileID: 0}
+    - target: {fileID: 114793947340731602, guid: c356fb2a30089429ba752deb66c9b295,
+        type: 2}
+      propertyPath: RosBridgeServerUrl
+      value: ws://131.179.142.82:9090
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c356fb2a30089429ba752deb66c9b295, type: 2}
   m_IsPrefabAsset: 0

@@ -52,6 +52,8 @@ namespace GoogleARCore.Visualization.Core
         public GameObject ServerConnection;
 
         public Dictionary<int, GameObject> activeTracks = new Dictionary<int, GameObject>();
+        public Dictionary<int, ParticleSystem> particles = new Dictionary<int, ParticleSystem>();
+
         private Dictionary<int, VisualizationVisualizer> m_Visualizers = new Dictionary<int, VisualizationVisualizer>();
         private Dictionary<int, Color> colors = new Dictionary<int, Color>();
         private List<AugmentedImage> m_TempAugmentedImages = new List<AugmentedImage>();
@@ -64,9 +66,9 @@ namespace GoogleARCore.Visualization.Core
         private Vector3 positionCentreImage;
         private Quaternion rotationCentreImage;
 
-        private TouchScreenKeyboard keyboard;
-        public GUIStyle style;
-        public String ipAddress;
+        //private TouchScreenKeyboard keyboard;
+        //public GUIStyle style;
+        //public String ipAddress;
 
         int counterErrorDistance = 0;
 
@@ -106,12 +108,12 @@ namespace GoogleARCore.Visualization.Core
 
         private void ConnectionToRos()
         {
-            //Destroy(rosPrivate);
-            rosConnector.TearDown();
-            PrintDebugMessage("ROS - E :  Server not running on: " + rosConnector.RosBridgeServerUrl);
-            rosConnector.SetAddress("ws://" + ipAddress + ":9090");
-            rosConnector.Awake();
-            //rosPrivate = Instantiate(ros);
+            ////Destroy(rosPrivate);
+            //rosConnector.TearDown();
+            //PrintDebugMessage("ROS - E :  Server not running on: " + rosConnector.RosBridgeServerUrl);
+            //rosConnector.SetAddress("ws://" + ipAddress + ":9090");
+            //rosConnector.Awake();
+            ////rosPrivate = Instantiate(ros);
         }
 
 
@@ -189,12 +191,12 @@ namespace GoogleARCore.Visualization.Core
             Destroy(anchorOriginObject);
 
 
-            foreach (KeyValuePair<int, GameObject> kvp in activeTracks)
-            {
-                Destroy(activeTracks[kvp.Key]);
-                PrintDebugMessage("I: Destroy centroid: " + kvp.Key);
-                activeTracks.Remove(kvp.Key);
-            }
+            //foreach (KeyValuePair<int, GameObject> kvp in activeTracks)
+            //{
+            //    Destroy(activeTracks[kvp.Key]);
+            //    PrintDebugMessage("I: Destroy centroid: " + kvp.Key);
+            //    activeTracks.Remove(kvp.Key);
+            //}
             counterErrorDistance = 0;
         }
 
@@ -235,10 +237,14 @@ namespace GoogleARCore.Visualization.Core
 
                     FitToScanOverlay.SetActive(false);
 
-                    anchorOriginObject = Instantiate(anchorObject, image.CenterPose.position, image.CenterPose.rotation);
-                    anchorOriginObject.transform.parent = anchorOrigin.transform;
 
-                    PrintDebugMessage("I: Anchor created!");
+
+                    anchorOriginObject = Instantiate(anchorObject);
+                    anchorOriginObject.transform.parent = anchorOrigin.transform;
+                    anchorOriginObject.transform.localPosition = Vector3.zero;
+                    anchorOriginObject.transform.localRotation = Quaternion.identity;
+
+                    PrintDebugMessage("I: Anchor and Image created!");
                     //PrintDebugMessage("I: " + image.ExtentX + " H: " + image.ExtentZ);
                 }
             }
@@ -281,13 +287,13 @@ namespace GoogleARCore.Visualization.Core
         }
 
 
-        private void CreateParticleSystem(GameObject newCentroid, Color color)
+        private ParticleSystem CreateParticleSystem(GameObject newCentroid, Color color)
         {
             ParticleSystem newParticular = Instantiate(partSystem);
             var mainPartSyst = newParticular.main;
             mainPartSyst.duration = 5.00f;
             mainPartSyst.startDelay = 0f;
-            mainPartSyst.startLifetime = 1.4f;
+            mainPartSyst.startLifetime = 2.0f;
             mainPartSyst.startSpeed = 0f;
             mainPartSyst.simulationSpace = ParticleSystemSimulationSpace.World;
             mainPartSyst.scalingMode = ParticleSystemScalingMode.Local;
@@ -343,6 +349,8 @@ namespace GoogleARCore.Visualization.Core
 
             newParticular.transform.SetParent(newCentroid.transform);
             newParticular.transform.localPosition = Vector3.zero;
+
+            return newParticular;
         }
 
 
@@ -375,8 +383,7 @@ namespace GoogleARCore.Visualization.Core
                     newCentroid.name = "centroid_" + track.Key;
                     newCentroid.GetComponent<Renderer>().material.color = color;
 
-                    CreateParticleSystem(newCentroid, color);
-
+                    particles.Add(track.Key, CreateParticleSystem(newCentroid, color));
                     activeTracks.Add(track.Key, newCentroid);
 
                     //PrintDebugMessage("I: Crete centroid -> Parent: " + activeTracks[id].transform.parent.name + " | Position: " + activeTracks[id].transform.localPosition.ToString() + " | Id: " + id);
@@ -394,9 +401,11 @@ namespace GoogleARCore.Visualization.Core
             {
                 if (!dataFromCentroidSub.ContainsKey(kvp.Key))
                 {
-                    activeTracks[kvp.Key].GetComponent<Renderer>().enabled = false;
-                    PrintDebugMessage("I: Remove centroid: " + kvp.Key);
+                    Destroy(particles[kvp.Key]);
+                    Destroy(activeTracks[kvp.Key]);
+                    PrintDebugMessage("I: Remove centroid and particles: " + kvp.Key);
                     activeTracks.Remove(kvp.Key);
+                    particles.Remove(kvp.Key);
                 }
             }
         }
