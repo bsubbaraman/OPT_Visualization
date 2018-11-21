@@ -19,10 +19,10 @@ namespace RosSharp.RosBridgeClient
 {
     public class PoseStampedSubscriber : Subscriber<Messages.Geometry.PoseStamped>
     {
-        public Transform PublishedTransform;
+        private Transform PublishedTransform;
 
-        public Vector3 position;
-        public Quaternion rotation;
+        private Vector3 position;
+        private Quaternion rotation;
         private bool isMessageReceived;
 
         protected override void Start()
@@ -40,8 +40,6 @@ namespace RosSharp.RosBridgeClient
         {
             position = new Vector3(message.pose.position.x, message.pose.position.y, message.pose.position.z);
             rotation = new Quaternion(message.pose.orientation.x, message.pose.orientation.y, message.pose.orientation.z, message.pose.orientation.w);
-            //position = GetPosition(message).Ros2Unity();
-            //rotation = GetRotation(message).Ros2Unity();
             isMessageReceived = true;
         }
 
@@ -57,6 +55,12 @@ namespace RosSharp.RosBridgeClient
                 message.pose.position.x,
                 message.pose.position.y,
                 message.pose.position.z);
+        }
+
+        public float GetYCoordinates()
+        {
+            //2 fot the ROS -> ARCore mapping coordiantes
+            return position[2];
         }
 
         public Quaternion GetRotation(Messages.Geometry.PoseStamped message)

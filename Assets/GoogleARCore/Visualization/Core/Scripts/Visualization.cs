@@ -25,7 +25,6 @@ namespace GoogleARCore.Visualization.Core
     using GoogleARCore;
     using UnityEngine;
     using System;
-    using System.Threading;
 
     /// <summary>
     /// Controller for AugmentedImage example.
@@ -43,6 +42,8 @@ namespace GoogleARCore.Visualization.Core
         public GameObject centroidObject;
         private GameObject anchorOriginObject;
 
+        public GameObject avatarPrefab;
+
         public ParticleSystem partSystem;
         
         /// <summary>
@@ -53,6 +54,7 @@ namespace GoogleARCore.Visualization.Core
 
         public Dictionary<int, GameObject> activeTracks = new Dictionary<int, GameObject>();
         public Dictionary<int, ParticleSystem> particles = new Dictionary<int, ParticleSystem>();
+        public Dictionary<int, GameObject> activeSkeleton = new Dictionary<int, GameObject>();
 
         private Dictionary<int, VisualizationVisualizer> m_Visualizers = new Dictionary<int, VisualizationVisualizer>();
         private Dictionary<int, Color> colors = new Dictionary<int, Color>();
@@ -74,8 +76,8 @@ namespace GoogleARCore.Visualization.Core
 
         public RosSharp.RosBridgeClient.RosConnector rosConnector;
         public RosSharp.RosBridgeClient.CentroidSubscriber centroidSub;
+        public RosSharp.RosBridgeClient.SkeletonSubscriber skeletonSub;
         public RosSharp.RosBridgeClient.PoseStampedPublisher posePub;
-
 
 
         private void Start()
@@ -165,9 +167,68 @@ namespace GoogleARCore.Visualization.Core
 
 
             //Send the pose to ROS
-            PoseSender();
+            //PoseSender();
+            GameObject cameraObject = Instantiate(emptyGameObject, FirstPersonCamera.transform.position, FirstPersonCamera.transform.rotation);
+            cameraObject.transform.SetParent(anchorOrigin.transform);
+
+            posePub.SendMessage(SwapCoordinates(cameraObject.transform.localPosition, cameraObject.transform.localRotation), SystemInfo.deviceUniqueIdentifier);
             //Take the data and create centroids
-            CreateCentroidFromRosData();
+            //CreateCentroidFromRosData();
+
+            Dictionary<int, Vector3> dataFromSkeletonSubCentroid = skeletonSub.centroidPose;
+            Dictionary<int, Vector3[]> dataFromSkeletonSubSkeleton = skeletonSub.jointsData;
+            //PrintDebugMessage("I: Received data from SkeletonSub length: " + dataFromSkeletonSubSkeleton.Count);
+
+
+            foreach (KeyValuePair<int, Vector3[]> track in dataFromSkeletonSubSkeleton)
+            {
+
+                //PrintDebugMessage("I: distance: " + Vector3.Distance(positionCentroid, cameraObject.transform.localPosition));
+
+                if (!activeSkeleton.ContainsKey(track.Key))
+                {
+                    GameObject newSkeleton = Instantiate(avatarPrefab);
+                    //newSkeleton.transform.SetParent(anchorOrigin.transform);
+                    //newSkeleton.name = "Skeleton_" + track.Key;
+
+                    SetParentValue(newSkeleton);
+                    activeSkeleton.Add(track.Key, newSkeleton);
+                    //PrintDebugMessage("I: Crete skeleton Id # " + track.Key);
+
+                }
+
+                //activeSkeleton[track.Key].transform.localPosition = new Vector3(dataFromSkeletonSubCentroid[track.Key].x, dataFromSkeletonSubCentroid[track.Key].y, dataFromSkeletonSubCentroid[track.Key].z);
+
+                SetJointsValue(activeSkeleton[track.Key], dataFromSkeletonSubSkeleton[track.Key]);
+                //activeSkeleton[track.Key].transform.rotation = Quaternion.Euler(Quaternion.identity.eulerAngles[0], cameraObject.transform.localRotation.eulerAngles[1] + (float)Math.PI / 2, Quaternion.identity.eulerAngles[2]);
+
+                //Avatar avatar = activeSkeleton[track.Key].GetComponent<>();
+
+                //PrintDebugMessage("I:  " + 0 + " -> x: " + dataFromSkeletonSubSkeleton[track.Key][0].x + " _ y: " + dataFromSkeletonSubSkeleton[track.Key][0].y + " _ z: " + dataFromSkeletonSubSkeleton[track.Key][0].z);
+
+                //PrintDebugMessage("I: Joints:");
+                //int counterJoints = 0;
+                //foreach (Vector3 joint in track.Value)
+                //{
+                //    PrintDebugMessage("I:  " + counterJoints++ + " -> x: " + joint.x + " _ y: " + joint.y + " _ z: " + joint.z);
+                //}
+            }
+        
+
+            //remove any people who are no longer present
+            if (activeSkeleton.Count > 0)
+            {
+                foreach (KeyValuePair<int, GameObject> kvp in activeSkeleton)
+                {
+                    if (!dataFromSkeletonSubSkeleton.ContainsKey(kvp.Key))
+                    {
+                        activeSkeleton[kvp.Key].SetActive(false);
+                        //Destroy(activeSkeleton[kvp.Key]);
+                        //PrintDebugMessage("I: Remove skeleton: " + kvp.Key);
+                        activeSkeleton.Remove(kvp.Key);
+                    }
+                }
+            }
 
 
             PrintDebugMessage("I: Update complete correctly!");
@@ -176,6 +237,55 @@ namespace GoogleARCore.Visualization.Core
         }
 
 
+        void SetParentValue(GameObject objectInput)
+        {
+            Animator animator = objectInput.GetComponent<Animator>();
+            animator.transform.SetParent(anchorOrigin.transform);
+
+            animator.GetBoneTransform(HumanBodyBones.Head).parent = anchorOrigin.transform;
+            animator.GetBoneTransform(HumanBodyBones.Neck).parent = anchorOrigin.transform;
+            animator.GetBoneTransform(HumanBodyBones.RightShoulder).parent = anchorOrigin.transform;
+            animator.GetBoneTransform(HumanBodyBones.RightLowerArm).parent = anchorOrigin.transform;
+            animator.GetBoneTransform(HumanBodyBones.RightHand).parent = anchorOrigin.transform;
+            animator.GetBoneTransform(HumanBodyBones.LeftShoulder).parent = anchorOrigin.transform;
+            animator.GetBoneTransform(HumanBodyBones.LeftLowerArm).parent = anchorOrigin.transform;
+            animator.GetBoneTransform(HumanBodyBones.LeftHand).parent = anchorOrigin.transform;
+            animator.GetBoneTransform(HumanBodyBones.RightUpperLeg).parent = anchorOrigin.transform;
+            animator.GetBoneTransform(HumanBodyBones.RightLowerLeg).parent = anchorOrigin.transform;
+            animator.GetBoneTransform(HumanBodyBones.RightFoot).parent = anchorOrigin.transform;
+            animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg).parent = anchorOrigin.transform;
+            animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg).parent = anchorOrigin.transform;
+            animator.GetBoneTransform(HumanBodyBones.LeftFoot).parent = anchorOrigin.transform;
+            animator.GetBoneTransform(HumanBodyBones.Spine).parent = anchorOrigin.transform;
+            animator.GetBoneTransform(HumanBodyBones.Hips).parent = anchorOrigin.transform;
+
+        }
+
+        void SetJointsValue(GameObject objectInput, Vector3[] poseInput)
+        {
+            Animator animator = objectInput.GetComponent<Animator>();
+            animator.transform.SetParent(anchorOrigin.transform);
+
+            animator.GetBoneTransform(HumanBodyBones.Head).localPosition = new Vector3(poseInput[0].x, poseInput[0].y + 0.2f, poseInput[0].z);
+            animator.GetBoneTransform(HumanBodyBones.Neck).localPosition = poseInput[1];
+            animator.GetBoneTransform(HumanBodyBones.RightShoulder).localPosition = poseInput[2];
+            animator.GetBoneTransform(HumanBodyBones.RightLowerArm).localPosition = poseInput[3];
+            animator.GetBoneTransform(HumanBodyBones.RightHand).localPosition = poseInput[4];
+            animator.GetBoneTransform(HumanBodyBones.LeftShoulder).localPosition = poseInput[5];
+            animator.GetBoneTransform(HumanBodyBones.LeftLowerArm).localPosition = poseInput[6];
+            animator.GetBoneTransform(HumanBodyBones.LeftHand).localPosition = poseInput[7];
+            animator.GetBoneTransform(HumanBodyBones.RightUpperLeg).localPosition = poseInput[8];
+            animator.GetBoneTransform(HumanBodyBones.RightLowerLeg).localPosition = poseInput[9];
+            animator.GetBoneTransform(HumanBodyBones.RightFoot).localPosition = poseInput[10];
+            animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg).localPosition = poseInput[11];
+            animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg).localPosition = poseInput[12];
+            animator.GetBoneTransform(HumanBodyBones.LeftFoot).localPosition = poseInput[13];
+
+            animator.GetBoneTransform(HumanBodyBones.Spine).localPosition = new Vector3(poseInput[14].x, poseInput[14].y + 0.15f, poseInput[14].z);
+
+            Vector3 poseHips = new Vector3((poseInput[8].x + poseInput[11].x) / 2, (poseInput[8].y + poseInput[11].y) / 2 + 0.05f, (poseInput[8].z + poseInput[11].z) / 2);
+            animator.GetBoneTransform(HumanBodyBones.Hips).localPosition = poseHips;
+        }
 
 
 
@@ -190,6 +300,16 @@ namespace GoogleARCore.Visualization.Core
             Destroy(anchorOrigin);
             Destroy(anchorOriginObject);
 
+            if (activeSkeleton.Count > 0)
+            {
+                foreach (KeyValuePair<int, GameObject> kvp in activeSkeleton)
+                {
+                    activeSkeleton[kvp.Key].SetActive(false);
+                    //Destroy(activeSkeleton[kvp.Key]);
+                    PrintDebugMessage("I: Remove skeleton: " + kvp.Key);
+                    activeSkeleton.Remove(kvp.Key);
+                }
+            }
 
             //foreach (KeyValuePair<int, GameObject> kvp in activeTracks)
             //{
@@ -236,8 +356,6 @@ namespace GoogleARCore.Visualization.Core
                     PrintDebugMessage("I: Position: P:" + image.CenterPose.position.ToString() + " , quat: " + image.CenterPose.rotation.ToString());
 
                     FitToScanOverlay.SetActive(false);
-
-
 
                     anchorOriginObject = Instantiate(anchorObject);
                     anchorOriginObject.transform.parent = anchorOrigin.transform;
@@ -286,7 +404,12 @@ namespace GoogleARCore.Visualization.Core
             posePub.SendMessage(SwapCoordinates(cameraObject.transform.localPosition, cameraObject.transform.localRotation), SystemInfo.deviceUniqueIdentifier);
         }
 
-
+        /// <summary>
+        /// Creates the particle system.
+        /// </summary>
+        /// <returns>The particle system.</returns>
+        /// <param name="newCentroid">Parent Centroid.</param>
+        /// <param name="color">Centroid Color.</param>
         private ParticleSystem CreateParticleSystem(GameObject newCentroid, Color color)
         {
             ParticleSystem newParticular = Instantiate(partSystem);
@@ -377,7 +500,6 @@ namespace GoogleARCore.Visualization.Core
                                             1);
 
                     GameObject newCentroid = Instantiate(centroidObject);
-
                     newCentroid.transform.SetParent(anchorOrigin.transform);
                     newCentroid.transform.localPosition = track.Value;
                     newCentroid.name = "centroid_" + track.Key;
@@ -409,5 +531,6 @@ namespace GoogleARCore.Visualization.Core
                 }
             }
         }
+
     }
 }
