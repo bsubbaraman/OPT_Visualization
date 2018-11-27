@@ -60,7 +60,7 @@ namespace RosSharp.RosBridgeClient
                         infinityFound = true;
                     jointDetected[jointPositionFree++] = new Vector3(track3D.x, track3D.z, track3D.y);
 
-                    if (jointPositionFree > 1 && (Mathf.Approximately(Vector3.Distance(jointDetected[jointPositionFree - 2], jointDetected[jointPositionFree - 1]), 0.0f) || Vector3.Distance(jointDetected[jointPositionFree - 2], jointDetected[jointPositionFree - 1]) > 1.0f))
+                    if (jointPositionFree > 1 && (Mathf.Approximately(Vector3.Distance(jointDetected[jointPositionFree - 2], jointDetected[jointPositionFree - 1]), 0.0f) || Vector3.Distance(jointDetected[jointPositionFree - 2], jointDetected[jointPositionFree - 1]) > 2.5f))
                         infinityFound = true;
                 }
 
