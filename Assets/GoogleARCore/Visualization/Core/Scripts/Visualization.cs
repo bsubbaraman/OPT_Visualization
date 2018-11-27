@@ -79,7 +79,6 @@ namespace GoogleARCore.Visualization.Core
         public RosSharp.RosBridgeClient.CentroidSubscriber centroidSub;
         public RosSharp.RosBridgeClient.SkeletonSubscriber skeletonSub;
         public RosSharp.RosBridgeClient.PoseStampedPublisher posePub;
-        public RosSharp.RosBridgeClient.PoseStampedPublisher posePubOrigin;
 
 
         private void Start()
@@ -171,105 +170,14 @@ namespace GoogleARCore.Visualization.Core
             //Send the pose to ROS
             //PoseSender();
 
-            GameObject cameraObject = Instantiate(emptyGameObject, FirstPersonCamera.transform.position, FirstPersonCamera.transform.rotation);
-            cameraObject.transform.SetParent(anchorOrigin.transform);
+            CreateCentroidFromRosData();
 
-            posePub.SendMessage(SwapCoordinates(cameraObject.transform.localPosition, cameraObject.transform.localRotation), SystemInfo.deviceUniqueIdentifier);
-            //Take the data and create centroids
-            //CreateCentroidFromRosData();
-
-            Dictionary<int, Vector3> dataFromSkeletonSubCentroid = skeletonSub.centroidPose;
-            Dictionary<int, Vector3[]> dataFromSkeletonSubSkeleton = skeletonSub.jointsData;
-            //PrintDebugMessage("I: Received data from SkeletonSub length: " + dataFromSkeletonSubSkeleton.Count);
-
-
-            foreach (KeyValuePair<int, Vector3[]> track in dataFromSkeletonSubSkeleton)
-            {
-                if (!activeSkeleton.ContainsKey(track.Key))
-                {
-                    GameObject newSkeleton = Instantiate(avatarPrefab);
-                    //newSkeleton.transform.SetParent(anchorOrigin.transform);
-                    newSkeleton.name = "Skeleton_" + track.Key;
-                    //SetParentValue(newSkeleton);
-                    activeSkeleton.Add(track.Key, newSkeleton);
-                    Debug.Log("I: Crete skeleton Id # " + track.Key);
-
-                }
-
-                SetJointsValue(activeSkeleton[track.Key], dataFromSkeletonSubSkeleton[track.Key]);
-
-            }
-
-            //remove any people who are no longer present
-            if (activeSkeleton.Count > 0)
-            {
-                foreach (KeyValuePair<int, GameObject> kvp in activeSkeleton)
-                {
-                    if (!dataFromSkeletonSubSkeleton.ContainsKey(kvp.Key))
-                    {
-                        //activeSkeleton[kvp.Key].SetActive(false);
-                        Destroy(activeSkeleton[kvp.Key]);
-                        //PrintDebugMessage("I: Remove skeleton: " + kvp.Key);
-                        activeSkeleton.Remove(kvp.Key);
-                    }
-                }
-            }
-
+            CreateSkeletonFromRosData();
 
             PrintDebugMessage("I: Update complete correctly!");
         
         
         }
-
-
-        void SetParentValue(GameObject objectInput)
-        {
-            Animator animator = objectInput.GetComponent<Animator>();
-            animator.transform.SetParent(anchorOrigin.transform);
-
-            animator.GetBoneTransform(HumanBodyBones.Head).parent = anchorOrigin.transform;
-            animator.GetBoneTransform(HumanBodyBones.Neck).parent = anchorOrigin.transform;
-            animator.GetBoneTransform(HumanBodyBones.RightShoulder).parent = anchorOrigin.transform;
-            animator.GetBoneTransform(HumanBodyBones.RightLowerArm).parent = anchorOrigin.transform;
-            animator.GetBoneTransform(HumanBodyBones.RightHand).parent = anchorOrigin.transform;
-            animator.GetBoneTransform(HumanBodyBones.LeftShoulder).parent = anchorOrigin.transform;
-            animator.GetBoneTransform(HumanBodyBones.LeftLowerArm).parent = anchorOrigin.transform;
-            animator.GetBoneTransform(HumanBodyBones.LeftHand).parent = anchorOrigin.transform;
-            animator.GetBoneTransform(HumanBodyBones.RightUpperLeg).parent = anchorOrigin.transform;
-            animator.GetBoneTransform(HumanBodyBones.RightLowerLeg).parent = anchorOrigin.transform;
-            animator.GetBoneTransform(HumanBodyBones.RightFoot).parent = anchorOrigin.transform;
-            animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg).parent = anchorOrigin.transform;
-            animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg).parent = anchorOrigin.transform;
-            animator.GetBoneTransform(HumanBodyBones.LeftFoot).parent = anchorOrigin.transform;
-            animator.GetBoneTransform(HumanBodyBones.Spine).parent = anchorOrigin.transform;
-            animator.GetBoneTransform(HumanBodyBones.Hips).parent = anchorOrigin.transform;
-        }
-
-        //void SetJointsValue(GameObject objectInput, Vector3[] poseInput)
-        //{
-        //    Animator animator = objectInput.GetComponent<Animator>();
-        //    animator.transform.SetParent(anchorOrigin.transform);
-
-        //    animator.GetBoneTransform(HumanBodyBones.Head).localPosition = new Vector3(poseInput[0].x, poseInput[0].y + 0.2f, poseInput[0].z);
-        //    animator.GetBoneTransform(HumanBodyBones.Neck).localPosition = poseInput[1];
-        //    animator.GetBoneTransform(HumanBodyBones.RightShoulder).localPosition = poseInput[2];
-        //    animator.GetBoneTransform(HumanBodyBones.RightLowerArm).localPosition = poseInput[3];
-        //    animator.GetBoneTransform(HumanBodyBones.RightHand).localPosition = poseInput[4];
-        //    animator.GetBoneTransform(HumanBodyBones.LeftShoulder).localPosition = poseInput[5];
-        //    animator.GetBoneTransform(HumanBodyBones.LeftLowerArm).localPosition = poseInput[6];
-        //    animator.GetBoneTransform(HumanBodyBones.LeftHand).localPosition = poseInput[7];
-        //    animator.GetBoneTransform(HumanBodyBones.RightUpperLeg).localPosition = poseInput[8];
-        //    animator.GetBoneTransform(HumanBodyBones.RightLowerLeg).localPosition = poseInput[9];
-        //    animator.GetBoneTransform(HumanBodyBones.RightFoot).localPosition = poseInput[10];
-        //    animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg).localPosition = poseInput[11];
-        //    animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg).localPosition = poseInput[12];
-        //    animator.GetBoneTransform(HumanBodyBones.LeftFoot).localPosition = poseInput[13];
-
-        //    animator.GetBoneTransform(HumanBodyBones.Spine).localPosition = new Vector3(poseInput[14].x, poseInput[14].y + 0.15f, poseInput[14].z);
-
-        //    Vector3 poseHips = new Vector3((poseInput[8].x + poseInput[11].x) / 2, (poseInput[8].y + poseInput[11].y) / 2 + 0.05f, (poseInput[8].z + poseInput[11].z) / 2);
-        //    animator.GetBoneTransform(HumanBodyBones.Hips).localPosition = poseHips;
-        //}
 
         /// <summary>
         /// Losts the position, reset all.
@@ -284,19 +192,22 @@ namespace GoogleARCore.Visualization.Core
             {
                 foreach (KeyValuePair<int, GameObject> kvp in activeSkeleton)
                 {
-                    activeSkeleton[kvp.Key].SetActive(false);
-                    //Destroy(activeSkeleton[kvp.Key]);
+                    //activeSkeleton[kvp.Key].SetActive(false);
+                    Destroy(activeSkeleton[kvp.Key]);
                     PrintDebugMessage("I: Remove skeleton: " + kvp.Key);
                     activeSkeleton.Remove(kvp.Key);
                 }
             }
 
-            //foreach (KeyValuePair<int, GameObject> kvp in activeTracks)
-            //{
-            //    Destroy(activeTracks[kvp.Key]);
-            //    PrintDebugMessage("I: Destroy centroid: " + kvp.Key);
-            //    activeTracks.Remove(kvp.Key);
-            //}
+            if (activeTracks.Count > 0)
+            {
+                foreach (KeyValuePair<int, GameObject> kvp in activeTracks)
+                {
+                    Destroy(activeTracks[kvp.Key]);
+                    PrintDebugMessage("I: Destroy centroid: " + kvp.Key);
+                    activeTracks.Remove(kvp.Key);
+                }
+            }
             counterErrorDistance = 0;
         }
 
@@ -352,7 +263,6 @@ namespace GoogleARCore.Visualization.Core
         /// <param name="quaternionInput">Quaternion input.</param>
         private Tuple<Vector3, Quaternion> SwapCoordinates(Vector3 poseInput, Quaternion quaternionInput)
         {
-
             Vector3 pose_swap = new Vector3(poseInput.x, poseInput.z, poseInput.y);
 
             Vector3 angle = quaternionInput.eulerAngles;
@@ -376,9 +286,9 @@ namespace GoogleARCore.Visualization.Core
             cameraObject.transform.SetParent(anchorOrigin.transform);
 
             posePub.SendMessage(SwapCoordinates(cameraObject.transform.localPosition, cameraObject.transform.localRotation), SystemInfo.deviceUniqueIdentifier);
+
+            Destroy(cameraObject);
         }
-
-
 
         /// <summary>
         /// Creates the particle system.
@@ -412,7 +322,6 @@ namespace GoogleARCore.Visualization.Core
             shapePartSyst.shapeType = ParticleSystemShapeType.Sphere;
             shapePartSyst.radius = 0.01f;
             shapePartSyst.radiusThickness = 1f;
-
 
 
             Gradient gradient = new Gradient();
@@ -457,10 +366,14 @@ namespace GoogleARCore.Visualization.Core
         /// </summary>
         private void CreateCentroidFromRosData()
         {
-            Dictionary<int, Vector3> dataFromCentroidSub = centroidSub.processedTrackData;
-            PrintDebugMessage("I: Received data from CentroidSub length: " + dataFromCentroidSub.Count);
+            //Data from centroidSub
+            //Dictionary<int, Vector3> dataFromCentroidSub = centroidSub.processedTrackData;
 
-            foreach (KeyValuePair<int, Vector3> track in dataFromCentroidSub)
+            //Data from skeletonSub
+            Dictionary<int, Vector3> dataFromSkeletonSubCentroid = skeletonSub.centroidPose;
+            PrintDebugMessage("I: Received data from CentroidSub length: " + dataFromSkeletonSubCentroid.Count);
+
+            foreach (KeyValuePair<int, Vector3> track in dataFromSkeletonSubCentroid)
             {
                 //int id = track.Key;
                 //Vector3 poseInput = track.Value;
@@ -496,7 +409,7 @@ namespace GoogleARCore.Visualization.Core
             //remove any people who are no longer present
             foreach (KeyValuePair<int, GameObject> kvp in activeTracks)
             {
-                if (!dataFromCentroidSub.ContainsKey(kvp.Key))
+                if (!dataFromSkeletonSubCentroid.ContainsKey(kvp.Key))
                 {
                     Destroy(particles[kvp.Key]);
                     Destroy(activeTracks[kvp.Key]);
@@ -507,8 +420,53 @@ namespace GoogleARCore.Visualization.Core
             }
         }
 
+        /// <summary>
+        /// Creates the skeleton from ros data.
+        /// </summary>
+        void CreateSkeletonFromRosData()
+        {
+            Dictionary<int, Vector3[]> dataFromSkeletonSubSkeleton = skeletonSub.jointsData;
+            //PrintDebugMessage("I: Received data from SkeletonSub length: " + dataFromSkeletonSubSkeleton.Count);
+
+            foreach (KeyValuePair<int, Vector3[]> track in dataFromSkeletonSubSkeleton)
+            {
+                if (!activeSkeleton.ContainsKey(track.Key))
+                {
+                    GameObject newSkeleton = Instantiate(avatarPrefab);
+                    newSkeleton.name = "Skeleton_" + track.Key;
+                    activeSkeleton.Add(track.Key, newSkeleton);
+                    PrintDebugMessage("I: Crete skeleton Id # " + track.Key);
+
+                }
+
+                SetJointsValue(activeSkeleton[track.Key], dataFromSkeletonSubSkeleton[track.Key]);
+            }
+
+            //remove any people who are no longer present
+            if (activeSkeleton.Count > 0)
+            {
+                foreach (KeyValuePair<int, GameObject> kvp in activeSkeleton)
+                {
+                    if (!dataFromSkeletonSubSkeleton.ContainsKey(kvp.Key))
+                    {
+                        //activeSkeleton[kvp.Key].SetActive(false);
+                        Destroy(activeSkeleton[kvp.Key]);
+                        PrintDebugMessage("I: Remove skeleton: " + kvp.Key);
+                        activeSkeleton.Remove(kvp.Key);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sets the joints value.
+        /// </summary>
+        /// <param name="theAvatar">The avatar.</param>
+        /// <param name="poseInput">Pose input.</param>
         void SetJointsValue(GameObject theAvatar, Vector3[] poseInput)
         {
+            PrintDebugMessage("I: Processing: " + theAvatar.name);
+
             Animator animator = theAvatar.GetComponent<Animator>();
 
             Matrix4x4 m = Matrix4x4.TRS(anchorOrigin.transform.position, anchorOrigin.transform.rotation, new Vector3(1, 1, 1));
@@ -557,8 +515,7 @@ namespace GoogleARCore.Visualization.Core
             quaternionValue = Quaternion.LookRotation(shoulder_shoulder_vec);
             quaternionValue *= Quaternion.Euler(0.0f, 0.0f, -90.0f);
 
-            Debug.Log("-------------");
-            Debug.Log(Vector3.Distance(quaternionValue.eulerAngles, chest.rotation.eulerAngles) % 360);
+            PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, chest.rotation.eulerAngles) % 360);
 
             if (Vector3.Distance(quaternionValue.eulerAngles, chest.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
             {
@@ -568,7 +525,7 @@ namespace GoogleARCore.Visualization.Core
             Vector3 r_shoulder_elbow = r_elbow_vec - r_shoulder_vec;
             quaternionValue = XLookRotation(r_shoulder_elbow);
             quaternionValue *= Quaternion.Euler(180.0f, 0.0f, 0.0f);
-            Debug.Log(Vector3.Distance(quaternionValue.eulerAngles, right_shoulder.rotation.eulerAngles) % 360);
+            PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, right_shoulder.rotation.eulerAngles) % 360);
             if (Vector3.Distance(quaternionValue.eulerAngles, right_shoulder.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
             {
                 right_shoulder.rotation = quaternionValue;
@@ -577,7 +534,7 @@ namespace GoogleARCore.Visualization.Core
             // place elbow correctly
             Vector3 r_elbow_wrist = r_wrist_vec - r_elbow_vec;
             quaternionValue = XLookRotation(r_elbow_wrist);
-            Debug.Log(Vector3.Distance(quaternionValue.eulerAngles, right_elbow.rotation.eulerAngles) % 360);
+            PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, right_elbow.rotation.eulerAngles) % 360);
             if (Vector3.Distance(quaternionValue.eulerAngles, right_elbow.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
             {
                 right_elbow.rotation = quaternionValue;
@@ -587,7 +544,7 @@ namespace GoogleARCore.Visualization.Core
             //Left upper body:
             Vector3 l_shoulder_elbow = l_shoulder_vec - l_elbow_vec;
             quaternionValue = XLookRotation(l_shoulder_elbow);
-            Debug.Log(Vector3.Distance(quaternionValue.eulerAngles, left_shoulder.rotation.eulerAngles) % 360);
+            PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, left_shoulder.rotation.eulerAngles) % 360);
             if (Vector3.Distance(quaternionValue.eulerAngles, left_shoulder.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
             {
                 left_shoulder.rotation = quaternionValue; //function defined below.  artifact of how avatar is rotated
@@ -596,7 +553,7 @@ namespace GoogleARCore.Visualization.Core
             // place elbow correctly
             Vector3 l_elbow_wrist = l_elbow_vec - l_wrist_vec;
             quaternionValue = YLookRotation(l_elbow_wrist);
-            Debug.Log(Vector3.Distance(quaternionValue.eulerAngles, left_elbow.rotation.eulerAngles) % 360);
+            PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, left_elbow.rotation.eulerAngles) % 360);
             if (Vector3.Distance(quaternionValue.eulerAngles, left_elbow.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
             {
                 left_elbow.rotation = quaternionValue;
@@ -612,7 +569,7 @@ namespace GoogleARCore.Visualization.Core
             Vector3 hip_hip_vec = r_hip_vec - l_hip_vec;
             quaternionValue = Quaternion.LookRotation(hip_hip_vec);
             quaternionValue *= Quaternion.Euler(0f, 180f, -90f);
-            Debug.Log(Vector3.Distance(quaternionValue.eulerAngles, hip.rotation.eulerAngles) % 360);
+            PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, hip.rotation.eulerAngles) % 360);
             if (Vector3.Distance(quaternionValue.eulerAngles, hip.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
             {
                 hip.rotation = quaternionValue;
@@ -627,14 +584,14 @@ namespace GoogleARCore.Visualization.Core
             //orient left leg:
             Vector3 l_hip_knee = l_hip_vec - l_knee_vec;
             quaternionValue = XLookRotation(l_hip_knee);
-            Debug.Log(Vector3.Distance(quaternionValue.eulerAngles, left_hip.rotation.eulerAngles) % 360);
+            PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, left_hip.rotation.eulerAngles) % 360);
             if (Vector3.Distance(quaternionValue.eulerAngles, left_hip.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
             {
                 left_hip.rotation = quaternionValue;
                 Vector3 localZ = left_hip.TransformDirection(Vector3.forward);
                 if (Vector3.Dot(hip_hip_vec, localZ) > 0)
                 {
-                    Debug.Log("Enter");
+                    PrintDebugMessage("I: Enter in refinement");
                     left_hip.RotateAround(left_hip.position, left_hip.right, 180f);
                 }
             }
@@ -642,7 +599,7 @@ namespace GoogleARCore.Visualization.Core
 
             Vector3 l_knee_ankle = l_knee_vec - l_ankle_vec;
             quaternionValue = XLookRotation(l_knee_ankle);
-            Debug.Log(Vector3.Distance(quaternionValue.eulerAngles, left_knee.rotation.eulerAngles) % 360);
+            PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, left_knee.rotation.eulerAngles) % 360);
             if (Vector3.Distance(quaternionValue.eulerAngles, left_knee.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
             {
                 left_knee.rotation = quaternionValue;
@@ -656,7 +613,7 @@ namespace GoogleARCore.Visualization.Core
             //orient right leg:
             Vector3 r_hip_knee = r_knee_vec - r_hip_vec;
             quaternionValue = XLookRotation(r_hip_knee);
-            Debug.Log(Vector3.Distance(quaternionValue.eulerAngles, right_hip.rotation.eulerAngles) % 360);
+            PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, right_hip.rotation.eulerAngles) % 360);
             if (Vector3.Distance(quaternionValue.eulerAngles, right_hip.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
             {
                 right_hip.rotation = quaternionValue;
@@ -668,7 +625,7 @@ namespace GoogleARCore.Visualization.Core
             }
             Vector3 r_knee_ankle = r_ankle_vec - r_knee_vec;
             quaternionValue = XLookRotation(r_knee_ankle);
-            Debug.Log(Vector3.Distance(quaternionValue.eulerAngles, right_knee.rotation.eulerAngles) % 360);
+            PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, right_knee.rotation.eulerAngles) % 360);
             if (Vector3.Distance(quaternionValue.eulerAngles, right_knee.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
             {
                 right_knee.rotation = quaternionValue;
@@ -678,181 +635,13 @@ namespace GoogleARCore.Visualization.Core
                     right_knee.RotateAround(right_knee.position, right_knee.right, 180f);
                 }
             }
-
         }
 
-        void SetJointsValue2(GameObject theAvatar, Vector3[] poseInput)
-        {
-            Animator animator = theAvatar.GetComponent<Animator>();
-
-            Vector3 chest_vec = poseInput[14];
-            Vector3 l_knee_vec = poseInput[12];
-            Vector3 l_hip_vec = poseInput[11];
-            Vector3 r_hip_vec = poseInput[8];
-            Vector3 l_ankle_vec = poseInput[13];
-            Vector3 r_knee_vec = poseInput[9];
-            Vector3 r_ankle_vec = poseInput[10];
-            Vector3 l_shoulder_vec = poseInput[5];
-            Vector3 l_elbow_vec = poseInput[6];
-            Vector3 l_wrist_vec = poseInput[7];
-            Vector3 r_shoulder_vec = poseInput[2];
-            Vector3 r_elbow_vec = poseInput[3];
-            Vector3 r_wrist_vec = poseInput[4];
-            Vector3 neck_vec = poseInput[1];
-            Vector3 head_vec = poseInput[0];
-
-            //Transform head = animator.GetBoneTransform(HumanBodyBones.Head);
-            //Transform neck = animator.GetBoneTransform(HumanBodyBones.Neck);
-            Transform right_shoulder = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
-            Transform right_elbow = animator.GetBoneTransform(HumanBodyBones.RightLowerArm);
-            //Transform right_hand = animator.GetBoneTransform(HumanBodyBones.RightHand);
-            Transform left_shoulder = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
-            Transform left_elbow = animator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
-            //Transform left_hand = animator.GetBoneTransform(HumanBodyBones.LeftHand);
-            Transform right_hip = animator.GetBoneTransform(HumanBodyBones.RightUpperLeg);
-            Transform right_knee = animator.GetBoneTransform(HumanBodyBones.RightLowerLeg);
-            Transform right_foot = animator.GetBoneTransform(HumanBodyBones.RightFoot);
-            Transform left_hip = animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg);
-            Transform left_knee = animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg);
-            Transform left_foot = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
-            Transform hip = animator.GetBoneTransform(HumanBodyBones.Hips);
-            Transform chest = animator.GetBoneTransform(HumanBodyBones.Spine);
-
-            Quaternion quaternionValue;
-
-            if (Vector3.Distance(chest_vec, chest.position) > DISTANCE_METER)
-            {
-                chest.localPosition = chest_vec; //move avatar to correct location
-            }
-
-            Vector3 shoulder_shoulder_vec = l_shoulder_vec - r_shoulder_vec;
-            quaternionValue = Quaternion.LookRotation(shoulder_shoulder_vec);
-            quaternionValue *= Quaternion.Euler(0.0f, 0.0f, -90.0f);
-
-            Debug.Log("-------------");
-            Debug.Log(Vector3.Distance(quaternionValue.eulerAngles, chest.localRotation.eulerAngles) % 360);
-
-            if (Vector3.Distance(quaternionValue.eulerAngles, chest.localRotation.eulerAngles) % 360 > DISTANCE_ANGLE)
-            {
-                chest.localRotation = quaternionValue;
-            }
-
-            Vector3 r_shoulder_elbow = r_elbow_vec - r_shoulder_vec;
-            quaternionValue = XLookRotation(r_shoulder_elbow);
-            quaternionValue *= Quaternion.Euler(180.0f, 0.0f, 0.0f);
-            Debug.Log(Vector3.Distance(quaternionValue.eulerAngles, right_shoulder.localRotation.eulerAngles) % 360);
-            if (Vector3.Distance(quaternionValue.eulerAngles, right_shoulder.localRotation.eulerAngles) % 360 > DISTANCE_ANGLE)
-            {
-                right_shoulder.localRotation = quaternionValue;
-            }
-
-            // place elbow correctly
-            Vector3 r_elbow_wrist = r_wrist_vec - r_elbow_vec;
-            quaternionValue = XLookRotation(r_elbow_wrist);
-            Debug.Log(Vector3.Distance(quaternionValue.eulerAngles, right_elbow.localRotation.eulerAngles) % 360);
-            if (Vector3.Distance(quaternionValue.eulerAngles, right_elbow.localRotation.eulerAngles) % 360 > DISTANCE_ANGLE)
-            {
-                right_elbow.localRotation = quaternionValue;
-            }
-
-
-            //Left upper body:
-            Vector3 l_shoulder_elbow = l_shoulder_vec - l_elbow_vec;
-            quaternionValue = XLookRotation(l_shoulder_elbow);
-            Debug.Log(Vector3.Distance(quaternionValue.eulerAngles, left_shoulder.localRotation.eulerAngles) % 360);
-            if (Vector3.Distance(quaternionValue.eulerAngles, left_shoulder.localRotation.eulerAngles) % 360 > DISTANCE_ANGLE)
-            {
-                left_shoulder.localRotation = quaternionValue; //function defined below.  artifact of how avatar is rotated
-            }
-
-            // place elbow correctly
-            Vector3 l_elbow_wrist = l_elbow_vec - l_wrist_vec;
-            quaternionValue = YLookRotation(l_elbow_wrist);
-            Debug.Log(Vector3.Distance(quaternionValue.eulerAngles, left_elbow.localRotation.eulerAngles) % 360);
-            if (Vector3.Distance(quaternionValue.eulerAngles, left_elbow.localRotation.eulerAngles) % 360 > DISTANCE_ANGLE)
-            {
-                left_elbow.localRotation = quaternionValue;
-            }
-
-            //placing & orienting hips
-            Vector3 hip_midpoint = (l_hip_vec + r_hip_vec) / 2;
-            if (Vector3.Distance(hip_midpoint, hip.position) > DISTANCE_METER)
-            {
-                hip.position = hip_midpoint;
-            }
-
-            Vector3 hip_hip_vec = r_hip_vec - l_hip_vec;
-            quaternionValue = Quaternion.LookRotation(hip_hip_vec);
-            quaternionValue *= Quaternion.Euler(0f, 180f, -90f);
-            Debug.Log(Vector3.Distance(quaternionValue.eulerAngles, hip.localRotation.eulerAngles) % 360);
-            if (Vector3.Distance(quaternionValue.eulerAngles, hip.localRotation.eulerAngles) % 360 > DISTANCE_ANGLE)
-            {
-                hip.localRotation = quaternionValue;
-
-                left_foot.localRotation = Quaternion.LookRotation(hip_hip_vec);
-                left_foot.localRotation *= Quaternion.Euler(0f, 0f, +45f);
-
-                right_foot.localRotation = Quaternion.LookRotation(hip_hip_vec);
-                right_foot.localRotation *= Quaternion.Euler(0f, 0f, 225f);
-            }
-
-            //orient left leg:
-            Vector3 l_hip_knee = l_hip_vec - l_knee_vec;
-            quaternionValue = XLookRotation(l_hip_knee);
-            Debug.Log(Vector3.Distance(quaternionValue.eulerAngles, left_hip.localRotation.eulerAngles) % 360);
-            if (Vector3.Distance(quaternionValue.eulerAngles, left_hip.localRotation.eulerAngles) % 360 > DISTANCE_ANGLE)
-            {
-                left_hip.localRotation = quaternionValue;
-                Vector3 localZ = left_hip.TransformDirection(Vector3.forward);
-                if (Vector3.Dot(hip_hip_vec, localZ) > 0)
-                {
-                    Debug.Log("Enter");
-                    left_hip.RotateAround(left_hip.position, left_hip.right, 180f);
-                }
-            }
-
-
-            Vector3 l_knee_ankle = l_knee_vec - l_ankle_vec;
-            quaternionValue = XLookRotation(l_knee_ankle);
-            Debug.Log(Vector3.Distance(quaternionValue.eulerAngles, left_knee.localRotation.eulerAngles) % 360);
-            if (Vector3.Distance(quaternionValue.eulerAngles, left_knee.localRotation.eulerAngles) % 360 > DISTANCE_ANGLE)
-            {
-                left_knee.localRotation = quaternionValue;
-                Vector3 localZ = left_knee.TransformDirection(Vector3.forward);
-                if (Vector3.Dot(hip_hip_vec, localZ) > 0)
-                {
-                    left_knee.RotateAround(left_knee.position, left_knee.right, 180f);
-                }
-            }
-
-            //orient right leg:
-            Vector3 r_hip_knee = r_knee_vec - r_hip_vec;
-            quaternionValue = XLookRotation(r_hip_knee);
-            Debug.Log(Vector3.Distance(quaternionValue.eulerAngles, right_hip.localRotation.eulerAngles) % 360);
-            if (Vector3.Distance(quaternionValue.eulerAngles, right_hip.localRotation.eulerAngles) % 360 > DISTANCE_ANGLE)
-            {
-                right_hip.localRotation = quaternionValue;
-                Vector3 localZ = right_hip.TransformDirection(Vector3.forward);
-                if (Vector3.Dot(hip_hip_vec, localZ) < 0)
-                {
-                    right_hip.RotateAround(right_hip.position, right_hip.right, 180f);
-                }
-            }
-            Vector3 r_knee_ankle = r_ankle_vec - r_knee_vec;
-            quaternionValue = XLookRotation(r_knee_ankle);
-            Debug.Log(Vector3.Distance(quaternionValue.eulerAngles, right_knee.localRotation.eulerAngles) % 360);
-            if (Vector3.Distance(quaternionValue.eulerAngles, right_knee.localRotation.eulerAngles) % 360 > DISTANCE_ANGLE)
-            {
-                right_knee.localRotation = quaternionValue;
-                Vector3 localZ = right_knee.TransformDirection(Vector3.forward);
-                if (Vector3.Dot(hip_hip_vec, localZ) < 0)
-                {
-                    right_knee.RotateAround(right_knee.position, right_knee.right, 180f);
-                }
-            }
-
-        }
-
+        /// <summary>
+        /// XLs the ook rotation.
+        /// </summary>
+        /// <returns>The X look rotation.</returns>
+        /// <param name="right">Right.</param>
         Quaternion XLookRotation(Vector3 right)
         {
             Quaternion rightToForward = Quaternion.Euler(0f, -90f, 0f);
@@ -860,6 +649,12 @@ namespace GoogleARCore.Visualization.Core
 
             return forwardToTarget * rightToForward;
         }
+
+        /// <summary>
+        /// YLs the look rotation.
+        /// </summary>
+        /// <returns>The look rotation.</returns>
+        /// <param name="up">Up.</param>
         Quaternion YLookRotation(Vector3 up)
         {
             Quaternion upToForward = Quaternion.Euler(90f, 0f, 0f);
