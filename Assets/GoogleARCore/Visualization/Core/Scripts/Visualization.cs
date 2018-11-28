@@ -67,7 +67,6 @@ namespace GoogleARCore.Visualization.Core
         private Quaternion rotationCentreImage;
 
         //private TouchScreenKeyboard keyboard;
-        //public GUIStyle style;
         //public String ipAddress;
 
         int counterErrorDistance = 0;
@@ -119,13 +118,49 @@ namespace GoogleARCore.Visualization.Core
             ////rosPrivate = Instantiate(ros);
         }
 
+        public Texture skeletonTexture;
+        public Texture centroidTexture;
 
+        private bool centroidView = true;
+
+        private void OnGUI()
+        {
+            if (!skeletonTexture || !centroidTexture)
+            {
+                PrintDebugMessage("E: Texture not assigned in the ispector");
+                return;
+            }
+
+            if (anchorOrigin == null)
+                return;
+
+            if(centroidView)
+            {
+                if (GUI.Button(new Rect(8, Screen.height-200, 110, 200), skeletonTexture))
+                {
+                    RemoveAllCentroids();
+                    centroidView = false;
+                    PrintDebugMessage("I: SWAP -> Skeleton mode");
+                }
+            }
+            else
+            {
+                if (GUI.Button(new Rect(8, Screen.height-110, 200, 110), centroidTexture))
+                {
+                    RemoveAllSkeletons();
+                    centroidView = true;
+                    PrintDebugMessage("I: SWAP -> Centroid mode");
+                }
+            }
+           
+        }
 
         /// <summary>
         /// The Unity Update method.
         /// </summary>
         public void Update()
         {
+       
             // Exit the app when the 'back' button is pressed.
             if (Input.GetKey(KeyCode.Escape))
             {
@@ -170,14 +205,19 @@ namespace GoogleARCore.Visualization.Core
             //Send the pose to ROS
             //PoseSender();
 
-            CreateCentroidFromRosData();
-
-            CreateSkeletonFromRosData();
+            if (centroidView)
+            {
+                CreateCentroidFromRosData();
+            }
+            else
+            {
+                CreateSkeletonFromRosData();
+            }
 
             PrintDebugMessage("I: Update complete correctly!");
-        
-        
+     
         }
+
 
         /// <summary>
         /// Losts the position, reset all.
@@ -188,6 +228,34 @@ namespace GoogleARCore.Visualization.Core
             Destroy(anchorOrigin);
             Destroy(anchorOriginObject);
 
+            RemoveAllCentroids();
+            RemoveAllSkeletons();
+
+            counterErrorDistance = 0;
+        }
+
+        /// <summary>
+        /// Removes all centroids.
+        /// </summary>
+        void RemoveAllCentroids()
+        {
+            if (activeTracks.Count > 0)
+            {
+                foreach (KeyValuePair<int, GameObject> kvp in activeTracks)
+                {
+                    Destroy(activeTracks[kvp.Key]);
+                    PrintDebugMessage("I: Destroy centroid: " + kvp.Key);
+                    activeTracks.Remove(kvp.Key);
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Removes all skeletons.
+        /// </summary>
+        void RemoveAllSkeletons()
+        {
             if (activeSkeleton.Count > 0)
             {
                 foreach (KeyValuePair<int, GameObject> kvp in activeSkeleton)
@@ -199,16 +267,6 @@ namespace GoogleARCore.Visualization.Core
                 }
             }
 
-            if (activeTracks.Count > 0)
-            {
-                foreach (KeyValuePair<int, GameObject> kvp in activeTracks)
-                {
-                    Destroy(activeTracks[kvp.Key]);
-                    PrintDebugMessage("I: Destroy centroid: " + kvp.Key);
-                    activeTracks.Remove(kvp.Key);
-                }
-            }
-            counterErrorDistance = 0;
         }
 
         /// <summary>

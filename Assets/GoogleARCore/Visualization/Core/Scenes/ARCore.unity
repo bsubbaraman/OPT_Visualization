@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657856, g: 0.49641234, b: 0.57481724, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657868, g: 0.49641263, b: 0.5748171, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -752,6 +752,8 @@ MonoBehaviour:
   centroidSub: {fileID: 307661314}
   skeletonSub: {fileID: 307661317}
   posePub: {fileID: 307661313}
+  skeletonTexture: {fileID: 2800000, guid: 183fd349807da4989a863afca9d8914d, type: 3}
+  centroidTexture: {fileID: 2800000, guid: a1052c42916544235adccd659108cac0, type: 3}
 --- !u!4 &2000013467
 Transform:
   m_ObjectHideFlags: 0
