@@ -25,6 +25,7 @@ namespace GoogleARCore.Visualization.Core
     using GoogleARCore;
     using UnityEngine;
     using System;
+    using System.Threading;
 
     /// <summary>
     /// Controller for AugmentedImage example.
@@ -122,6 +123,7 @@ namespace GoogleARCore.Visualization.Core
         public Texture centroidTexture;
 
         private bool centroidView = true;
+        private bool changeMode = false;
 
         private void OnGUI()
         {
@@ -138,18 +140,24 @@ namespace GoogleARCore.Visualization.Core
             {
                 if (GUI.Button(new Rect(8, Screen.height-200, 110, 200), skeletonTexture))
                 {
-                    RemoveAllCentroids();
                     centroidView = false;
+                    changeMode = true;
+
                     PrintDebugMessage("I: SWAP -> Skeleton mode");
+                    return;
+
                 }
             }
             else
             {
                 if (GUI.Button(new Rect(8, Screen.height-110, 200, 110), centroidTexture))
                 {
-                    RemoveAllSkeletons();
                     centroidView = true;
+                    changeMode = true;
+
                     PrintDebugMessage("I: SWAP -> Centroid mode");
+                    return;
+
                 }
             }
            
@@ -195,15 +203,21 @@ namespace GoogleARCore.Visualization.Core
             //control if the tracking is lost for at least 5 times
             if (counterErrorDistance > 4)
             {
-                LostPosition("Tracking problem");
+                LostPosition("Tracking problem", true);
                 counterErrorDistance = 0;
                 return;
             }
             counterErrorDistance = 0;
 
+            if(changeMode)
+            {
+                LostPosition("Change mode", false);
+                changeMode = false;
+                return;
+            }
 
             //Send the pose to ROS
-            //PoseSender();
+            PoseSender();
 
             if (centroidView)
             {
@@ -222,16 +236,19 @@ namespace GoogleARCore.Visualization.Core
         /// <summary>
         /// Losts the position, reset all.
         /// </summary>
-        private void LostPosition(string message)
+        private void LostPosition(string message, bool action)
         {
             PrintDebugMessage("E: Position Lost! " + message);
-            Destroy(anchorOrigin);
-            Destroy(anchorOriginObject);
+
+            if(action)
+            {
+                Destroy(anchorOrigin);
+                Destroy(anchorOriginObject);
+                counterErrorDistance = 0;
+            }
 
             RemoveAllCentroids();
             RemoveAllSkeletons();
-
-            counterErrorDistance = 0;
         }
 
         /// <summary>
@@ -243,9 +260,18 @@ namespace GoogleARCore.Visualization.Core
             {
                 foreach (KeyValuePair<int, GameObject> kvp in activeTracks)
                 {
-                    Destroy(activeTracks[kvp.Key]);
-                    PrintDebugMessage("I: Destroy centroid: " + kvp.Key);
-                    activeTracks.Remove(kvp.Key);
+                    if (particles[kvp.Key])
+                    {
+                        Destroy(particles[kvp.Key]);
+                        particles.Remove(kvp.Key);
+                    }
+                    if (activeTracks[kvp.Key])
+                    {
+                        Destroy(activeTracks[kvp.Key]);
+                        activeTracks.Remove(kvp.Key);
+                    }
+
+                    PrintDebugMessage("I: Destroy centroid and particles: " + kvp.Key);
                 }
             }
 
@@ -261,9 +287,13 @@ namespace GoogleARCore.Visualization.Core
                 foreach (KeyValuePair<int, GameObject> kvp in activeSkeleton)
                 {
                     //activeSkeleton[kvp.Key].SetActive(false);
-                    Destroy(activeSkeleton[kvp.Key]);
-                    PrintDebugMessage("I: Remove skeleton: " + kvp.Key);
-                    activeSkeleton.Remove(kvp.Key);
+                    if(activeSkeleton[kvp.Key])
+                    {
+                        Destroy(activeSkeleton[kvp.Key]);
+                        activeSkeleton.Remove(kvp.Key);
+                        PrintDebugMessage("I: Remove skeleton: " + kvp.Key);
+                    }
+
                 }
             }
 
@@ -425,13 +455,13 @@ namespace GoogleARCore.Visualization.Core
         private void CreateCentroidFromRosData()
         {
             //Data from centroidSub
-            //Dictionary<int, Vector3> dataFromCentroidSub = centroidSub.processedTrackData;
+            Dictionary<int, Vector3> dataFromCentroidSub = centroidSub.processedTrackData;
 
             //Data from skeletonSub
-            Dictionary<int, Vector3> dataFromSkeletonSubCentroid = skeletonSub.centroidPose;
-            PrintDebugMessage("I: Received data from CentroidSub length: " + dataFromSkeletonSubCentroid.Count);
+            //Dictionary<int, Vector3> dataFromSkeletonSubCentroid = skeletonSub.centroidPose;
+            PrintDebugMessage("I: Received data from CentroidSub length: " + dataFromCentroidSub.Count);
 
-            foreach (KeyValuePair<int, Vector3> track in dataFromSkeletonSubCentroid)
+            foreach (KeyValuePair<int, Vector3> track in dataFromCentroidSub)
             {
                 //int id = track.Key;
                 //Vector3 poseInput = track.Value;
@@ -467,13 +497,18 @@ namespace GoogleARCore.Visualization.Core
             //remove any people who are no longer present
             foreach (KeyValuePair<int, GameObject> kvp in activeTracks)
             {
-                if (!dataFromSkeletonSubCentroid.ContainsKey(kvp.Key))
+                if (!dataFromCentroidSub.ContainsKey(kvp.Key))
                 {
-                    Destroy(particles[kvp.Key]);
-                    Destroy(activeTracks[kvp.Key]);
-                    PrintDebugMessage("I: Remove centroid and particles: " + kvp.Key);
-                    activeTracks.Remove(kvp.Key);
-                    particles.Remove(kvp.Key);
+                    if (particles[kvp.Key])
+                    {
+                        Destroy(particles[kvp.Key]);
+                        particles.Remove(kvp.Key);
+                    }
+                    if (activeTracks[kvp.Key])
+                    {
+                        Destroy(activeTracks[kvp.Key]);
+                        activeTracks.Remove(kvp.Key);
+                    }
                 }
             }
         }
@@ -483,6 +518,7 @@ namespace GoogleARCore.Visualization.Core
         /// </summary>
         void CreateSkeletonFromRosData()
         {
+
             Dictionary<int, Vector3[]> dataFromSkeletonSubSkeleton = skeletonSub.jointsData;
             //PrintDebugMessage("I: Received data from SkeletonSub length: " + dataFromSkeletonSubSkeleton.Count);
 
@@ -508,9 +544,12 @@ namespace GoogleARCore.Visualization.Core
                     if (!dataFromSkeletonSubSkeleton.ContainsKey(kvp.Key))
                     {
                         //activeSkeleton[kvp.Key].SetActive(false);
-                        Destroy(activeSkeleton[kvp.Key]);
-                        PrintDebugMessage("I: Remove skeleton: " + kvp.Key);
-                        activeSkeleton.Remove(kvp.Key);
+                        if (activeSkeleton[kvp.Key])
+                        {
+                            Destroy(activeSkeleton[kvp.Key]);
+                            activeSkeleton.Remove(kvp.Key);
+                            PrintDebugMessage("I: Remove skeleton: " + kvp.Key);
+                        }
                     }
                 }
             }
