@@ -19,55 +19,52 @@
 //-----------------------------------------------------------------------
 
 
-namespace GoogleARCore.Visualization.Core
-{
-    using System.Collections.Generic;
-    using GoogleARCore;
-    using UnityEngine;
-    using System;
-    using System.Threading;
+using System.Collections.Generic;
+using GoogleARCore;
+using UnityEngine;
+using System;
+using System.Threading;
 
+
+namespace RosSharp.RosBridgeClient
+{
     /// <summary>
     /// Controller for AugmentedImage example.
     /// </summary>
     public class Visualization : MonoBehaviour
     {
-
-        /// <summary>
-        /// The first-person camera being used to render the passthrough camera image (i.e. AR background).
-        /// </summary>
-        public Camera FirstPersonCamera;
-
-        /// <summary>
-        /// The overlay containing the fit to scan user guide.
-        /// </summary>
-        public GameObject FitToScanOverlay;
         public GameObject ServerConnection;
         public GameObject anchorObject;
         public GameObject emptyGameObject;
         public GameObject centroidObject;
-        private GameObject anchorOriginObject;
         public GameObject avatarPrefab;
+        public GameObject objectPrefab;
+        public GameObject LabelTemplate;
+        public GameObject GUI;
 
         public ParticleSystem partSystem;
 
-        public Dictionary<int, GameObject> activeTracks = new Dictionary<int, GameObject>();
+        public Dictionary<int, GameObject> activeTracks = new Dictionary<int, GameObject>(); //person tracks
         public Dictionary<int, ParticleSystem> particles = new Dictionary<int, ParticleSystem>();
         public Dictionary<int, GameObject> activeSkeleton = new Dictionary<int, GameObject>();
-
-        private Dictionary<int, VisualizationVisualizer> m_Visualizers = new Dictionary<int, VisualizationVisualizer>();
+        public Dictionary<int, GameObject> activeObjects = new Dictionary<int, GameObject>();
+        public Dictionary<int, GameObject> labels = new Dictionary<int, GameObject>();
         private Dictionary<int, Color> colors = new Dictionary<int, Color>();
-        private List<AugmentedImage> m_TempAugmentedImages = new List<AugmentedImage>();
+
+
+        public bool centroidView;
+        public bool skeletonView;
+        public bool objectView;
+        private bool changeMode;
 
         /// <summary>
         /// The anchor origin.
         /// </summary>
-        private Anchor anchorOrigin = null;
+        //private Anchor anchorOrigin = null;
 
-        private Vector3 positionCentreImage;
-        private Quaternion rotationCentreImage;
+        //private Vector3 positionCentreImage;
+        //private Quaternion rotationCentreImage;
 
-        //private TouchScreenKeyboard keyboard;
         //public String ipAddress;
 
         int counterErrorDistance = 0;
@@ -78,36 +75,15 @@ namespace GoogleARCore.Visualization.Core
         public RosSharp.RosBridgeClient.RosConnector rosConnector;
         public RosSharp.RosBridgeClient.CentroidSubscriber centroidSub;
         public RosSharp.RosBridgeClient.SkeletonSubscriber skeletonSub;
+        public RosSharp.RosBridgeClient.ObjectsSubscriber objectSub;
         public RosSharp.RosBridgeClient.PoseStampedPublisher posePub;
 
 
         private void Start()
         {
             PrintDebugMessage("D: -------- New execution --------");
+            centroidView = false;
         }
-
-        //// Updates button's text while user is typing
-        //void OnGUI()
-        //{
-        //    style.fontSize = 50;
-
-        //    if (GUI.Button(new Rect(0, 0, 350, 100), ipAddress, style))
-        //    {
-        //        keyboard = TouchScreenKeyboard.Open(ipAddress, TouchScreenKeyboardType.Default);
-        //    }
-
-        //    if (keyboard != null)
-        //    {
-        //        ipAddress = keyboard.text;
-        //    }
-
-        //    if (!keyboard.active)
-        //    {
-        //        keyboard = null;
-        //        ConnectionToRos();
-        //    }
-
-        //}
 
         private void ConnectionToRos()
         {
@@ -119,68 +95,78 @@ namespace GoogleARCore.Visualization.Core
             ////rosPrivate = Instantiate(ros);
         }
 
-        public Texture skeletonTexture;
-        public Texture centroidTexture;
+        //public Texture skeletonTexture;
+        //public Texture centroidTexture;
 
-        private bool centroidView = true;
-        private bool changeMode = false;
 
-        private void OnGUI()
-        {
-            if (!skeletonTexture || !centroidTexture)
-            {
-                PrintDebugMessage("E: Texture not assigned in the ispector");
-                return;
-            }
+        //public void OnGUI()
+        //{
+        //    //if (!skeletonTexture || !centroidTexture)
+        //    //{
+        //    //    PrintDebugMessage("E: Texture not assigned in the ispector");
+        //    //    return;
+        //    //}
 
-            if (anchorOrigin == null)
-                return;
+        //    //if (anchorOrigin == null)
+        //    //return;
 
-            if(centroidView)
-            {
-                if (GUI.Button(new Rect(8, Screen.height-200, 110, 200), skeletonTexture))
-                {
-                    centroidView = false;
-                    changeMode = true;
 
-                    PrintDebugMessage("I: SWAP -> Skeleton mode");
-                    return;
+        //    if (GUI.Button(new Rect(0,0,100,100), "text")){
+        //        Debug.Log("click!");
+        //    }
 
-                }
-            }
-            else
-            {
-                if (GUI.Button(new Rect(8, Screen.height-110, 200, 110), centroidTexture))
-                {
-                    centroidView = true;
-                    changeMode = true;
+        //    if (centroidView)
+        //    {
+        //        //if (GUI.Button(new Rect(8, Screen.height-200, 110, 200), skeletonTexture))
+        //        //{
+        //        //    centroidView = false;
+        //        //    changeMode = true;
 
-                    PrintDebugMessage("I: SWAP -> Centroid mode");
-                    return;
+        //        //    PrintDebugMessage("I: SWAP -> Skeleton mode");
+        //        //    return;
 
-                }
-            }
-           
-        }
+        //        //}
+        //    }
+        //    else
+        //    {
+        //        //if (GUI.Button(new Rect(8, Screen.height-110, 200, 110), centroidTexture))
+        //        //{
+        //        //    centroidView = true;
+        //        //    changeMode = true;
+
+        //        //    PrintDebugMessage("I: SWAP -> Centroid mode");
+        //        //    return;
+
+        //        //}
+        //    }
+
+        //}
 
         /// <summary>
         /// The Unity Update method.
         /// </summary>
         public void Update()
         {
-       
+
             // Exit the app when the 'back' button is pressed.
             if (Input.GetKey(KeyCode.Escape))
             {
                 Application.Quit();
             }
 
-            if (Session.Status != SessionStatus.Tracking && counterErrorDistance < 5)
+            // To Open Control Panel
+
+            if (Input.GetKeyDown(KeyCode.Tab))
             {
-                counterErrorDistance++;
-                PrintDebugMessage("W: Counter lost tracking #" + counterErrorDistance);
-                return;
+                GUI.SetActive(!GUI.activeSelf);
             }
+
+            //if (Session.Status != SessionStatus.Tracking && counterErrorDistance < 5)
+            //{
+            //    counterErrorDistance++;
+            //    PrintDebugMessage("W: Counter lost tracking #" + counterErrorDistance);
+            //    return;
+            //}
 
             if (!rosConnector.ConnectionStatus())
             {
@@ -190,71 +176,86 @@ namespace GoogleARCore.Visualization.Core
             }
 
             //Search anchor
-            if (anchorOrigin == null)
-            {
-                ServerConnection.SetActive(false);
-                FitToScanOverlay.SetActive(true);
+            //if (anchorOrigin == null)
+            //{
+            //    ServerConnection.SetActive(false);
+            //    FitToScanOverlay.SetActive(true);
 
-                SearchAnchorOrigin();
+            //    SearchAnchorOrigin();
 
-                return;
-            }
+            //    return;
+            //}
 
             //control if the tracking is lost for at least 5 times
             if (counterErrorDistance > 4)
             {
-                LostPosition("Tracking problem", true);
+                //LostPosition("Tracking problem", true);
                 counterErrorDistance = 0;
                 return;
             }
             counterErrorDistance = 0;
 
-            if(changeMode)
+            if (changeMode)
             {
-                LostPosition("Change mode", false);
+                //LostPosition("Change mode", false);
                 changeMode = false;
                 return;
             }
 
             //Send the pose to ROS
-            PoseSender();
-
+            //PoseSender();
+            //if (centroidView)
             if (centroidView)
             {
                 CreateCentroidFromRosData();
             }
             else
             {
+                RemoveAllCentroids();
+            }
+            if (skeletonView)
+            {
                 CreateSkeletonFromRosData();
             }
-
+            else
+            {
+                RemoveAllSkeletons();
+            }
+            if (objectView)
+            {
+                CreateObjectMarkersFromRosData();
+            }
+            else
+            {
+                RemoveAllObjects();
+            }
             PrintDebugMessage("I: Update complete correctly!");
-     
+
         }
 
 
         /// <summary>
         /// Losts the position, reset all.
         /// </summary>
-        private void LostPosition(string message, bool action)
-        {
-            PrintDebugMessage("E: Position Lost! " + message);
+        //private void LostPosition(string message, bool action)
+        //{
+        //    PrintDebugMessage("E: Position Lost! " + message);
 
-            if(action)
-            {
-                Destroy(anchorOrigin);
-                Destroy(anchorOriginObject);
-                counterErrorDistance = 0;
-            }
+        //    if(action)
+        //    {
+        //        Destroy(anchorOrigin);
+        //        Destroy(anchorOriginObject);
+        //        counterErrorDistance = 0;
+        //    }
 
-            RemoveAllCentroids();
-            RemoveAllSkeletons();
-        }
+        //    RemoveAllCentroids();
+        //    RemoveAllSkeletons();
+        //}
 
         /// <summary>
         /// Removes all centroids.
         /// </summary>
-        void RemoveAllCentroids()
+        public void RemoveAllCentroids()
         {
             if (activeTracks.Count > 0)
             {
@@ -280,14 +281,14 @@ namespace GoogleARCore.Visualization.Core
         /// <summary>
         /// Removes all skeletons.
         /// </summary>
-        void RemoveAllSkeletons()
+        public void RemoveAllSkeletons()
         {
             if (activeSkeleton.Count > 0)
             {
                 foreach (KeyValuePair<int, GameObject> kvp in activeSkeleton)
                 {
                     //activeSkeleton[kvp.Key].SetActive(false);
-                    if(activeSkeleton[kvp.Key])
+                    if (activeSkeleton[kvp.Key])
                     {
                         Destroy(activeSkeleton[kvp.Key]);
                         activeSkeleton.Remove(kvp.Key);
@@ -299,49 +300,73 @@ namespace GoogleARCore.Visualization.Core
 
         }
 
+        public void RemoveAllObjects()
+        {
+            if (activeObjects.Count > 0)
+            {
+                foreach (KeyValuePair<int, GameObject> kvp in activeObjects)
+                {
+                    //if (particles[kvp.Key])
+                    //{
+                    //    Destroy(particles[kvp.Key]);
+                    //    particles.Remove(kvp.Key);
+                    //}
+                    if (activeObjects[kvp.Key])
+                    {
+                        Destroy(activeObjects[kvp.Key]);
+                        activeObjects.Remove(kvp.Key);
+                    }
+
+                    PrintDebugMessage("I: Destroy object: " + kvp.Key);
+                }
+            }
+
+        }
+
+
         /// <summary>
         /// Prints the debug message.
         /// </summary>
         /// <param name="message">Message.</param>
         private void PrintDebugMessage(string message)
         {
-            Debug.Log("123 - " + message);
+            //Debug.Log("123 - " + message);
         }
 
         /// <summary>
         /// Searchs the anchor origin.
         /// </summary>
-        private void SearchAnchorOrigin()
-        {
-            // Get updated augmented images for this frame.
-            Session.GetTrackables<AugmentedImage>(m_TempAugmentedImages, TrackableQueryFilter.Updated);
+        //private void SearchAnchorOrigin()
+        //{
+        //    // Get updated augmented images for this frame.
+        //    Session.GetTrackables<AugmentedImage>(m_TempAugmentedImages, TrackableQueryFilter.Updated);
 
-            // Create visualizers and anchors for updated augmented images that are tracking and do not previously
-            // have a visualizer. Remove visualizers for stopped images.
-            foreach (var image in m_TempAugmentedImages)
-            {
-                if (image.TrackingState == TrackingState.Tracking)
-                {
-                    // Create an anchor to ensure that ARCore keeps tracking this augmented image.
-                    anchorOrigin = image.CreateAnchor(image.CenterPose);
+        //    // Create visualizers and anchors for updated augmented images that are tracking and do not previously
+        //    // have a visualizer. Remove visualizers for stopped images.
+        //    foreach (var image in m_TempAugmentedImages)
+        //    {
+        //        if (image.TrackingState == TrackingState.Tracking)
+        //        {
+        //            // Create an anchor to ensure that ARCore keeps tracking this augmented image.
+        //            anchorOrigin = image.CreateAnchor(image.CenterPose);
 
-                    positionCentreImage = image.CenterPose.position;
-                    rotationCentreImage = image.CenterPose.rotation;
+        //            positionCentreImage = image.CenterPose.position;
+        //            rotationCentreImage = image.CenterPose.rotation;
 
-                    PrintDebugMessage("I: Position: P:" + image.CenterPose.position.ToString() + " , quat: " + image.CenterPose.rotation.ToString());
+        //            PrintDebugMessage("I: Position: P:" + image.CenterPose.position.ToString() + " , quat: " + image.CenterPose.rotation.ToString());
 
-                    FitToScanOverlay.SetActive(false);
+        //            FitToScanOverlay.SetActive(false);
 
-                    anchorOriginObject = Instantiate(anchorObject);
-                    anchorOriginObject.transform.parent = anchorOrigin.transform;
-                    anchorOriginObject.transform.localPosition = Vector3.zero;
-                    anchorOriginObject.transform.localRotation = Quaternion.identity;
+        //            anchorOriginObject = Instantiate(anchorObject);
+        //            anchorOriginObject.transform.parent = anchorOrigin.transform;
+        //            anchorOriginObject.transform.localPosition = Vector3.zero;
+        //            anchorOriginObject.transform.localRotation = Quaternion.identity;
 
-                    PrintDebugMessage("I: Anchor and Image created!");
-                    //PrintDebugMessage("I: " + image.ExtentX + " H: " + image.ExtentZ);
-                }
-            }
-        }
+        //            PrintDebugMessage("I: Anchor and Image created!");
+        //            //PrintDebugMessage("I: " + image.ExtentX + " H: " + image.ExtentZ);
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Swaps the coordinates from (xyz) to (xzy)
@@ -355,7 +380,7 @@ namespace GoogleARCore.Visualization.Core
 
             Vector3 angle = quaternionInput.eulerAngles;
             Vector3 angle_swap = new Vector3();
-            
+
             angle_swap[0] = angle[0];
             angle_swap[1] = angle[2];
             angle_swap[2] = angle[1];
@@ -368,15 +393,15 @@ namespace GoogleARCore.Visualization.Core
         /// <summary>
         /// Send the pose of the camera to ROS.
         /// </summary>
-        private void PoseSender()
-        {
-            GameObject cameraObject = Instantiate(emptyGameObject, FirstPersonCamera.transform.position, FirstPersonCamera.transform.rotation);
-            cameraObject.transform.SetParent(anchorOrigin.transform);
+        //private void PoseSender()
+        //{
+        //    GameObject cameraObject = Instantiate(emptyGameObject, FirstPersonCamera.transform.position, FirstPersonCamera.transform.rotation);
+        //    cameraObject.transform.SetParent(anchorOrigin.transform);
 
-            posePub.SendMessage(SwapCoordinates(cameraObject.transform.localPosition, cameraObject.transform.localRotation), SystemInfo.deviceUniqueIdentifier);
+        //    posePub.SendMessage(SwapCoordinates(cameraObject.transform.localPosition, cameraObject.transform.localRotation), SystemInfo.deviceUniqueIdentifier);
 
-            Destroy(cameraObject);
-        }
+        //    Destroy(cameraObject);
+        //}
 
         /// <summary>
         /// Creates the particle system.
@@ -388,7 +413,9 @@ namespace GoogleARCore.Visualization.Core
         {
             ParticleSystem newParticular = Instantiate(partSystem);
             var mainPartSyst = newParticular.main;
+            newParticular.Stop(); //can't set duration while playing
             mainPartSyst.duration = 5.00f;
+            newParticular.Play();
             mainPartSyst.startDelay = 0f;
             mainPartSyst.startLifetime = 2.0f;
             mainPartSyst.startSpeed = 0f;
@@ -450,6 +477,24 @@ namespace GoogleARCore.Visualization.Core
         }
 
         /// <summary>
+        /// Creates label for all markers
+        /// </summary>
+
+        private GameObject CreateLabel(GameObject theMarker, string info)
+        {
+            GameObject label = Instantiate(LabelTemplate);
+            TextMesh tm = label.GetComponent<TextMesh>();
+            label.transform.SetParent(theMarker.transform);
+            tm.text = info;
+            tm.transform.localPosition = new Vector3(0f, 1f, 0f); // to position just above marker
+            tm.transform.localScale = new Vector3(1f, 1f, 1f);
+
+
+            return label;
+        }
+
+
+        /// <summary>
         /// Creates the centroids from ros data.
         /// </summary>
         private void CreateCentroidFromRosData()
@@ -469,6 +514,7 @@ namespace GoogleARCore.Visualization.Core
                 //add any people who have joined the scene
                 if (!activeTracks.ContainsKey(track.Key))
                 {
+                    Debug.Log(activeTracks.Count);
                     Color color = new Color(
                           UnityEngine.Random.Range(0f, 1f),
                           UnityEngine.Random.Range(0f, 1f),
@@ -476,13 +522,18 @@ namespace GoogleARCore.Visualization.Core
                                             1);
 
                     GameObject newCentroid = Instantiate(centroidObject);
-                    newCentroid.transform.SetParent(anchorOrigin.transform);
+                    //newCentroid.transform.SetParent(anchorOrigin.transform);
                     newCentroid.transform.localPosition = track.Value;
                     newCentroid.name = "centroid_" + track.Key;
                     newCentroid.GetComponent<Renderer>().material.color = color;
 
                     particles.Add(track.Key, CreateParticleSystem(newCentroid, color));
                     activeTracks.Add(track.Key, newCentroid);
+                    labels.Add(track.Key, CreateLabel(newCentroid, track.Key.ToString()));
+
+
+                    //add label
+
 
                     //PrintDebugMessage("I: Crete centroid -> Parent: " + activeTracks[id].transform.parent.name + " | Position: " + activeTracks[id].transform.localPosition.ToString() + " | Id: " + id);
                 }
@@ -495,7 +546,8 @@ namespace GoogleARCore.Visualization.Core
             }
 
             //remove any people who are no longer present
-            foreach (KeyValuePair<int, GameObject> kvp in activeTracks)
+            Dictionary<int, GameObject> checkActiveTracks = activeTracks;
+            foreach (KeyValuePair<int, GameObject> kvp in checkActiveTracks)
             {
                 if (!dataFromCentroidSub.ContainsKey(kvp.Key))
                 {
@@ -510,6 +562,7 @@ namespace GoogleARCore.Visualization.Core
                         activeTracks.Remove(kvp.Key);
                     }
                 }
+                Debug.Log("****************** " + checkActiveTracks.Count);
             }
         }
 
@@ -566,23 +619,23 @@ namespace GoogleARCore.Visualization.Core
 
             Animator animator = theAvatar.GetComponent<Animator>();
 
-            Matrix4x4 m = Matrix4x4.TRS(anchorOrigin.transform.position, anchorOrigin.transform.rotation, new Vector3(1, 1, 1));
+            //Matrix4x4 m = Matrix4x4.TRS(anchorOrigin.transform.position, anchorOrigin.transform.rotation, new Vector3(1, 1, 1));
 
-            Vector3 chest_vec = m.MultiplyPoint3x4(poseInput[14]);
-            Vector3 l_knee_vec = m.MultiplyPoint3x4(poseInput[12]);
-            Vector3 l_hip_vec = m.MultiplyPoint3x4(poseInput[11]);
-            Vector3 r_hip_vec = m.MultiplyPoint3x4(poseInput[8]);
-            Vector3 l_ankle_vec = m.MultiplyPoint3x4(poseInput[13]);
-            Vector3 r_knee_vec = m.MultiplyPoint3x4(poseInput[9]);
-            Vector3 r_ankle_vec = m.MultiplyPoint3x4(poseInput[10]);
-            Vector3 l_shoulder_vec = m.MultiplyPoint3x4(poseInput[5]);
-            Vector3 l_elbow_vec = m.MultiplyPoint3x4(poseInput[6]);
-            Vector3 l_wrist_vec = m.MultiplyPoint3x4(poseInput[7]);
-            Vector3 r_shoulder_vec = m.MultiplyPoint3x4(poseInput[2]);
-            Vector3 r_elbow_vec = m.MultiplyPoint3x4(poseInput[3]);
-            Vector3 r_wrist_vec = m.MultiplyPoint3x4(poseInput[4]);
-            Vector3 neck_vec = m.MultiplyPoint3x4(poseInput[1]);
-            Vector3 head_vec = m.MultiplyPoint3x4(poseInput[0]);
+            Vector3 chest_vec = poseInput[14];
+            Vector3 l_knee_vec = poseInput[12];
+            Vector3 l_hip_vec = poseInput[11];
+            Vector3 r_hip_vec = poseInput[8];
+            Vector3 l_ankle_vec = poseInput[13];
+            Vector3 r_knee_vec = poseInput[9];
+            Vector3 r_ankle_vec = poseInput[10];
+            Vector3 l_shoulder_vec = poseInput[5];
+            Vector3 l_elbow_vec = poseInput[6];
+            Vector3 l_wrist_vec = poseInput[7];
+            Vector3 r_shoulder_vec = poseInput[2];
+            Vector3 r_elbow_vec = poseInput[3];
+            Vector3 r_wrist_vec = poseInput[4];
+            Vector3 neck_vec = poseInput[1];
+            Vector3 head_vec = poseInput[0];
 
             //Transform head = animator.GetBoneTransform(HumanBodyBones.Head);
             //Transform neck = animator.GetBoneTransform(HumanBodyBones.Neck);
@@ -602,7 +655,8 @@ namespace GoogleARCore.Visualization.Core
             Transform chest = animator.GetBoneTransform(HumanBodyBones.Spine);
 
             Quaternion quaternionValue;
-
+            Debug.Log("CHEST VEC __________" + chest_vec);
+            Debug.Log("CHEST __________" + chest.position);
             if (Vector3.Distance(chest_vec, chest.position) > DISTANCE_METER)
             {
                 chest.position = chest_vec; //move avatar to correct location
@@ -758,6 +812,71 @@ namespace GoogleARCore.Visualization.Core
             Quaternion forwardToTarget = Quaternion.LookRotation(up, Vector3.up);
 
             return forwardToTarget * upToForward;
+        }
+
+        // *** Adding Object Markers
+
+        private void CreateObjectMarkersFromRosData()
+        {
+            //Data from centroidSub
+            //Dictionary<int, Vector3> dataFromObjectSub = objectSub.objectTrackData;
+            Dictionary<int, OPTObject> dataFromObjectSub = objectSub.objectTrackData;
+            //Debug.Log(dataFromObjectSub.Count);
+            //Data from skeletonSub
+            //Dictionary<int, Vector3> dataFromSkeletonSubCentroid = skeletonSub.centroidPose;
+            PrintDebugMessage("I: Received data from objectSub length: " + dataFromObjectSub.Count);
+
+            foreach (KeyValuePair<int, OPTObject> track in dataFromObjectSub)
+            {
+                //int id = track.Key;
+                //Vector3 poseInput = track.Value;
+
+                //add any object which have joined the scene
+                if (!activeObjects.ContainsKey(track.Key))
+                {
+                    Color color = new Color(
+                          UnityEngine.Random.Range(0f, 1f),
+                          UnityEngine.Random.Range(0f, 1f),
+                          UnityEngine.Random.Range(0f, 1f),
+                                            1);
+
+                    GameObject newObject = Instantiate(objectPrefab);
+                    //newCentroid.transform.SetParent(anchorOrigin.transform);
+                    newObject.transform.localPosition = track.Value.pos;
+                    newObject.name = "object_" + track.Key;
+                    newObject.GetComponent<Renderer>().material.color = color;
+
+                    particles.Add(track.Key, CreateParticleSystem(newObject, color));
+                    activeObjects.Add(track.Key, newObject);
+                    labels.Add(track.Key, CreateLabel(newObject, track.Value.objectID));
+
+                    //PrintDebugMessage("I: Crete centroid -> Parent: " + activeTracks[id].transform.parent.name + " | Position: " + activeTracks[id].transform.localPosition.ToString() + " | Id: " + id);
+                }
+                else
+                {
+                    activeObjects[track.Key].transform.localPosition = track.Value.pos;
+                    //PrintDebugMessage("I: Update centroid  -> Parent: " + activeTracks[id].transform.parent.name + " | Position: " + activeTracks[id].transform.localPosition.ToString() + " | Id: " + id);
+                }
+
+            }
+
+            //remove any objects which are no longer present
+            foreach (KeyValuePair<int, GameObject> kvp in activeObjects)
+            {
+                if (!dataFromObjectSub.ContainsKey(kvp.Key))
+                {
+                    if (particles[kvp.Key])
+                    {
+                        Destroy(particles[kvp.Key]);
+                        particles.Remove(kvp.Key);
+                    }
+                    if (activeObjects[kvp.Key])
+                    {
+                        Destroy(activeObjects[kvp.Key]);
+                        activeObjects.Remove(kvp.Key);
+                    }
+                }
+            }
         }
 
     }
