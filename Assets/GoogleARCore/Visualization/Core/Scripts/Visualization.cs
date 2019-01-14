@@ -259,20 +259,24 @@ namespace RosSharp.RosBridgeClient
         {
             if (activeTracks.Count > 0)
             {
-                foreach (KeyValuePair<int, GameObject> kvp in activeTracks)
+                List<int> keyList = new List<int>(activeTracks.Keys);
+                foreach (int key in keyList)
                 {
-                    if (particles[kvp.Key])
+                    if (particles[key])
                     {
-                        Destroy(particles[kvp.Key]);
-                        particles.Remove(kvp.Key);
+                        Destroy(particles[key]);
+                        particles.Remove(key);
                     }
-                    if (activeTracks[kvp.Key])
+                    if (activeTracks[key])
                     {
-                        Destroy(activeTracks[kvp.Key]);
-                        activeTracks.Remove(kvp.Key);
+                        Destroy(activeTracks[key]);
+                        activeTracks.Remove(key);
                     }
-
-                    PrintDebugMessage("I: Destroy centroid and particles: " + kvp.Key);
+                    if (labels[key]){
+                        Destroy(labels[key]);
+                        labels.Remove(key);
+                    }
+                    PrintDebugMessage("I: Destroy centroid and particles: " + key);
                 }
             }
 
@@ -285,14 +289,15 @@ namespace RosSharp.RosBridgeClient
         {
             if (activeSkeleton.Count > 0)
             {
-                foreach (KeyValuePair<int, GameObject> kvp in activeSkeleton)
+                List<int> keyList = new List<int>(activeSkeleton.Keys);
+                foreach (int key in keyList)
                 {
                     //activeSkeleton[kvp.Key].SetActive(false);
-                    if (activeSkeleton[kvp.Key])
+                    if (activeSkeleton[key])
                     {
-                        Destroy(activeSkeleton[kvp.Key]);
-                        activeSkeleton.Remove(kvp.Key);
-                        PrintDebugMessage("I: Remove skeleton: " + kvp.Key);
+                        Destroy(activeSkeleton[key]);
+                        activeSkeleton.Remove(key);
+                        PrintDebugMessage("I: Remove skeleton: " + key);
                     }
 
                 }
@@ -304,20 +309,26 @@ namespace RosSharp.RosBridgeClient
         {
             if (activeObjects.Count > 0)
             {
-                foreach (KeyValuePair<int, GameObject> kvp in activeObjects)
+                List<int> keyList = new List<int>(activeObjects.Keys);
+                foreach (int key in keyList)
                 {
-                    //if (particles[kvp.Key])
-                    //{
-                    //    Destroy(particles[kvp.Key]);
-                    //    particles.Remove(kvp.Key);
-                    //}
-                    if (activeObjects[kvp.Key])
+                    if (particles[key])
                     {
-                        Destroy(activeObjects[kvp.Key]);
-                        activeObjects.Remove(kvp.Key);
+                        Destroy(particles[key]);
+                        particles.Remove(key);
                     }
+                    if (activeObjects[key])
+                    {
+                        Destroy(activeObjects[key]);
+                        activeObjects.Remove(key);
+                    }
+                    if (labels[key]){
+                        Destroy(labels[key]);
+                        labels.Remove(key);
+                    }
+                    
 
-                    PrintDebugMessage("I: Destroy object: " + kvp.Key);
+                    PrintDebugMessage("I: Destroy object: " + key);
                 }
             }
 
@@ -546,23 +557,27 @@ namespace RosSharp.RosBridgeClient
             }
 
             //remove any people who are no longer present
-            Dictionary<int, GameObject> checkActiveTracks = activeTracks;
-            foreach (KeyValuePair<int, GameObject> kvp in checkActiveTracks)
+            List<int> keyList = new List<int>(activeTracks.Keys);
+            foreach (int key in keyList)
             {
-                if (!dataFromCentroidSub.ContainsKey(kvp.Key))
+                if (!dataFromCentroidSub.ContainsKey(key))
                 {
-                    if (particles[kvp.Key])
+                    if (particles[key])
                     {
-                        Destroy(particles[kvp.Key]);
-                        particles.Remove(kvp.Key);
+                        Destroy(particles[key]);
+                        particles.Remove(key);
                     }
-                    if (activeTracks[kvp.Key])
+                    if (activeTracks[key])
                     {
-                        Destroy(activeTracks[kvp.Key]);
-                        activeTracks.Remove(kvp.Key);
+                        Destroy(activeTracks[key]);
+                        activeTracks.Remove(key);
+                    }
+                    if (labels[key])
+                    {
+                        Destroy(labels[key]);
+                        labels.Remove(key);
                     }
                 }
-                Debug.Log("****************** " + checkActiveTracks.Count);
             }
         }
 
@@ -592,16 +607,17 @@ namespace RosSharp.RosBridgeClient
             //remove any people who are no longer present
             if (activeSkeleton.Count > 0)
             {
-                foreach (KeyValuePair<int, GameObject> kvp in activeSkeleton)
+                List<int> keyList = new List<int>(activeSkeleton.Keys);
+                foreach (int key in keyList)
                 {
-                    if (!dataFromSkeletonSubSkeleton.ContainsKey(kvp.Key))
+                    if (!dataFromSkeletonSubSkeleton.ContainsKey(key))
                     {
                         //activeSkeleton[kvp.Key].SetActive(false);
-                        if (activeSkeleton[kvp.Key])
+                        if (activeSkeleton[key])
                         {
-                            Destroy(activeSkeleton[kvp.Key]);
-                            activeSkeleton.Remove(kvp.Key);
-                            PrintDebugMessage("I: Remove skeleton: " + kvp.Key);
+                            Destroy(activeSkeleton[key]);
+                            activeSkeleton.Remove(key);
+                            PrintDebugMessage("I: Remove skeleton: " + key);
                         }
                     }
                 }
@@ -861,19 +877,48 @@ namespace RosSharp.RosBridgeClient
             }
 
             //remove any objects which are no longer present
-            foreach (KeyValuePair<int, GameObject> kvp in activeObjects)
+
+
+            //foreach (KeyValuePair<int, GameObject> kvp in objectCheck)
+            //{
+            //    if (!dataFromObjectSub.ContainsKey(kvp.Key))
+            //    {
+            //        if (particles[kvp.Key])
+            //        {
+            //            Destroy(particles[kvp.Key]);
+            //            particles.Remove(kvp.Key);
+            //        }
+            //        if (activeObjects[kvp.Key])
+            //        {
+            //            Destroy(activeObjects[kvp.Key]);
+            //            activeObjects.Remove(kvp.Key);
+            //        }
+            //        if (labels[kvp.Key]){
+            //            Destroy(labels[kvp.Key]);
+            //            labels.Remove(kvp.Key);
+            //        }
+            //    }
+            //}
+
+            List<int> keyList = new List<int>(activeObjects.Keys);
+            foreach (int key in keyList)
             {
-                if (!dataFromObjectSub.ContainsKey(kvp.Key))
+                if (!dataFromObjectSub.ContainsKey(key))
                 {
-                    if (particles[kvp.Key])
+                    if (particles[key])
                     {
-                        Destroy(particles[kvp.Key]);
-                        particles.Remove(kvp.Key);
+                        Destroy(particles[key]);
+                        particles.Remove(key);
                     }
-                    if (activeObjects[kvp.Key])
+                    if (activeObjects[key])
                     {
-                        Destroy(activeObjects[kvp.Key]);
-                        activeObjects.Remove(kvp.Key);
+                        Destroy(activeObjects[key]);
+                        activeObjects.Remove(key);
+                    }
+                    if (labels[key])
+                    {
+                        Destroy(labels[key]);
+                        labels.Remove(key);
                     }
                 }
             }
