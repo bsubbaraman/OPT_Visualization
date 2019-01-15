@@ -7,8 +7,9 @@ namespace RosSharp.RosBridgeClient
 
     public class GUIControl : MonoBehaviour
     {
-        public Button m_CentroidButton, m_SkeletonButton, m_ObjectButton;
-        public GameObject theController;
+        public Button m_CentroidButton, m_SkeletonButton, m_ObjectButton, m_ImageButton, m_SnapToButton;
+        public Camera main;
+        public GameObject theConnector, theController, theImage;
         public Visualization v;
         // Use this for initialization
         void Start()
@@ -17,6 +18,9 @@ namespace RosSharp.RosBridgeClient
             m_CentroidButton.onClick.AddListener(() => TaskOnClick(m_CentroidButton));
             m_SkeletonButton.onClick.AddListener(() => TaskOnClick(m_SkeletonButton));
             m_ObjectButton.onClick.AddListener(() => TaskOnClick(m_ObjectButton));
+            m_ImageButton.onClick.AddListener(() => TaskOnClick(m_ImageButton));
+
+            //position the image in bottom left of screen
         }
 
         void TaskOnClick(Button b)
@@ -37,29 +41,23 @@ namespace RosSharp.RosBridgeClient
             {
                 case "CentroidsButton":
                     v.centroidView = !v.centroidView;
-                    //if (v.centroidView == false){
-                    //    v.RemoveAllCentroids();
-                    //}
                     break;
                 case "SkeletonsButton":
                     v.skeletonView = !v.skeletonView;
-                    //if (v.skeletonView == false){
-                    //    v.RemoveAllSkeletons();
-                    //}
                     break;
                 case "ObjectsButton":
                     v.objectView = !v.objectView;
-                    //if (v.objectView == false){
-                    //    v.RemoveAllObjects();
-                    //}
-
+                    break;
+                case "ImageButton":
+                    theConnector.GetComponent<ImageSubscriber>().enabled = !theConnector.GetComponent<ImageSubscriber>().enabled;
+                    theImage.SetActive(!theImage.activeSelf);
                     break;
             }
         }
         // Update is called once per frame
         void Update()
         {
-
+            //theImage.transform.position = main.ViewportToWorldPoint(new Vector3(.5f, .5f, 0));
         }
     }
 }

@@ -500,7 +500,6 @@ namespace RosSharp.RosBridgeClient
             tm.transform.localPosition = new Vector3(0f, 1f, 0f); // to position just above marker
             tm.transform.localScale = new Vector3(1f, 1f, 1f);
 
-
             return label;
         }
 
@@ -525,7 +524,6 @@ namespace RosSharp.RosBridgeClient
                 //add any people who have joined the scene
                 if (!activeTracks.ContainsKey(track.Key))
                 {
-                    Debug.Log(activeTracks.Count);
                     Color color = new Color(
                           UnityEngine.Random.Range(0f, 1f),
                           UnityEngine.Random.Range(0f, 1f),

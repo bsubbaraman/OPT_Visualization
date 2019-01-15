@@ -53,6 +53,7 @@ namespace RosSharp.RosBridgeClient
                 else{
                     processedTrackData[track.id] = new Vector3(track.x, track.height, track.y);
                 }
+
             }
 
             OnReceive?.Invoke();

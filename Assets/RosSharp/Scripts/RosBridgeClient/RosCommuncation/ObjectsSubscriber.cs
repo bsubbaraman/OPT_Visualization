@@ -20,6 +20,7 @@ namespace RosSharp.RosBridgeClient
     public class OPTObject{
         public Vector3 pos;
         public string objectID;
+        public float age;
     }
 
     public class ObjectsSubscriber : Subscriber<Messages.OPT.TrackArray>
@@ -60,7 +61,9 @@ namespace RosSharp.RosBridgeClient
                     OPTObject o = new OPTObject
                     {
                         pos = new Vector3(track.x, track.height, track.y),
-                        objectID = track.object_name
+                        objectID = track.object_name,
+                        age = track.age
+
                     };
                     //objectTrackData.Add(track.id, new Vector3(track.x, track.height, track.y));
                     objectTrackData.Add(track.id, o);
