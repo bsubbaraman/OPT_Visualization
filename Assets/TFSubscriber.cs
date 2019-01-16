@@ -20,12 +20,12 @@ namespace RosSharp.RosBridgeClient
     public class TFSubscriber : Subscriber<Messages.OPT.TFMessage>
     {
         private Messages.OPT.TFMessage tf;
-        public GameObject thing;
+        public GameObject cam;
         private bool isMessageReceived;
 
-        public delegate void ReceiveTrackData();
-        public static event ReceiveTrackData OnReceive;
-
+        //refers to the actual kinect/zed/etc
+        public Vector3 cameraPos;
+        public Quaternion cameraRot;
         protected override void Start()
         {
             base.Start();
@@ -46,13 +46,12 @@ namespace RosSharp.RosBridgeClient
         private void ProcessMessage()
         {
             if(tf.transforms[0].child_frame_id == "/kinect01"){
-                Vector3 pos = new Vector3(tf.transforms[0].transform.translation.x, tf.transforms[0].transform.translation.z, tf.transforms[0].transform.translation.y);
-                Debug.Log(pos);
-                GameObject c = Instantiate(thing);
-                c.transform.position = pos;
+                cameraPos = new Vector3(tf.transforms[0].transform.translation.x, tf.transforms[0].transform.translation.z, tf.transforms[0].transform.translation.y);
+                cameraRot = new Quaternion(tf.transforms[0].transform.quaternion.x, tf.transforms[0].transform.quaternion.y, tf.transforms[0].transform.quaternion.z, tf.transforms[0].transform.quaternion.w);
+                cam.transform.position = cameraPos;
+                cam.transform.rotation = cameraRot;
             }
 
-            //OnReceive?.Invoke();
         }
     }
 }

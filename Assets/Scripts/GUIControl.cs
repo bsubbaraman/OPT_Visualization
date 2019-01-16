@@ -11,6 +11,8 @@ namespace RosSharp.RosBridgeClient
         public Camera main;
         public GameObject theConnector, theController, theImage;
         public Visualization v;
+        public TFSubscriber s;
+
         // Use this for initialization
         void Start()
         {
@@ -19,8 +21,8 @@ namespace RosSharp.RosBridgeClient
             m_SkeletonButton.onClick.AddListener(() => TaskOnClick(m_SkeletonButton));
             m_ObjectButton.onClick.AddListener(() => TaskOnClick(m_ObjectButton));
             m_ImageButton.onClick.AddListener(() => TaskOnClick(m_ImageButton));
+            m_SnapToButton.onClick.AddListener(() => TaskOnClick(m_SnapToButton));
 
-            //position the image in bottom left of screen
         }
 
         void TaskOnClick(Button b)
@@ -49,11 +51,21 @@ namespace RosSharp.RosBridgeClient
                     v.objectView = !v.objectView;
                     break;
                 case "ImageButton":
+                    //TODO: Currently doesn't work after first click, begins working after 2... need to find the problem there
                     theConnector.GetComponent<ImageSubscriber>().enabled = !theConnector.GetComponent<ImageSubscriber>().enabled;
                     theImage.SetActive(!theImage.activeSelf);
                     break;
+                case "SnapToCamView":
+                    main.transform.position = s.cameraPos;
+                    main.transform.rotation = s.cameraRot;
+
+                    cb.normalColor = Color.white;
+                    cb.highlightedColor = cb.normalColor;
+                    b.colors = cb;
+                    break;
             }
         }
+
         // Update is called once per frame
         void Update()
         {
