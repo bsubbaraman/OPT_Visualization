@@ -51,8 +51,7 @@ namespace RosSharp.RosBridgeClient
                     v.objectView = !v.objectView;
                     break;
                 case "ImageButton":
-                    //TODO: Currently doesn't work after first click, begins working after 2... need to find the problem there
-                    theConnector.GetComponent<ImageSubscriber>().enabled = !theConnector.GetComponent<ImageSubscriber>().enabled;
+                    //theConnector.GetComponent<ImageSubscriber>().enabled = !theConnector.GetComponent<ImageSubscriber>().enabled;
                     theImage.SetActive(!theImage.activeSelf);
                     break;
                 case "SnapToCamView":

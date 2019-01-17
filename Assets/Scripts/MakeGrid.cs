@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
 public class MakeGrid : MonoBehaviour
 {
     public GameObject WhitePlane;
     public GameObject BlackPlane;
-    public int width = 10;
-    public int height = 10;
-    private GameObject[,] grid = new GameObject[10, 10];
-    private GameObject[,] gridBlack = new GameObject[10, 10];
+    public Transform ParentGrid;
+    public int width;
+    public int height ;
+    private GameObject[,] grid = new GameObject[100, 100];
+    private GameObject[,] gridBlack = new GameObject[100, 100];
 
     private void Awake()
     {
@@ -20,8 +23,10 @@ public class MakeGrid : MonoBehaviour
             {
                 GameObject gridPlane = (GameObject)Instantiate(WhitePlane);
                 GameObject gridPlaneBlack = (GameObject)Instantiate(BlackPlane);
-                gridPlane.transform.position = new Vector3(gridPlane.transform.position.x + x, 0.0f, gridPlane.transform.position.z + z);
-                gridPlaneBlack.transform.position = new Vector3(gridPlaneBlack.transform.position.x + x, 0.001f, gridPlaneBlack.transform.position.z + z);
+                gridPlane.transform.SetParent(ParentGrid);
+                gridPlaneBlack.transform.SetParent(ParentGrid);
+                gridPlane.transform.position = new Vector3(gridPlane.transform.position.x - (x-width/2), 0.0f, gridPlane.transform.position.z - (z-height/2));
+                gridPlaneBlack.transform.position = new Vector3(gridPlaneBlack.transform.position.x - (x - width / 2), 0.001f, gridPlaneBlack.transform.position.z -(z - height / 2));
                 grid[x, z] = gridPlane;
                 gridBlack[x, z] = gridPlaneBlack;
             }

@@ -40,7 +40,6 @@ namespace RosSharp.RosBridgeClient
         protected override void ReceiveMessage(Messages.Sensor.CompressedImage message)
         {
             imageData = message.data;
-            Debug.Log(imageData);
             isMessageReceived = true;
         }
 
