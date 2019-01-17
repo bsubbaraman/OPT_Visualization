@@ -56,6 +56,7 @@ namespace RosSharp.RosBridgeClient
         public bool centroidView;
         public bool skeletonView;
         public bool objectView;
+        public bool labelView;
 
         const float DISTANCE_ANGLE = 4.0f;
         const float DISTANCE_METER = 0.05f;
@@ -207,7 +208,6 @@ namespace RosSharp.RosBridgeClient
 
         }
 
-
         /// <summary>
         /// Prints the debug message.
         /// </summary>
@@ -326,7 +326,17 @@ namespace RosSharp.RosBridgeClient
             tm.transform.localPosition = new Vector3(0f, 1f, 0f); // to position just above marker
             tm.transform.localScale = new Vector3(1f, 1f, 1f);
 
+            label.SetActive(labelView);
             return label;
+        }
+
+        public void ToggleLabels()
+        {
+            labelView = !labelView;
+            foreach (KeyValuePair<int, GameObject> kvp in labels)
+            {
+                kvp.Value.SetActive(labelView);
+            }
         }
 
         /// <summary>

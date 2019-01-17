@@ -7,7 +7,7 @@ namespace RosSharp.RosBridgeClient
 
     public class GUIControl : MonoBehaviour
     {
-        public Button m_CentroidButton, m_SkeletonButton, m_ObjectButton, m_ImageButton, m_SnapToButton;
+        public Button m_CentroidButton, m_SkeletonButton, m_ObjectButton, m_ImageButton, m_SnapToButton, m_LabelButton;
         public Camera main;
         public GameObject theConnector, theController, theImage, cameraRepresentation;
         public Visualization v;
@@ -22,7 +22,7 @@ namespace RosSharp.RosBridgeClient
             m_ObjectButton.onClick.AddListener(() => TaskOnClick(m_ObjectButton));
             m_ImageButton.onClick.AddListener(() => TaskOnClick(m_ImageButton));
             m_SnapToButton.onClick.AddListener(() => TaskOnClick(m_SnapToButton));
-
+            m_LabelButton.onClick.AddListener(() => TaskOnClick(m_LabelButton));
         }
 
         void TaskOnClick(Button b)
@@ -64,6 +64,9 @@ namespace RosSharp.RosBridgeClient
                     cb.normalColor = Color.white;
                     cb.highlightedColor = cb.normalColor;
                     b.colors = cb;
+                    break;
+                case "LabelsButton":
+                    v.ToggleLabels();
                     break;
             }
         }
