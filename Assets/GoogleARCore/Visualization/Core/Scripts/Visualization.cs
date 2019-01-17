@@ -56,19 +56,6 @@ namespace RosSharp.RosBridgeClient
         public bool centroidView;
         public bool skeletonView;
         public bool objectView;
-        private bool changeMode;
-
-        /// <summary>
-        /// The anchor origin.
-        /// </summary>
-        //private Anchor anchorOrigin = null;
-
-        //private Vector3 positionCentreImage;
-        //private Quaternion rotationCentreImage;
-
-        //public String ipAddress;
-
-        int counterErrorDistance = 0;
 
         const float DISTANCE_ANGLE = 4.0f;
         const float DISTANCE_METER = 0.05f;
@@ -85,64 +72,6 @@ namespace RosSharp.RosBridgeClient
             PrintDebugMessage("D: -------- New execution --------");
             centroidView = false;
         }
-
-        private void ConnectionToRos()
-        {
-            ////Destroy(rosPrivate);
-            //rosConnector.TearDown();
-            //PrintDebugMessage("ROS - E :  Server not running on: " + rosConnector.RosBridgeServerUrl);
-            //rosConnector.SetAddress("ws://" + ipAddress + ":9090");
-            //rosConnector.Awake();
-            ////rosPrivate = Instantiate(ros);
-        }
-
-        //public Texture skeletonTexture;
-        //public Texture centroidTexture;
-
-
-        //public void OnGUI()
-        //{
-        //    //if (!skeletonTexture || !centroidTexture)
-        //    //{
-        //    //    PrintDebugMessage("E: Texture not assigned in the ispector");
-        //    //    return;
-        //    //}
-
-        //    //if (anchorOrigin == null)
-        //    //return;
-
-
-        //    if (GUI.Button(new Rect(0,0,100,100), "text")){
-        //        Debug.Log("click!");
-        //    }
-
-        //    if (centroidView)
-        //    {
-        //        //if (GUI.Button(new Rect(8, Screen.height-200, 110, 200), skeletonTexture))
-        //        //{
-        //        //    centroidView = false;
-        //        //    changeMode = true;
-
-        //        //    PrintDebugMessage("I: SWAP -> Skeleton mode");
-        //        //    return;
-
-        //        //}
-        //    }
-        //    else
-        //    {
-        //        //if (GUI.Button(new Rect(8, Screen.height-110, 200, 110), centroidTexture))
-        //        //{
-        //        //    centroidView = true;
-        //        //    changeMode = true;
-
-        //        //    PrintDebugMessage("I: SWAP -> Centroid mode");
-        //        //    return;
-
-        //        //}
-        //    }
-
-        //}
-
         /// <summary>
         /// The Unity Update method.
         /// </summary>
@@ -156,56 +85,18 @@ namespace RosSharp.RosBridgeClient
             }
 
             // To Open Control Panel
-
             if (Input.GetKeyDown(KeyCode.Tab))
             {
                 GUI.SetActive(!GUI.activeSelf);
             }
 
-            //if (Session.Status != SessionStatus.Tracking && counterErrorDistance < 5)
-            //{
-            //    counterErrorDistance++;
-            //    PrintDebugMessage("W: Counter lost tracking #" + counterErrorDistance);
-            //    return;
-            //}
 
             if (!rosConnector.ConnectionStatus())
             {
                 ServerConnection.SetActive(true);
-                //ConnectionToRos();
                 return;
             }
 
-            //Search anchor
-            //if (anchorOrigin == null)
-            //{
-            //    ServerConnection.SetActive(false);
-            //    FitToScanOverlay.SetActive(true);
-
-            //    SearchAnchorOrigin();
-
-            //    return;
-            //}
-
-            //control if the tracking is lost for at least 5 times
-            if (counterErrorDistance > 4)
-            {
-                //LostPosition("Tracking problem", true);
-                counterErrorDistance = 0;
-                return;
-            }
-            counterErrorDistance = 0;
-
-            if (changeMode)
-            {
-                //LostPosition("Change mode", false);
-                changeMode = false;
-                return;
-            }
-
-            //Send the pose to ROS
-            //PoseSender();
-            //if (centroidView)
             if (centroidView)
             {
                 CreateCentroidFromRosData();
@@ -234,25 +125,6 @@ namespace RosSharp.RosBridgeClient
             PrintDebugMessage("I: Update complete correctly!");
 
         }
-
-
-        /// <summary>
-        /// Losts the position, reset all.
-        /// </summary>
-        //private void LostPosition(string message, bool action)
-        //{
-        //    PrintDebugMessage("E: Position Lost! " + message);
-
-        //    if(action)
-        //    {
-        //        Destroy(anchorOrigin);
-        //        Destroy(anchorOriginObject);
-        //        counterErrorDistance = 0;
-        //    }
-
-        //    RemoveAllCentroids();
-        //    RemoveAllSkeletons();
-        //}
 
         /// <summary>
         /// Removes all centroids.
@@ -294,7 +166,6 @@ namespace RosSharp.RosBridgeClient
                 List<int> keyList = new List<int>(activeSkeleton.Keys);
                 foreach (int key in keyList)
                 {
-                    //activeSkeleton[kvp.Key].SetActive(false);
                     if (activeSkeleton[key])
                     {
                         Destroy(activeSkeleton[key]);
@@ -347,41 +218,6 @@ namespace RosSharp.RosBridgeClient
         }
 
         /// <summary>
-        /// Searchs the anchor origin.
-        /// </summary>
-        //private void SearchAnchorOrigin()
-        //{
-        //    // Get updated augmented images for this frame.
-        //    Session.GetTrackables<AugmentedImage>(m_TempAugmentedImages, TrackableQueryFilter.Updated);
-
-        //    // Create visualizers and anchors for updated augmented images that are tracking and do not previously
-        //    // have a visualizer. Remove visualizers for stopped images.
-        //    foreach (var image in m_TempAugmentedImages)
-        //    {
-        //        if (image.TrackingState == TrackingState.Tracking)
-        //        {
-        //            // Create an anchor to ensure that ARCore keeps tracking this augmented image.
-        //            anchorOrigin = image.CreateAnchor(image.CenterPose);
-
-        //            positionCentreImage = image.CenterPose.position;
-        //            rotationCentreImage = image.CenterPose.rotation;
-
-        //            PrintDebugMessage("I: Position: P:" + image.CenterPose.position.ToString() + " , quat: " + image.CenterPose.rotation.ToString());
-
-        //            FitToScanOverlay.SetActive(false);
-
-        //            anchorOriginObject = Instantiate(anchorObject);
-        //            anchorOriginObject.transform.parent = anchorOrigin.transform;
-        //            anchorOriginObject.transform.localPosition = Vector3.zero;
-        //            anchorOriginObject.transform.localRotation = Quaternion.identity;
-
-        //            PrintDebugMessage("I: Anchor and Image created!");
-        //            //PrintDebugMessage("I: " + image.ExtentX + " H: " + image.ExtentZ);
-        //        }
-        //    }
-        //}
-
-        /// <summary>
         /// Swaps the coordinates from (xyz) to (xzy)
         /// </summary>
         /// <returns>Tuple with swaped coordinates.</returns>
@@ -403,18 +239,6 @@ namespace RosSharp.RosBridgeClient
             return Tuple.Create<Vector3, Quaternion>(pose_swap, quaternionInput);
         }
 
-        /// <summary>
-        /// Send the pose of the camera to ROS.
-        /// </summary>
-        //private void PoseSender()
-        //{
-        //    GameObject cameraObject = Instantiate(emptyGameObject, FirstPersonCamera.transform.position, FirstPersonCamera.transform.rotation);
-        //    cameraObject.transform.SetParent(anchorOrigin.transform);
-
-        //    posePub.SendMessage(SwapCoordinates(cameraObject.transform.localPosition, cameraObject.transform.localRotation), SystemInfo.deviceUniqueIdentifier);
-
-        //    Destroy(cameraObject);
-        //}
 
         /// <summary>
         /// Creates the particle system.
@@ -881,29 +705,6 @@ namespace RosSharp.RosBridgeClient
             }
 
             //remove any objects which are no longer present
-
-
-            //foreach (KeyValuePair<int, GameObject> kvp in objectCheck)
-            //{
-            //    if (!dataFromObjectSub.ContainsKey(kvp.Key))
-            //    {
-            //        if (particles[kvp.Key])
-            //        {
-            //            Destroy(particles[kvp.Key]);
-            //            particles.Remove(kvp.Key);
-            //        }
-            //        if (activeObjects[kvp.Key])
-            //        {
-            //            Destroy(activeObjects[kvp.Key]);
-            //            activeObjects.Remove(kvp.Key);
-            //        }
-            //        if (labels[kvp.Key]){
-            //            Destroy(labels[kvp.Key]);
-            //            labels.Remove(kvp.Key);
-            //        }
-            //    }
-            //}
-
             List<int> keyList = new List<int>(activeObjects.Keys);
             foreach (int key in keyList)
             {
