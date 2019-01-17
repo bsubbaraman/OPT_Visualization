@@ -56,11 +56,13 @@ namespace RosSharp.RosBridgeClient
             objectTrackData.Clear();
             foreach (Messages.OPT.Track track in trackArray.tracks)
             {
+                Vector3 v = new Vector3(track.x, track.y, track.height);
                 if (!objectTrackData.ContainsKey(track.id))
                 {
                     OPTObject o = new OPTObject
                     {
-                        pos = new Vector3(track.x, track.height, track.y),
+                        //pos = new Vector3(track.x, track.height, track.y),
+                        pos = RHtoLHTransform(v),
                         objectID = track.object_name,
                         age = track.age
 
@@ -70,7 +72,9 @@ namespace RosSharp.RosBridgeClient
                 }
                 else
                 {
-                    objectTrackData[track.id].pos = new Vector3(track.x, track.height, track.y);
+                    //objectTrackData[track.id].pos = new Vector3(track.x, track.height, track.y);
+                    objectTrackData[track.id].pos = RHtoLHTransform(v);
+
                 }
             }
 

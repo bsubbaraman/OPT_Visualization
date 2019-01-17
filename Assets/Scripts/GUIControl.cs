@@ -9,7 +9,7 @@ namespace RosSharp.RosBridgeClient
     {
         public Button m_CentroidButton, m_SkeletonButton, m_ObjectButton, m_ImageButton, m_SnapToButton;
         public Camera main;
-        public GameObject theConnector, theController, theImage;
+        public GameObject theConnector, theController, theImage, cameraRepresentation;
         public Visualization v;
         public TFSubscriber s;
 
@@ -56,9 +56,12 @@ namespace RosSharp.RosBridgeClient
                     theImage.SetActive(!theImage.activeSelf);
                     break;
                 case "SnapToCamView":
+                    //Quaternion orient = Quaternion.LookRotation(s.cameraRot.eulerAngles, Vector3.up);
                     main.transform.position = s.cameraPos;
-                    main.transform.rotation = s.cameraRot;
-
+                    //main.transform.rotation = s.cameraRot;
+                    main.transform.rotation = cameraRepresentation.transform.rotation;
+                    main.transform.Rotate(-90f,0f,0f, Space.Self);
+                    main.transform.Rotate(0f, 0f, 90f, Space.Self);
                     cb.normalColor = Color.white;
                     cb.highlightedColor = cb.normalColor;
                     b.colors = cb;

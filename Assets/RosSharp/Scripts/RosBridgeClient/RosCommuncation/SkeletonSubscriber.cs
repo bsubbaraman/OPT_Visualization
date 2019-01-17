@@ -58,7 +58,9 @@ namespace RosSharp.RosBridgeClient
                 {
                     if (float.IsInfinity(System.Math.Abs(track3D.x)))
                         infinityFound = true;
-                    jointDetected[jointPositionFree++] = new Vector3(track3D.x, track3D.z, track3D.y);
+                    //jointDetected[jointPositionFree++] = new Vector3(track3D.x, track3D.z, track3D.y);
+                    jointDetected[jointPositionFree++] = new Vector3(track3D.y, track3D.z, -track3D.x);
+
 
                     if (jointPositionFree > 1 && (Mathf.Approximately(Vector3.Distance(jointDetected[jointPositionFree - 2], jointDetected[jointPositionFree - 1]), 0.0f) || Vector3.Distance(jointDetected[jointPositionFree - 2], jointDetected[jointPositionFree - 1]) > 2.5f))
                         infinityFound = true;
@@ -66,13 +68,16 @@ namespace RosSharp.RosBridgeClient
 
                 if (!infinityFound)
                 {
+                    Vector3 v = new Vector3(track.x, track.y, track.height);
                     if (!centroidPose.ContainsKey(track.id))
                     {
-                        centroidPose.Add(track.id, new Vector3(track.x, track.height, track.y));
+                        centroidPose.Add(track.id, RHtoLHTransform(v));
+                        //centroidPose.Add(track.id, new Vector3(track.y, track.height, -track.x));
                     }
                     else
                     {
-                        centroidPose[track.id] = new Vector3(track.x, track.height, track.y);
+                        centroidPose[track.id] = RHtoLHTransform(v);
+                        //centroidPose.Add(track.id, new Vector3(track.y, track.height, -track.x));
                     }
 
                     if (!jointsData.ContainsKey(track.id))

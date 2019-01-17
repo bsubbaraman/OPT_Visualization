@@ -47,11 +47,14 @@ namespace RosSharp.RosBridgeClient
         {
             processedTrackData.Clear();
             foreach(Messages.OPT.Track track in trackArray.tracks){
+                Vector3 v = new Vector3(track.x, track.y, track.height);
                 if(!processedTrackData.ContainsKey(track.id)){
-                    processedTrackData.Add(track.id, new Vector3(track.x, track.height, track.y));
+                    //processedTrackData.Add(track.id, new Vector3(track.x, track.height, track.y));
+                    processedTrackData.Add(track.id, RHtoLHTransform(v));
                 }
                 else{
-                    processedTrackData[track.id] = new Vector3(track.x, track.height, track.y);
+                    //processedTrackData[track.id] = new Vector3(track.x, track.height, track.y);
+                    processedTrackData[track.id] = RHtoLHTransform(v);
                 }
 
             }

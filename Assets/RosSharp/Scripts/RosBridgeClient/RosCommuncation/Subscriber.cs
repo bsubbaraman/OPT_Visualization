@@ -34,5 +34,18 @@ namespace RosSharp.RosBridgeClient
         {
             Topic = topic;
         }
+
+
+        // ROS is right-handed, Unity is left-handed.  Each subscriber inherits this function to transform before visualization
+        public Vector3 RHtoLHTransform(Vector3 rh){
+        
+            Vector3 lh = new Vector3(rh.y, rh.z, -rh.x);
+            return lh;
+        }
+
+        public Quaternion RHtoLHTransform(Quaternion rh){
+            Quaternion lh = new Quaternion(-rh.y, -rh.z, rh.x, rh.w);
+            return lh;
+        }
     }
 }

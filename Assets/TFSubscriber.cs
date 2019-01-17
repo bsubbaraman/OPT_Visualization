@@ -26,6 +26,7 @@ namespace RosSharp.RosBridgeClient
         //refers to the actual kinect/zed/etc
         public Vector3 cameraPos;
         public Quaternion cameraRot;
+
         protected override void Start()
         {
             base.Start();
@@ -46,8 +47,12 @@ namespace RosSharp.RosBridgeClient
         private void ProcessMessage()
         {
             if(tf.transforms[0].child_frame_id == "/kinect01"){
-                cameraPos = new Vector3(tf.transforms[0].transform.translation.x, tf.transforms[0].transform.translation.z, tf.transforms[0].transform.translation.y);
-                cameraRot = new Quaternion(tf.transforms[0].transform.quaternion.x, tf.transforms[0].transform.quaternion.y, tf.transforms[0].transform.quaternion.z, tf.transforms[0].transform.quaternion.w);
+                Vector3 v = new Vector3(tf.transforms[0].transform.translation.x, tf.transforms[0].transform.translation.y, tf.transforms[0].transform.translation.z);
+                Quaternion q = new Quaternion(tf.transforms[0].transform.rotation.x, tf.transforms[0].transform.rotation.y, tf.transforms[0].transform.rotation.z, tf.transforms[0].transform.rotation.w);
+
+                cameraPos = RHtoLHTransform(v);
+                cameraRot = RHtoLHTransform(q);
+
                 cam.transform.position = cameraPos;
                 cam.transform.rotation = cameraRot;
             }
