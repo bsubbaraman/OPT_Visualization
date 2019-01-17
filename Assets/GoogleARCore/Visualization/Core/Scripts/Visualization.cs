@@ -41,6 +41,7 @@ namespace RosSharp.RosBridgeClient
         public GameObject objectPrefab;
         public GameObject LabelTemplate;
         public GameObject GUI;
+        public Camera main;
 
         public ParticleSystem partSystem;
 
@@ -229,6 +230,7 @@ namespace RosSharp.RosBridgeClient
             {
                 RemoveAllObjects();
             }
+            RotateLabels(labels);
             PrintDebugMessage("I: Update complete correctly!");
 
         }
@@ -503,7 +505,18 @@ namespace RosSharp.RosBridgeClient
             return label;
         }
 
-
+        /// <summary>
+        ///  Rotates labels so they always look at the main camera
+        /// </summary>
+        private void RotateLabels(Dictionary<int, GameObject> d){
+            foreach(KeyValuePair<int, GameObject> kvp in d){
+                TextMesh tm = kvp.Value.GetComponent<TextMesh>();
+                Vector3 v = main.transform.position - tm.transform.position;
+                v.x = v.z = 0.0f;
+                tm.transform.LookAt(main.transform.position - v);
+                tm.transform.Rotate(0, 180, 0);
+            }
+        }
         /// <summary>
         /// Creates the centroids from ros data.
         /// </summary>
@@ -539,19 +552,12 @@ namespace RosSharp.RosBridgeClient
                     particles.Add(track.Key, CreateParticleSystem(newCentroid, color));
                     activeTracks.Add(track.Key, newCentroid);
                     labels.Add(track.Key, CreateLabel(newCentroid, track.Key.ToString()));
-
-
-                    //add label
-
-
                     //PrintDebugMessage("I: Crete centroid -> Parent: " + activeTracks[id].transform.parent.name + " | Position: " + activeTracks[id].transform.localPosition.ToString() + " | Id: " + id);
                 }
                 else
                 {
-                    activeTracks[track.Key].transform.localPosition = track.Value;
-                    //PrintDebugMessage("I: Update centroid  -> Parent: " + activeTracks[id].transform.parent.name + " | Position: " + activeTracks[id].transform.localPosition.ToString() + " | Id: " + id);
+                    activeTracks[track.Key].transform.localPosition = track.Value;                    //PrintDebugMessage("I: Update centroid  -> Parent: " + activeTracks[id].transform.parent.name + " | Position: " + activeTracks[id].transform.localPosition.ToString() + " | Id: " + id);
                 }
-
             }
 
             //remove any people who are no longer present
