@@ -40,7 +40,7 @@ namespace RosSharp.RosBridgeClient
         public GameObject avatarPrefab;
         public GameObject objectPrefab;
         public GameObject LabelTemplate;
-        public GameObject GUI;
+        public GameObject GUIPanel;
         public Camera main;
 
         public ParticleSystem partSystem;
@@ -88,7 +88,7 @@ namespace RosSharp.RosBridgeClient
             // To Open Control Panel
             if (Input.GetKeyDown(KeyCode.Tab))
             {
-                GUI.SetActive(!GUI.activeSelf);
+                GUIPanel.SetActive(!GUIPanel.activeSelf);
             }
 
 

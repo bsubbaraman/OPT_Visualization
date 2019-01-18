@@ -14,7 +14,7 @@ public class LabelAlign : MonoBehaviour {
         Vector3 camR = camLabel.parent.rotation.eulerAngles;
         camLabel.localRotation = Quaternion.Euler(-camR);
 
-        camLabel.Translate(.1f * Vector3.up);
+        camLabel.Translate(.15f * Vector3.up);
 	}
 	
 	// Update is called once per frame

@@ -297,16 +297,16 @@ RectTransform:
   - {fileID: 1933214192}
   - {fileID: 2116588885}
   - {fileID: 1452459135}
-  - {fileID: 1106671789}
   - {fileID: 526618088}
+  - {fileID: 1444525549}
   m_Father: {fileID: 941436036}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -442.5, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 10, y: -10}
   m_SizeDelta: {x: 119, y: 748}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &187979364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -423,7 +423,7 @@ RectTransform:
   m_Children:
   - {fileID: 2023772836}
   m_Father: {fileID: 187979363}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -894,7 +894,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 187979363}
-  - {fileID: 1444525549}
+  - {fileID: 1106671789}
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -925,7 +925,9 @@ MonoBehaviour:
   theController: {fileID: 1055780064}
   theImage: {fileID: 1106671785}
   cameraRepresentation: {fileID: 115028804}
+  Panel: {fileID: 187979362}
   v: {fileID: 1055780065}
+  iS: {fileID: 0}
   s: {fileID: 1533692834}
 --- !u!1 &1055780064
 GameObject:
@@ -967,13 +969,14 @@ MonoBehaviour:
     type: 2}
   LabelTemplate: {fileID: 1723776156424130, guid: 19f78bf1d371b43b7919ea7facde101e,
     type: 2}
-  GUI: {fileID: 941436032}
+  GUIPanel: {fileID: 187979362}
   main: {fileID: 534669904}
   partSystem: {fileID: 198775328465513110, guid: 50c7238da49dc4036b401cbcfd1f7e6b,
     type: 2}
   centroidView: 1
   skeletonView: 0
   objectView: 0
+  labelView: 0
   rosConnector: {fileID: 1533692828}
   centroidSub: {fileID: 1533692830}
   skeletonSub: {fileID: 1533692827}
@@ -1137,17 +1140,17 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1106671785}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 187979363}
-  m_RootOrder: 5
+  m_Father: {fileID: 941436036}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1, y: -311.7}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -20, y: 20}
+  m_SizeDelta: {x: 150, y: 150}
+  m_Pivot: {x: 1, y: 0}
 --- !u!1 &1329321086
 GameObject:
   m_ObjectHideFlags: 0
@@ -1323,18 +1326,18 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1444525548}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 941436036}
-  m_RootOrder: 1
+  m_Father: {fileID: 187979363}
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -409, y: 352}
-  m_SizeDelta: {x: 160, y: 30}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 15, y: -5}
+  m_SizeDelta: {x: 100, y: 30}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &1444525550
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1651,6 +1654,8 @@ MonoBehaviour:
   Topic: /kinect01/qhd/image_color/compressed
   TimeStep: 0
   meshRenderer: {fileID: 1106671786}
+  pulse: 1
+  timer: 0
 --- !u!114 &1533692833
 MonoBehaviour:
   m_ObjectHideFlags: 0

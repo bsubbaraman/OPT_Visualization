@@ -25,6 +25,8 @@ namespace RosSharp.RosBridgeClient
         private byte[] imageData;
         private bool isMessageReceived;
 
+        public bool pulse;
+        public float timer;
         protected override void Start()
         {
 			base.Start();
@@ -33,14 +35,23 @@ namespace RosSharp.RosBridgeClient
         }
         private void Update()
         {
+            timer += Time.deltaTime;
+            if (timer > 10f){
+                pulse = true;
+                timer = 0f;
+            }
             if (isMessageReceived)
                 ProcessMessage();
         }
 
         protected override void ReceiveMessage(Messages.Sensor.CompressedImage message)
         {
-            imageData = message.data;
-            isMessageReceived = true;
+            if (pulse)
+            {
+                imageData = message.data;
+                isMessageReceived = true;
+                pulse = false;
+            }
         }
 
         private void ProcessMessage()
@@ -48,7 +59,7 @@ namespace RosSharp.RosBridgeClient
             texture2D.LoadImage(imageData);
             texture2D.Apply();
             meshRenderer.gameObject.GetComponent<Image>().material.SetTexture("_MainTex", texture2D);
-
+            Debug.Log("applied");
 
             //meshRenderer.material.SetTexture("_MainTex", texture2D);
             isMessageReceived = false;
