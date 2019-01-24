@@ -1151,6 +1151,52 @@ RectTransform:
   m_AnchoredPosition: {x: -20, y: 20}
   m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 1, y: 0}
+--- !u!1001 &1260962832
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4242751236670412, guid: 657df50c93218466792f90c48eabcf88, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4242751236670412, guid: 657df50c93218466792f90c48eabcf88, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4242751236670412, guid: 657df50c93218466792f90c48eabcf88, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4242751236670412, guid: 657df50c93218466792f90c48eabcf88, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4242751236670412, guid: 657df50c93218466792f90c48eabcf88, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4242751236670412, guid: 657df50c93218466792f90c48eabcf88, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4242751236670412, guid: 657df50c93218466792f90c48eabcf88, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4242751236670412, guid: 657df50c93218466792f90c48eabcf88, type: 2}
+      propertyPath: m_RootOrder
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4242751236670412, guid: 657df50c93218466792f90c48eabcf88, type: 2}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 180
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 657df50c93218466792f90c48eabcf88, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1 &1329321086
 GameObject:
   m_ObjectHideFlags: 0
@@ -1567,6 +1613,7 @@ GameObject:
   - component: {fileID: 1533692832}
   - component: {fileID: 1533692833}
   - component: {fileID: 1533692834}
+  - component: {fileID: 1533692835}
   m_Layer: 0
   m_Name: RosConnector
   m_TagString: Untagged
@@ -1685,6 +1732,19 @@ MonoBehaviour:
   cam: {fileID: 115028804}
   cameraPos: {x: 0, y: 0, z: 0}
   cameraRot: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1533692835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1533692826}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59cb50544e4b642d9adba650496f0bc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Topic: 
+  TimeStep: 0
 --- !u!1 &1603255598
 GameObject:
   m_ObjectHideFlags: 0
