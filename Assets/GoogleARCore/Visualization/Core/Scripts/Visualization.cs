@@ -66,6 +66,7 @@ namespace RosSharp.RosBridgeClient
         public RosSharp.RosBridgeClient.SkeletonSubscriber skeletonSub;
         public RosSharp.RosBridgeClient.ObjectsSubscriber objectSub;
         public RosSharp.RosBridgeClient.PoseStampedPublisher posePub;
+        public RosSharp.RosBridgeClient.UDPSubscriber_Pose recognizedPoseSub;
 
 
         private void Start()
@@ -736,6 +737,21 @@ namespace RosSharp.RosBridgeClient
                         labels.Remove(key);
                     }
                 }
+            }
+        }
+
+        private void RecognizePoseGlow()
+        {
+            Dictionary<int, RecognizedPose> dataFromPoseRecognitionSub = recognizedPoseSub.recognizedPoseData;
+          
+            PrintDebugMessage("I: Received data from objectSub length: " + dataFromPoseRecognitionSub.Count);
+
+            foreach (KeyValuePair<int, RecognizedPose> track in dataFromPoseRecognitionSub)
+            {
+                int id = track.Key;
+                GameObject person = activeSkeleton[id];
+                //person.GetCo
+
             }
         }
 

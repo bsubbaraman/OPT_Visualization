@@ -686,7 +686,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f87e4989c5e703e428df4339d59e2c72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  showMainBehavior: 1
+  showMainBehavior: 0
   showInnerGlowBehavior: 0
   rtFormat: 0
   blurShader: {fileID: 4800000, guid: 1855d9636fad3914bacc4a543165c974, type: 3}
@@ -968,6 +968,7 @@ GameObject:
   - component: {fileID: 1055780065}
   - component: {fileID: 1055780067}
   - component: {fileID: 1055780068}
+  - component: {fileID: 1055780069}
   m_Layer: 0
   m_Name: Controller
   m_TagString: Untagged
@@ -1010,6 +1011,7 @@ MonoBehaviour:
   skeletonSub: {fileID: 1533692827}
   objectSub: {fileID: 1533692831}
   posePub: {fileID: 0}
+  recognizedPoseSub: {fileID: 1130118784}
 --- !u!4 &1055780066
 Transform:
   m_ObjectHideFlags: 0
@@ -1074,6 +1076,18 @@ MonoBehaviour:
   ParentGrid: {fileID: 654027742}
   width: 50
   height: 50
+--- !u!114 &1055780069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1055780064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25363d9eb2390491e92899df764354eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mk: {fileID: 0}
 --- !u!1 &1106671785
 GameObject:
   m_ObjectHideFlags: 0
@@ -1179,6 +1193,62 @@ RectTransform:
   m_AnchoredPosition: {x: -20, y: 20}
   m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 1, y: 0}
+--- !u!1 &1130118783
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1130118786}
+  - component: {fileID: 1130118785}
+  - component: {fileID: 1130118784}
+  m_Layer: 0
+  m_Name: UDPConnector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1130118784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1130118783}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6c6d953efe8f4dbe88bcbaf261b713f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  receiver: {fileID: 1130118785}
+--- !u!114 &1130118785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1130118783}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e447fe3766f40d099cf02521850fbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  port: 0
+  lastReceivedUDPPacket: 
+  allReceivedUDPPackets: 
+--- !u!4 &1130118786
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1130118783}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.18946564, y: 1.058123, z: 1.1235034}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1329321086
 GameObject:
   m_ObjectHideFlags: 0
