@@ -46,19 +46,26 @@ namespace RosSharp.RosBridgeClient
             {
                 var data = receiver.getLatestUDPPacket();
                 var N = JSON.Parse(data);
-                if (N["pose_tracks"] != null){
+                if (N["pose_tracks"] != null)
+                {
                     recognizedPoseData.Clear();
-                    for (int count = 0; count < N["pose_tracks"].Count; count++){
+                    for (int count = 0; count < N["pose_tracks"].Count; count++)
+                    {
                         RecognizedPose rP = new RecognizedPose();
                         rP.id = N["pose_tracks"][count]["id"];
                         rP.pose_name = N["pose_tracks"][count]["predicted_pose_name"];
                         rP.score = N["pose_tracks"][count]["predicted_score"];
-                        recognizedPoseData.Add(rP.id, rP);
-                    } 
+                        if (rP.pose_name != "unknown")
+                        {
+                            recognizedPoseData.Add(rP.id, rP); ;
+                        }
+
+
+                    }
+                    newData = false;
+
+
                 }
-                newData = false;
-
-
             }
         }
     }

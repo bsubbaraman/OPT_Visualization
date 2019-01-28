@@ -968,7 +968,6 @@ GameObject:
   - component: {fileID: 1055780065}
   - component: {fileID: 1055780067}
   - component: {fileID: 1055780068}
-  - component: {fileID: 1055780069}
   m_Layer: 0
   m_Name: Controller
   m_TagString: Untagged
@@ -1076,18 +1075,6 @@ MonoBehaviour:
   ParentGrid: {fileID: 654027742}
   width: 50
   height: 50
---- !u!114 &1055780069
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1055780064}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25363d9eb2390491e92899df764354eb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mk: {fileID: 0}
 --- !u!1 &1106671785
 GameObject:
   m_ObjectHideFlags: 0
@@ -1745,7 +1732,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1533692826}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ef6e2677fa36b0c46a9f6d8bd354c686, type: 3}
   m_Name: 

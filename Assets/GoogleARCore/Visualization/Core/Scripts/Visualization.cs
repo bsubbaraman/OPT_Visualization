@@ -124,6 +124,7 @@ namespace RosSharp.RosBridgeClient
                 RemoveAllObjects();
             }
             RotateLabels(labels);
+            RecognizePoseGlow();
             PrintDebugMessage("I: Update complete correctly!");
 
         }
@@ -746,12 +747,17 @@ namespace RosSharp.RosBridgeClient
           
             PrintDebugMessage("I: Received data from objectSub length: " + dataFromPoseRecognitionSub.Count);
 
-            foreach (KeyValuePair<int, RecognizedPose> track in dataFromPoseRecognitionSub)
+            foreach (KeyValuePair<int, GameObject> track in activeSkeleton)
             {
                 int id = track.Key;
-                GameObject person = activeSkeleton[id];
-                //person.GetCo
-
+                GameObject r2 = track.Value.transform.GetChild(0).gameObject;
+                Material m = r2.GetComponent<Renderer>().material;
+                if (dataFromPoseRecognitionSub.ContainsKey(id)){
+                    m.SetFloat("_MKGlowPower", 0.5f);
+                }
+                else {
+                    m.SetFloat("_MKGlowPower", 0.0f);
+                }
             }
         }
 
