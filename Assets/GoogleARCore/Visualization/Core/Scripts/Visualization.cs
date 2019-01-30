@@ -504,19 +504,17 @@ namespace RosSharp.RosBridgeClient
             Vector3 neck_vec = poseInput[1];
             Vector3 head_vec = poseInput[0];
 
-            // for interp
+            // for interpolation
             float lerp_period = 0.15f; // this value is found empirically from the ros publishing frequency. currently f_max ~ 7 hz
             bool interpFlag = previousSkeletonData.ContainsKey(key);
             //float lerp = 0f;
-            Vector3[] p_poseInput = new Vector3[1];
+            Vector3[] p_poseInput = new Vector3[0];
             if (interpFlag){
                 p_poseInput = previousSkeletonData[key];
-                //lerp = Time.time - skeletonSub.ros_rcv_time;
             }
             else{
                 previousSkeletonData.Add(key, new Vector3[15]);
             }
-            // for interp
 
             // *** interpolate test
             //Transform head = animator.GetBoneTransform(HumanBodyBones.Head);
@@ -539,22 +537,50 @@ namespace RosSharp.RosBridgeClient
             Quaternion quaternionValue;
             //Debug.Log("CHEST VEC __________" + chest_vec);
             //Debug.Log("CHEST __________" + chest.position);
-            //** SKIPPING CHEST INTERPOLATION FOR NOW
-            if (Vector3.Distance(chest_vec, chest.position) > DISTANCE_METER)
-            {
-                chest.position = chest_vec; //move avatar to correct location
+            // ** chest interp
+            if (interpFlag){
+                Vector3 p_chest_vec = p_poseInput[14];
+                float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
+                Vector3 lerped_chest_vec = Vector3.Lerp(p_chest_vec, chest_vec, lerp);
+                chest_vec = lerped_chest_vec;
+                if (lerp > 1f){
+                    previousSkeletonData[key][14] = chest_vec;
+                }
             }
+            chest.position = chest_vec;
 
             Vector3 shoulder_shoulder_vec = l_shoulder_vec - r_shoulder_vec;
-            quaternionValue = Quaternion.LookRotation(shoulder_shoulder_vec);
-            quaternionValue *= Quaternion.Euler(0.0f, 0.0f, -90.0f);
-
-            PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, chest.rotation.eulerAngles) % 360);
-
-            if (Vector3.Distance(quaternionValue.eulerAngles, chest.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
-            {
-                chest.rotation = quaternionValue;
+            if (interpFlag){
+                Vector3 p_l_shoulder_vec = p_poseInput[5];
+                Vector3 p_r_shoulder_vec = p_poseInput[2];
+                Vector3 p_shoulder_shoulder_vec = p_l_shoulder_vec - p_r_shoulder_vec;
+                float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
+                Vector3 lerped_shoulder_shoulder_vec = Vector3.Lerp(p_shoulder_shoulder_vec, shoulder_shoulder_vec, lerp);
+                quaternionValue = Quaternion.LookRotation(lerped_shoulder_shoulder_vec);
             }
+            else{
+                quaternionValue = Quaternion.LookRotation(shoulder_shoulder_vec);
+            }
+            quaternionValue *= Quaternion.Euler(0.0f, 0.0f, -90.0f);
+            chest.rotation = quaternionValue;
+            // ** end chest interp
+            // ** original chest
+            //if (Vector3.Distance(chest_vec, chest.position) > DISTANCE_METER)
+            //{
+            //    chest.position = chest_vec; //move avatar to correct location
+            //}
+
+            //Vector3 shoulder_shoulder_vec = l_shoulder_vec - r_shoulder_vec;
+            //quaternionValue = Quaternion.LookRotation(shoulder_shoulder_vec);
+            //quaternionValue *= Quaternion.Euler(0.0f, 0.0f, -90.0f);
+
+            //PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, chest.rotation.eulerAngles) % 360);
+
+            //if (Vector3.Distance(quaternionValue.eulerAngles, chest.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
+            //{
+            //    chest.rotation = quaternionValue;
+            //}
+            // ** end original chest
 
             // ** test interpolation: r shoulder
             Vector3 r_shoulder_elbow = r_elbow_vec - r_shoulder_vec;
