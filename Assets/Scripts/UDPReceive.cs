@@ -96,7 +96,6 @@ namespace RosSharp.RosBridgeClient
                 client = new UdpClient(port);
                 while (true)
                 {
-                    Debug.Log("trying");
                     try
                     {
                         // Bytes empfangen.

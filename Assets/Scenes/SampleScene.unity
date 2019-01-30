@@ -427,9 +427,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 60, y: -195}
+  m_AnchoredPosition: {x: 10, y: -180}
   m_SizeDelta: {x: 100, y: 30}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &526618089
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1011,6 +1011,7 @@ MonoBehaviour:
   objectSub: {fileID: 1533692831}
   posePub: {fileID: 0}
   recognizedPoseSub: {fileID: 1130118784}
+  lerpBool: 1
 --- !u!4 &1055780066
 Transform:
   m_ObjectHideFlags: 0
@@ -1446,7 +1447,7 @@ MonoBehaviour:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 14
     m_FontStyle: 1
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 10
     m_MaxSize: 40
     m_Alignment: 0
@@ -1572,9 +1573,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 60, y: -165}
+  m_AnchoredPosition: {x: 10, y: -150}
   m_SizeDelta: {x: 100, y: 30}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 1}
 --- !u!1 &1460674886
 GameObject:
   m_ObjectHideFlags: 0
@@ -1673,6 +1674,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Topic: /tracker/skeleton_tracks
   TimeStep: 0
+  ros_rcv_time: 0
+  viz: {fileID: 1055780065}
 --- !u!114 &1533692828
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1893,9 +1896,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 60, y: -75}
+  m_AnchoredPosition: {x: 10, y: -60}
   m_SizeDelta: {x: 100, y: 30}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &1895261641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2005,9 +2008,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 60, y: -105}
+  m_AnchoredPosition: {x: 10, y: -90}
   m_SizeDelta: {x: 100, y: 30}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &1933214193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2323,9 +2326,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 60, y: -135}
+  m_AnchoredPosition: {x: 10, y: -120}
   m_SizeDelta: {x: 100, y: 30}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &2116588886
 MonoBehaviour:
   m_ObjectHideFlags: 0

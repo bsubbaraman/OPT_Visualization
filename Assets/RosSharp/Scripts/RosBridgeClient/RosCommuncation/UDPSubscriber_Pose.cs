@@ -51,13 +51,17 @@ namespace RosSharp.RosBridgeClient
                     recognizedPoseData.Clear();
                     for (int count = 0; count < N["pose_tracks"].Count; count++)
                     {
-                        RecognizedPose rP = new RecognizedPose();
-                        rP.id = N["pose_tracks"][count]["id"];
-                        rP.pose_name = N["pose_tracks"][count]["predicted_pose_name"];
-                        rP.score = N["pose_tracks"][count]["predicted_score"];
+                        RecognizedPose rP = new RecognizedPose
+                        {
+                            id = N["pose_tracks"][count]["id"],
+                            pose_name = N["pose_tracks"][count]["predicted_pose_name"],
+                            score = N["pose_tracks"][count]["predicted_score"]
+                        };
                         if (rP.pose_name != "unknown")
                         {
                             recognizedPoseData.Add(rP.id, rP); ;
+                            Debug.Log(rP.pose_name);
+                            Debug.Log(rP.score);
                         }
 
 

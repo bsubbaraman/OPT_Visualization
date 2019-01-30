@@ -68,11 +68,14 @@ namespace RosSharp.RosBridgeClient
         public RosSharp.RosBridgeClient.PoseStampedPublisher posePub;
         public RosSharp.RosBridgeClient.UDPSubscriber_Pose recognizedPoseSub;
 
-
+        // ** interpolation
+        public bool lerpBool = true;
+        public Dictionary<int, Vector3[]> previousSkeletonData = new Dictionary<int, Vector3[]>();
         private void Start()
         {
             PrintDebugMessage("D: -------- New execution --------");
             centroidView = false;
+
         }
         /// <summary>
         /// The Unity Update method.
@@ -428,6 +431,8 @@ namespace RosSharp.RosBridgeClient
         {
 
             Dictionary<int, Vector3[]> dataFromSkeletonSubSkeleton = skeletonSub.jointsData;
+            // *** interpolate test
+            //Dictionary<int, Vector3[]> previousDataFromSkeletonSub = skeletonSub.previousJointsData;
             //PrintDebugMessage("I: Received data from SkeletonSub length: " + dataFromSkeletonSubSkeleton.Count);
 
             foreach (KeyValuePair<int, Vector3[]> track in dataFromSkeletonSubSkeleton)
@@ -441,7 +446,10 @@ namespace RosSharp.RosBridgeClient
 
                 }
 
-                SetJointsValue(activeSkeleton[track.Key], dataFromSkeletonSubSkeleton[track.Key]);
+                //SetJointsValue(activeSkeleton[track.Key], dataFromSkeletonSubSkeleton[track.Key]);
+                //*** interpolate test
+                SetJointsValue(activeSkeleton[track.Key], dataFromSkeletonSubSkeleton[track.Key], track.Key);
+                //SetJointsValue(activeSkeleton[track.Key], dataFromSkeletonSubSkeleton[track.Key], previousDataFromSkeletonSub[track.Key]);
             }
 
             //remove any people who are no longer present
@@ -469,7 +477,9 @@ namespace RosSharp.RosBridgeClient
         /// </summary>
         /// <param name="theAvatar">The avatar.</param>
         /// <param name="poseInput">Pose input.</param>
-        void SetJointsValue(GameObject theAvatar, Vector3[] poseInput)
+        //void SetJointsValue(GameObject theAvatar, Vector3[] poseInput)
+        void SetJointsValue(GameObject theAvatar, Vector3[] poseInput, int key)
+        //void SetJointsValue(GameObject theAvatar, Vector3[] poseInput,Vector3[] previousPoseInput)
         {
             PrintDebugMessage("I: Processing: " + theAvatar.name);
 
@@ -493,6 +503,11 @@ namespace RosSharp.RosBridgeClient
             Vector3 neck_vec = poseInput[1];
             Vector3 head_vec = poseInput[0];
 
+            // *** interpolate test
+            //Vector3 prev_r_shoulder_vec = previousPoseInput[2];
+            //Vector3 prev_r_elbow_vec = previousPoseInput[3];
+
+
             //Transform head = animator.GetBoneTransform(HumanBodyBones.Head);
             //Transform neck = animator.GetBoneTransform(HumanBodyBones.Neck);
             Transform right_shoulder = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
@@ -509,10 +524,49 @@ namespace RosSharp.RosBridgeClient
             Transform left_foot = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
             Transform hip = animator.GetBoneTransform(HumanBodyBones.Hips);
             Transform chest = animator.GetBoneTransform(HumanBodyBones.Spine);
-
+            // trying stick figure:
+            GameObject myLine1 = new GameObject();
+            GameObject myLine2 = new GameObject();
+            GameObject myLine3 = new GameObject();
+            myLine1.AddComponent<LineRenderer>();
+            myLine2.AddComponent<LineRenderer>();
+            myLine3.AddComponent<LineRenderer>();
+            LineRenderer lr1 = myLine1.GetComponent<LineRenderer>();
+            LineRenderer lr2 = myLine2.GetComponent<LineRenderer>();
+            LineRenderer lr3 = myLine3.GetComponent<LineRenderer>();
+            lr1.material = new Material(Shader.Find("Particles/Alpha Blended Premultiply"));
+            lr2.material = new Material(Shader.Find("Particles/Alpha Blended Premultiply"));
+            lr3.material = new Material(Shader.Find("Particles/Alpha Blended Premultiply"));
+            lr1.positionCount = 6;
+            lr2.positionCount = 7;
+            lr3.positionCount = 4;
+            lr1.startWidth = 0.1f;
+            lr1.endWidth = 0.1f;
+            lr2.startWidth = 0.1f;
+            lr2.endWidth = 0.1f;
+            lr3.startWidth = 0.1f;
+            lr3.endWidth = 0.1f;
+            lr1.SetPosition(0, head_vec);
+            lr1.SetPosition(1, neck_vec);
+            lr1.SetPosition(2, chest_vec);
+            lr1.SetPosition(3, l_hip_vec);
+            lr1.SetPosition(4, l_knee_vec);
+            lr1.SetPosition(5, l_ankle_vec);
+            lr2.SetPosition(0, l_wrist_vec);
+            lr2.SetPosition(1, l_elbow_vec);
+            lr3.SetPosition(2, l_shoulder_vec);
+            lr2.SetPosition(3, neck_vec);
+            lr2.SetPosition(4, r_shoulder_vec);
+            lr2.SetPosition(5, r_elbow_vec);
+            lr2.SetPosition(6, r_wrist_vec);
+            lr3.SetPosition(0, chest_vec);
+            lr3.SetPosition(1, r_hip_vec);
+            lr3.SetPosition(2, r_knee_vec);
+            lr3.SetPosition(3, r_ankle_vec);
+            // end
             Quaternion quaternionValue;
-            Debug.Log("CHEST VEC __________" + chest_vec);
-            Debug.Log("CHEST __________" + chest.position);
+            //Debug.Log("CHEST VEC __________" + chest_vec);
+            //Debug.Log("CHEST __________" + chest.position);
             if (Vector3.Distance(chest_vec, chest.position) > DISTANCE_METER)
             {
                 chest.position = chest_vec; //move avatar to correct location
@@ -529,24 +583,86 @@ namespace RosSharp.RosBridgeClient
                 chest.rotation = quaternionValue;
             }
 
+            // ** test interpolation: r shoulder
             Vector3 r_shoulder_elbow = r_elbow_vec - r_shoulder_vec;
-            quaternionValue = XLookRotation(r_shoulder_elbow);
+            if (previousSkeletonData.ContainsKey(key)){
+                Vector3 p_r_elbow_vec = previousSkeletonData[key][3];
+                Vector3 p_r_shoulder_vec = previousSkeletonData[key][2];
+                Vector3 p_r_shoulder_elbow = p_r_elbow_vec - p_r_shoulder_vec;
+                Quaternion from = XLookRotation(p_r_shoulder_elbow);
+                Quaternion to = XLookRotation(r_shoulder_elbow);
+                float lerp = Time.time - skeletonSub.ros_rcv_time;
+                quaternionValue = Quaternion.Lerp(from, to, lerp/0.15f);
+                Debug.Log(from + " " + to + " " + lerp/0.15f);
+            }
+            else{
+                quaternionValue = XLookRotation(r_shoulder_elbow);
+                previousSkeletonData.Add(key, new Vector3[15]);
+            }
             quaternionValue *= Quaternion.Euler(180.0f, 0.0f, 0.0f);
-            PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, right_shoulder.rotation.eulerAngles) % 360);
-            if (Vector3.Distance(quaternionValue.eulerAngles, right_shoulder.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
-            {
-                right_shoulder.rotation = quaternionValue;
-            }
+            right_shoulder.rotation = quaternionValue;
+            previousSkeletonData[key][2] = r_shoulder_vec;
+            previousSkeletonData[key][3] = r_elbow_vec;
 
-            // place elbow correctly
+            // ** test interpolation: r elbow
             Vector3 r_elbow_wrist = r_wrist_vec - r_elbow_vec;
-            quaternionValue = XLookRotation(r_elbow_wrist);
-            PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, right_elbow.rotation.eulerAngles) % 360);
-            if (Vector3.Distance(quaternionValue.eulerAngles, right_elbow.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
+            if (previousSkeletonData.ContainsKey(key))
             {
-                right_elbow.rotation = quaternionValue;
+                Vector3 p_r_elbow_vec = previousSkeletonData[key][3];
+                Vector3 p_r_wrist_vec = previousSkeletonData[key][4];
+                Vector3 p_r_elbow_wrist = p_r_wrist_vec - p_r_elbow_vec;
+                Quaternion from = XLookRotation(p_r_elbow_wrist);
+                Quaternion to = XLookRotation(r_elbow_wrist);
+                float lerp = Time.time - skeletonSub.ros_rcv_time;
+                quaternionValue = Quaternion.Lerp(from, to, lerp / 0.15f);
+                Debug.Log(from + " " + to + " " + lerp / 0.15f);
             }
+            else
+            {
+                quaternionValue = XLookRotation(r_shoulder_elbow);
+                previousSkeletonData.Add(key, new Vector3[15]);
+            }
+            quaternionValue *= Quaternion.Euler(180.0f, 0.0f, 0.0f);
+            right_elbow.rotation = quaternionValue;
+            previousSkeletonData[key][4] = r_wrist_vec;
+            //quaternionValue = XLookRotation(r_elbow_wrist);
+            //PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, right_elbow.rotation.eulerAngles) % 360);
+            //if (Vector3.Distance(quaternionValue.eulerAngles, right_elbow.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
+            //{
+            //    right_elbow.rotation = quaternionValue;
+            //}
 
+            //quaternionValue = XLookRotation(r_shoulder_elbow);
+
+            //PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, right_shoulder.rotation.eulerAngles) % 360);
+            //if (Vector3.Distance(quaternionValue.eulerAngles, right_shoulder.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
+            //{
+            //    right_shoulder.rotation = quaternionValue;
+            //    Debug.Log("rotated");
+            //}
+            // ** end test
+
+            // ** original r shoulder
+            //Vector3 r_shoulder_elbow = r_elbow_vec - r_shoulder_vec;
+            //quaternionValue = XLookRotation(r_shoulder_elbow);
+            //quaternionValue *= Quaternion.Euler(180.0f, 0.0f, 0.0f);
+            //PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, right_shoulder.rotation.eulerAngles) % 360);
+            //if (Vector3.Distance(quaternionValue.eulerAngles, right_shoulder.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
+            //{
+            //    right_shoulder.rotation = quaternionValue;
+            //}
+            // ** end original 
+
+            // **original r elbow
+            // place elbow correctly
+            //Vector3 r_elbow_wrist = r_wrist_vec - r_elbow_vec;
+            //quaternionValue = XLookRotation(r_elbow_wrist);
+            //PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, right_elbow.rotation.eulerAngles) % 360);
+            //if (Vector3.Distance(quaternionValue.eulerAngles, right_elbow.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
+            //{
+            //    right_elbow.rotation = quaternionValue;
+            //}
+            // ** end original
 
             //Left upper body:
             Vector3 l_shoulder_elbow = l_shoulder_vec - l_elbow_vec;

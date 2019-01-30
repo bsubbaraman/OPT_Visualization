@@ -26,8 +26,29 @@ namespace RosSharp.RosBridgeClient
             m_SnapToButton.onClick.AddListener(() => TaskOnClick(m_SnapToButton));
             m_LabelButton.onClick.AddListener(() => TaskOnClick(m_LabelButton));
 
+            // change panel components based on window size
+
             RectTransform rT = Panel.GetComponent<RectTransform>();
-            rT.sizeDelta = new Vector2(rT.sizeDelta.x, Screen.height - 20f);
+            //rT.sizeDelta = new Vector2(rT.sizeDelta.x, Screen.height - 20f);
+            rT.sizeDelta = new Vector2(Screen.width/8f, Screen.height-20f);
+            rT = m_CentroidButton.GetComponent<RectTransform>();
+            rT.localPosition = new Vector2(rT.localPosition.x, -30f);
+            rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height/20f);
+            rT = m_SkeletonButton.GetComponent<RectTransform>();
+            rT.localPosition = new Vector2(rT.localPosition.x, -30f - (Screen.height / 20f));
+            rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 20f);
+            rT = m_ObjectButton.GetComponent<RectTransform>();
+            rT.localPosition = new Vector2(rT.localPosition.x, -30f - 2*(Screen.height / 20f));
+            rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 20f);
+            rT = m_ImageButton.GetComponent<RectTransform>();
+            rT.localPosition = new Vector2(rT.localPosition.x, -30f - 3*(Screen.height / 20f));
+            rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 20f);
+            rT = m_SnapToButton.GetComponent<RectTransform>();
+            rT.localPosition = new Vector2(rT.localPosition.x, -30f - 4*(Screen.height / 20f));
+            rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 20f);
+            rT = m_LabelButton.GetComponent<RectTransform>();
+            rT.localPosition = new Vector2(rT.localPosition.x, -30f - 5*(Screen.height / 20f));
+            rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 20f);
         }
 
         void TaskOnClick(Button b)
