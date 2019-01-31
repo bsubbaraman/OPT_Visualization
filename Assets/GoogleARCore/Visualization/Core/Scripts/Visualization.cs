@@ -1006,12 +1006,15 @@ namespace RosSharp.RosBridgeClient
             //TRYING INVERSE KINEMATICS
             if (interpFlag){
                 Vector3 p_l_ankle_vec = p_poseInput[13];
+                Vector3 p_l_knee_vec = p_poseInput[12];
                 Vector3 p_r_ankle_vec = p_poseInput[10];
                 float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
                 Vector3 lerped_l_ankle_vec = Vector3.Lerp(p_l_ankle_vec, l_ankle_vec, lerp);
                 Vector3 lerped_r_ankle_vec = Vector3.Lerp(p_r_ankle_vec, r_ankle_vec, lerp);
-                l_ankle_vec = lerped_l_ankle_vec;
-                r_ankle_vec = lerped_r_ankle_vec;
+                Vector3 p_l_knee_ankle = p_l_knee_vec - p_l_ankle_vec;
+                Vector3 lerped_l_knee_ankle = Vector3.Lerp(p_l_knee_ankle, l_knee_ankle, lerp);
+                l_ankle_vec = lerped_l_ankle_vec- 0.1f * Vector3.Normalize(lerped_l_knee_ankle);
+                r_ankle_vec = lerped_r_ankle_vec + 0.1f * Vector3.Normalize(r_knee_ankle);
             }
             InverseKinematics(left_hip.transform, left_knee.transform, left_foot.transform, l_ankle_vec, 0);
             InverseKinematics(right_hip.transform, right_knee.transform, right_foot.transform, r_ankle_vec, 1);
