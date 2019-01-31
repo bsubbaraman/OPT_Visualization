@@ -688,7 +688,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   showMainBehavior: 0
   showInnerGlowBehavior: 0
-  rtFormat: 2
+  rtFormat: 0
   blurShader: {fileID: 4800000, guid: 1855d9636fad3914bacc4a543165c974, type: 3}
   compositeShader: {fileID: 4800000, guid: e384de4389ba527479054baf0ddb1d3e, type: 3}
   selectiveRenderShader: {fileID: 4800000, guid: c04b7cae8accdfb4e9c2648823ff39d7,
@@ -991,7 +991,7 @@ MonoBehaviour:
   emptyGameObject: {fileID: 0}
   centroidObject: {fileID: 1317426671309370, guid: 94c447eb110654d62893dff7743cc562,
     type: 2}
-  avatarPrefab: {fileID: 1759164472227416, guid: 657df50c93218466792f90c48eabcf88,
+  avatarPrefab: {fileID: 1810503440902114, guid: 961996ba79e244763a248b0d2f6a34c5,
     type: 2}
   objectPrefab: {fileID: 1216508313281274, guid: 7e4343145b6a64ea18357b13c04b34e3,
     type: 2}

@@ -990,23 +990,84 @@ namespace RosSharp.RosBridgeClient
             //PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, right_knee.rotation.eulerAngles) % 360);
             //if (Vector3.Distance(quaternionValue.eulerAngles, right_knee.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
             //{
-                //right_knee.rotation = quaternionValue;
-                ////Vector3 localZ = right_knee.TransformDirection(Vector3.forward);
-                //localZ = right_knee.TransformDirection(Vector3.forward);
+            //right_knee.rotation = quaternionValue;
+            ////Vector3 localZ = right_knee.TransformDirection(Vector3.forward);
+            //localZ = right_knee.TransformDirection(Vector3.forward);
 
-                //if (Vector3.Dot(hip_hip_vec, localZ) < 0)
-                //{
-                //    right_knee.RotateAround(right_knee.position, right_knee.right, 180f);
-                //}
+            //if (Vector3.Dot(hip_hip_vec, localZ) < 0)
+            //{
+            //    right_knee.RotateAround(right_knee.position, right_knee.right, 180f);
+            //}
             //}
             // ** end original right leg
+
+
+
+            //TRYING INVERSE KINEMATICS
+            if (interpFlag){
+                Vector3 p_l_ankle_vec = p_poseInput[13];
+                Vector3 p_r_ankle_vec = p_poseInput[10];
+                float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
+                Vector3 lerped_l_ankle_vec = Vector3.Lerp(p_l_ankle_vec, l_ankle_vec, lerp);
+                Vector3 lerped_r_ankle_vec = Vector3.Lerp(p_l_ankle_vec, l_ankle_vec, lerp);
+                l_ankle_vec = lerped_l_ankle_vec;
+                r_ankle_vec = lerped_r_ankle_vec;
+            }
+            InverseKinematics(left_hip.transform, left_knee.transform, left_foot.transform, l_ankle_vec, 0);
+            InverseKinematics(right_hip.transform, right_knee.transform, right_foot.transform, r_ankle_vec, 1);
         }
 
+        //** TRYING INVERSE KINEMATICS
+        public void InverseKinematics(Transform hip, Transform knee, Transform foot, Vector3 target, int direction){
+            Transform orientation;
+            Vector3 hip_OffsetRotation;
+            Vector3 knee_OffsetRotation;
+            Vector3 foot_OffsetRotation;
+            if (direction == 0){ // left
+                hip_OffsetRotation = new Vector3(180f, 90f, 0f);
+                knee_OffsetRotation = new Vector3(90f, 90f, 0f);
+                foot_OffsetRotation = Vector3.zero;
+                orientation = hip.parent.parent.parent.GetChild(2);
+            }
+            else{
+                hip_OffsetRotation = new Vector3(180f, 270f, 0f);
+                knee_OffsetRotation = new Vector3(-90f, -90f, 0f);
+                foot_OffsetRotation = Vector3.zero;
+                orientation = hip.parent.parent.parent.GetChild(3);
+            }
+        
+            float angle;
+            float hip_Length;
+            float knee_Length;
+            float leg_Length;
+            float targetDistance;
+            float adyacent;
+            hip.LookAt(target, orientation.position - hip.position);
+            hip.Rotate(hip_OffsetRotation);
+
+            Vector3 cross = Vector3.Cross(orientation.position - hip.position, knee.position - hip.position);
+
+            hip_Length = Vector3.Distance(hip.position, knee.position);
+            knee_Length = Vector3.Distance(knee.position, foot.position);
+            leg_Length = hip_Length + knee_Length;
+            targetDistance = Vector3.Distance(hip.position, target);
+            targetDistance = Mathf.Min(targetDistance, leg_Length - leg_Length * 0.001f);
+
+            adyacent = ((hip_Length * hip_Length) - (knee_Length * knee_Length) + (targetDistance * targetDistance)) / (2 * targetDistance);
+
+            angle = Mathf.Acos(adyacent / hip_Length) * Mathf.Rad2Deg;
+
+            hip.RotateAround(hip.position, cross, -angle);
+
+            knee.LookAt(target, cross);
+            knee.Rotate(knee_OffsetRotation);
+        }
         /// <summary>
         /// XLs the ook rotation.
         /// </summary>
         /// <returns>The X look rotation.</returns>
         /// <param name="right">Right.</param>
+
         Quaternion XLookRotation(Vector3 right)
         {
             Quaternion rightToForward = Quaternion.Euler(0f, -90f, 0f);
