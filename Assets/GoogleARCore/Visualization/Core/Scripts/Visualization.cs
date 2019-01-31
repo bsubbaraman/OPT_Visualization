@@ -1009,7 +1009,7 @@ namespace RosSharp.RosBridgeClient
                 Vector3 p_r_ankle_vec = p_poseInput[10];
                 float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
                 Vector3 lerped_l_ankle_vec = Vector3.Lerp(p_l_ankle_vec, l_ankle_vec, lerp);
-                Vector3 lerped_r_ankle_vec = Vector3.Lerp(p_l_ankle_vec, l_ankle_vec, lerp);
+                Vector3 lerped_r_ankle_vec = Vector3.Lerp(p_r_ankle_vec, r_ankle_vec, lerp);
                 l_ankle_vec = lerped_l_ankle_vec;
                 r_ankle_vec = lerped_r_ankle_vec;
             }
@@ -1027,13 +1027,13 @@ namespace RosSharp.RosBridgeClient
                 hip_OffsetRotation = new Vector3(180f, 90f, 0f);
                 knee_OffsetRotation = new Vector3(90f, 90f, 0f);
                 foot_OffsetRotation = Vector3.zero;
-                orientation = hip.parent.parent.parent.GetChild(2);
+                orientation = hip.parent.GetChild(2);
             }
             else{
-                hip_OffsetRotation = new Vector3(180f, 270f, 0f);
+                hip_OffsetRotation = new Vector3(-180f, -90f, 0f);
                 knee_OffsetRotation = new Vector3(-90f, -90f, 0f);
                 foot_OffsetRotation = Vector3.zero;
-                orientation = hip.parent.parent.parent.GetChild(3);
+                orientation = hip.parent.GetChild(3);
             }
         
             float angle;
@@ -1041,7 +1041,7 @@ namespace RosSharp.RosBridgeClient
             float knee_Length;
             float leg_Length;
             float targetDistance;
-            float adyacent;
+            float adjacent;
             hip.LookAt(target, orientation.position - hip.position);
             hip.Rotate(hip_OffsetRotation);
 
@@ -1053,9 +1053,9 @@ namespace RosSharp.RosBridgeClient
             targetDistance = Vector3.Distance(hip.position, target);
             targetDistance = Mathf.Min(targetDistance, leg_Length - leg_Length * 0.001f);
 
-            adyacent = ((hip_Length * hip_Length) - (knee_Length * knee_Length) + (targetDistance * targetDistance)) / (2 * targetDistance);
+            adjacent = ((hip_Length * hip_Length) - (knee_Length * knee_Length) + (targetDistance * targetDistance)) / (2 * targetDistance);
 
-            angle = Mathf.Acos(adyacent / hip_Length) * Mathf.Rad2Deg;
+            angle = Mathf.Acos(adjacent / hip_Length) * Mathf.Rad2Deg;
 
             hip.RotateAround(hip.position, cross, -angle);
 
