@@ -11,8 +11,8 @@ public class test : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        Transform hip = a.GetBoneTransform(HumanBodyBones.Hips).GetChild(1);
+        Transform hip = a.GetBoneTransform(HumanBodyBones.Neck);
         Transform foot = a.GetBoneTransform(HumanBodyBones.LeftFoot);
-        Debug.Log(Vector3.Distance(hip.position, foot.position));
+        //Debug.Log(Vector3.Distance(hip.position, foot.position));
     }
 }

@@ -67,6 +67,7 @@ namespace RosSharp.RosBridgeClient
         public RosSharp.RosBridgeClient.ObjectsSubscriber objectSub;
         public RosSharp.RosBridgeClient.PoseStampedPublisher posePub;
         public RosSharp.RosBridgeClient.UDPSubscriber_Pose recognizedPoseSub;
+        public RosSharp.RosBridgeClient.UDPSubscriber_Faces recognizedFacesSub;
 
         // scaling
         //found directly from avatar
@@ -138,6 +139,7 @@ namespace RosSharp.RosBridgeClient
             }
             RotateLabels(labels);
             RecognizePoseGlow();
+            FaceRecognition();
             PrintDebugMessage("I: Update complete correctly!");
 
         }
@@ -559,38 +561,48 @@ namespace RosSharp.RosBridgeClient
 
             // SCALING
             // get current values for averaging
-            float upperBodyLength = Vector3.Distance(chest_vec, neck_vec);
+            float min_length = 0.2f;
+            float max_length = 1f;
+            //float upperBodyLength = Vector3.Distance(chest_vec, neck_vec);
+            float upperBodyLength = Vector3.Distance((r_hip_vec + l_hip_vec) / 2f, neck_vec);
             float lowerBodyLength = Vector3.Distance((r_hip_vec + l_hip_vec) / 2f, l_ankle_vec);
             float upperArmLength = Vector3.Distance(r_shoulder_vec, r_elbow_vec);
             float lowerArmLength = Vector3.Distance(r_wrist_vec, r_elbow_vec);
             float upperLegLength = Vector3.Distance(r_hip_vec, r_knee_vec);
             float lowerLegLength = Vector3.Distance(r_ankle_vec, r_knee_vec);
-            scales[key][0] += 1;
-            scales[key][1] += upperBodyLength;
-            scales[key][2] += lowerBodyLength;
-            scales[key][3] += upperArmLength;
-            scales[key][4] += lowerArmLength;
-            scales[key][5] += upperLegLength;
-            scales[key][6] += lowerLegLength;
-            //average thus far:
-            float count = scales[key][0];
-            upperBodyLength = scales[key][1] / count;
-            lowerBodyLength = scales[key][2] / count;
-            upperArmLength = scales[key][3] / count;
-            lowerArmLength = scales[key][4] / count;
-            upperLegLength = scales[key][5] / count;
-            lowerLegLength = scales[key][6] / count;
+            if (upperArmLength > min_length && upperArmLength < max_length && lowerArmLength > min_length && lowerArmLength < max_length && upperLegLength > min_length && upperLegLength < max_length && lowerLegLength > min_length && lowerLegLength < max_length)
+            {
+                scales[key][0] += 1;
+                scales[key][1] += upperBodyLength;
+                scales[key][2] += lowerBodyLength;
+                scales[key][3] += upperArmLength;
+                scales[key][4] += lowerArmLength;
+                scales[key][5] += upperLegLength;
+                scales[key][6] += lowerLegLength;
+                //average thus far:
+                float count = scales[key][0];
+                upperBodyLength = scales[key][1] / count;
+                lowerBodyLength = scales[key][2] / count;
+                upperArmLength = scales[key][3] / count;
+                lowerArmLength = scales[key][4] / count;
+                upperLegLength = scales[key][5] / count;
+                lowerLegLength = scales[key][6] / count;
 
-            chest.localScale = Vector3.one * (upperBodyLength / UPPER_BODY_LENGTH);
-            hip.GetChild(1).localScale = Vector3.one * (lowerBodyLength / LOWER_BODY_LENGTH);
-            //right_shoulder.localScale = Vector3.one * (upperArmLength / UPPER_ARM_LENGTH) / (upperBodyLength / UPPER_BODY_LENGTH);
-            //left_shoulder.localScale = Vector3.one * (upperArmLength / UPPER_ARM_LENGTH) / (upperBodyLength / UPPER_BODY_LENGTH);
-            //right_elbow.localScale = Vector3.one * (lowerArmLength / LOWER_ARM_LENGTH) / ((upperArmLength / UPPER_ARM_LENGTH) / (upperBodyLength / UPPER_BODY_LENGTH));
-            //left_elbow.localScale = Vector3.one * (lowerArmLength / LOWER_ARM_LENGTH) / ((upperArmLength / UPPER_ARM_LENGTH) / (upperBodyLength / UPPER_BODY_LENGTH));
-            //right_hip.localScale = Vector3.one * (upperLegLength / UPPER_LEG_LENGTH) / (lowerBodyLength / LOWER_BODY_LENGTH);
-            //left_hip.localScale = Vector3.one * (upperLegLength / UPPER_LEG_LENGTH) / (lowerBodyLength / LOWER_BODY_LENGTH);
-            //right_knee.localScale = Vector3.one * (lowerLegLength / LOWER_LEG_LENGTH) / (upperLegLength / UPPER_LEG_LENGTH) / (lowerBodyLength / LOWER_BODY_LENGTH);
-            //left_knee.localScale = Vector3.one * (lowerLegLength / LOWER_LEG_LENGTH) / (upperLegLength / UPPER_LEG_LENGTH) / (lowerBodyLength / LOWER_BODY_LENGTH);
+                float height = lowerLegLength + upperLegLength + upperBodyLength;
+                theAvatar.transform.localScale = Vector3.one * (height / 1.43f);
+
+                //chest.localScale = Vector3.one * (upperBodyLength / UPPER_BODY_LENGTH);
+                //hip.GetChild(1).localScale = Vector3.one * (lowerBodyLength / LOWER_BODY_LENGTH);
+                //right_shoulder.localScale = Vector3.one * (upperArmLength / UPPER_ARM_LENGTH) * chest.localScale.x;
+                //left_shoulder.localScale = Vector3.one * (upperArmLength / UPPER_ARM_LENGTH) * chest.localScale.x;
+                //right_elbow.localScale = Vector3.one * (lowerArmLength / LOWER_ARM_LENGTH) * right_shoulder.localScale.x * chest.localScale.x;
+                //left_elbow.localScale = Vector3.one * (lowerArmLength / LOWER_ARM_LENGTH) * right_shoulder.localScale.x * chest.localScale.x;
+                //right_hip.localScale = Vector3.one * (upperLegLength / UPPER_LEG_LENGTH) * hip.GetChild(1).localScale.x;
+                //left_hip.localScale = Vector3.one * (upperLegLength / UPPER_LEG_LENGTH) * hip.GetChild(1).localScale.x;
+                //right_knee.localScale = Vector3.one * (lowerLegLength / LOWER_LEG_LENGTH) * left_hip.localScale.x * hip.GetChild(1).localScale.x;
+                //left_knee.localScale = Vector3.one * (lowerLegLength / LOWER_LEG_LENGTH) * left_hip.localScale.x * hip.GetChild(1).localScale.x;
+            }
+
             // END SCALING
             Quaternion quaternionValue;
             //Debug.Log("CHEST VEC __________" + chest_vec);
@@ -1217,6 +1229,17 @@ namespace RosSharp.RosBridgeClient
                         Destroy(labels[key]);
                         labels.Remove(key);
                     }
+                }
+            }
+        }
+
+        private void FaceRecognition(){
+            // only adding name to centroid for now
+            Dictionary<int, string> dataFromFaceSub = recognizedFacesSub.recognizedFaceData;
+            foreach (KeyValuePair<int, string> face_track in dataFromFaceSub){
+                if (labels.ContainsKey(face_track.Key)){
+                    TextMesh tm = labels[face_track.Key].GetComponent<TextMesh>();
+                    tm.text = face_track.Key.ToString() + "\n" + dataFromFaceSub[face_track.Key];
                 }
             }
         }
