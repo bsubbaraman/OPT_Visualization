@@ -991,7 +991,7 @@ MonoBehaviour:
   emptyGameObject: {fileID: 0}
   centroidObject: {fileID: 1317426671309370, guid: 94c447eb110654d62893dff7743cc562,
     type: 2}
-  avatarPrefab: {fileID: 1992461732180542, guid: a5d1981515b7b49068acce9b4e21fb33,
+  avatarPrefab: {fileID: 1673001971079120, guid: 8720e6737a6d64e1daac6c668852f091,
     type: 2}
   objectPrefab: {fileID: 1216508313281274, guid: 7e4343145b6a64ea18357b13c04b34e3,
     type: 2}
@@ -1687,7 +1687,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Topic: /tracker/skeleton_tracks
-  TimeStep: 10
+  TimeStep: 60
   ros_rcv_time: 0
   viz: {fileID: 1055780065}
 --- !u!114 &1533692828

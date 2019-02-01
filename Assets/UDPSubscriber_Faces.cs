@@ -52,7 +52,6 @@ namespace RosSharp.RosBridgeClient
                         {
                             recognizedFaceData.Add(id, face_name);
                         }
-                        Debug.Log(id + " " + face_name);
                     }
                     newData = false;
 
