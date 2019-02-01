@@ -44,6 +44,7 @@ namespace RosSharp.RosBridgeClient
         {
             if (newData)
             {
+
                 var data = receiver.getLatestUDPPacket();
                 var N = JSON.Parse(data);
                 if (N["pose_tracks"] != null)
@@ -60,8 +61,6 @@ namespace RosSharp.RosBridgeClient
                         if (rP.pose_name != "unknown")
                         {
                             recognizedPoseData.Add(rP.id, rP); ;
-                            Debug.Log(rP.pose_name);
-                            Debug.Log(rP.score);
                         }
 
 

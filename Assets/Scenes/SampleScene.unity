@@ -1191,6 +1191,7 @@ GameObject:
   - component: {fileID: 1130118786}
   - component: {fileID: 1130118785}
   - component: {fileID: 1130118784}
+  - component: {fileID: 1130118787}
   m_Layer: 0
   m_Name: UDPConnector
   m_TagString: Untagged
@@ -1237,6 +1238,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1130118787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1130118783}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 692b5a4332b83410aabaa95f52c35854, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  receiver: {fileID: 1130118785}
 --- !u!1 &1329321086
 GameObject:
   m_ObjectHideFlags: 0
@@ -1741,7 +1754,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Topic: /kinect01/qhd/image_color/compressed
-  TimeStep: 0
+  TimeStep: 10000
   meshRenderer: {fileID: 1106671786}
   pulse: 1
   timer: 0

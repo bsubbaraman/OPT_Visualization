@@ -68,6 +68,16 @@ namespace RosSharp.RosBridgeClient
         public RosSharp.RosBridgeClient.PoseStampedPublisher posePub;
         public RosSharp.RosBridgeClient.UDPSubscriber_Pose recognizedPoseSub;
 
+        // scaling
+        //found directly from avatar
+        const float UPPER_ARM_LENGTH = 0.24f;
+        const float LOWER_ARM_LENGTH = 0.31f;
+        const float UPPER_LEG_LENGTH = 0.38f;
+        const float LOWER_LEG_LENGTH = 0.43f;
+        const float UPPER_BODY_LENGTH = 0.40f;
+        const float LOWER_BODY_LENGTH = 1.04f;
+        public Dictionary<int, Dictionary<int, float>> scales = new Dictionary<int, Dictionary<int, float>>(); 
+
         // ** interpolation
         public bool lerpBool = true;
         public Dictionary<int, Vector3[]> previousSkeletonData = new Dictionary<int, Vector3[]>();
@@ -443,6 +453,17 @@ namespace RosSharp.RosBridgeClient
                     newSkeleton.name = "Skeleton_" + track.Key;
                     activeSkeleton.Add(track.Key, newSkeleton);
                     PrintDebugMessage("I: Crete skeleton Id # " + track.Key);
+                    //SCALING
+                    Dictionary<int, float> jointLengths = new Dictionary<int, float>();
+                    jointLengths.Add(0,0);
+                    jointLengths.Add(1,0);
+                    jointLengths.Add(2,0);
+                    jointLengths.Add(3, 0);
+                    jointLengths.Add(4, 0);
+                    jointLengths.Add(5, 0);
+                    jointLengths.Add(6, 0);
+
+                    scales.Add(track.Key, jointLengths);
 
                 }
 
@@ -467,6 +488,8 @@ namespace RosSharp.RosBridgeClient
                             activeSkeleton.Remove(key);
                             PrintDebugMessage("I: Remove skeleton: " + key);
                         }
+                        //SCALING
+                        scales.Remove(key);
                     }
                 }
             }
@@ -518,10 +541,10 @@ namespace RosSharp.RosBridgeClient
 
             // *** interpolate test
             //Transform head = animator.GetBoneTransform(HumanBodyBones.Head);
-            //Transform neck = animator.GetBoneTransform(HumanBodyBones.Neck);
+            Transform neck = animator.GetBoneTransform(HumanBodyBones.Neck);
             Transform right_shoulder = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
             Transform right_elbow = animator.GetBoneTransform(HumanBodyBones.RightLowerArm);
-            //Transform right_hand = animator.GetBoneTransform(HumanBodyBones.RightHand);
+            Transform right_hand = animator.GetBoneTransform(HumanBodyBones.RightHand);
             Transform left_shoulder = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
             Transform left_elbow = animator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
             //Transform left_hand = animator.GetBoneTransform(HumanBodyBones.LeftHand);
@@ -533,7 +556,42 @@ namespace RosSharp.RosBridgeClient
             Transform left_foot = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
             Transform hip = animator.GetBoneTransform(HumanBodyBones.Hips);
             Transform chest = animator.GetBoneTransform(HumanBodyBones.Spine);
-       
+
+            // SCALING
+            // get current values for averaging
+            float upperBodyLength = Vector3.Distance(chest_vec, neck_vec);
+            float lowerBodyLength = Vector3.Distance((r_hip_vec + l_hip_vec) / 2f, l_ankle_vec);
+            float upperArmLength = Vector3.Distance(r_shoulder_vec, r_elbow_vec);
+            float lowerArmLength = Vector3.Distance(r_wrist_vec, r_elbow_vec);
+            float upperLegLength = Vector3.Distance(r_hip_vec, r_knee_vec);
+            float lowerLegLength = Vector3.Distance(r_ankle_vec, r_knee_vec);
+            scales[key][0] += 1;
+            scales[key][1] += upperBodyLength;
+            scales[key][2] += lowerBodyLength;
+            scales[key][3] += upperArmLength;
+            scales[key][4] += lowerArmLength;
+            scales[key][5] += upperLegLength;
+            scales[key][6] += lowerLegLength;
+            //average thus far:
+            float count = scales[key][0];
+            upperBodyLength = scales[key][1] / count;
+            lowerBodyLength = scales[key][2] / count;
+            upperArmLength = scales[key][3] / count;
+            lowerArmLength = scales[key][4] / count;
+            upperLegLength = scales[key][5] / count;
+            lowerLegLength = scales[key][6] / count;
+
+            chest.localScale = Vector3.one * (upperBodyLength / UPPER_BODY_LENGTH);
+            hip.GetChild(1).localScale = Vector3.one * (lowerBodyLength / LOWER_BODY_LENGTH);
+            //right_shoulder.localScale = Vector3.one * (upperArmLength / UPPER_ARM_LENGTH) / (upperBodyLength / UPPER_BODY_LENGTH);
+            //left_shoulder.localScale = Vector3.one * (upperArmLength / UPPER_ARM_LENGTH) / (upperBodyLength / UPPER_BODY_LENGTH);
+            //right_elbow.localScale = Vector3.one * (lowerArmLength / LOWER_ARM_LENGTH) / ((upperArmLength / UPPER_ARM_LENGTH) / (upperBodyLength / UPPER_BODY_LENGTH));
+            //left_elbow.localScale = Vector3.one * (lowerArmLength / LOWER_ARM_LENGTH) / ((upperArmLength / UPPER_ARM_LENGTH) / (upperBodyLength / UPPER_BODY_LENGTH));
+            //right_hip.localScale = Vector3.one * (upperLegLength / UPPER_LEG_LENGTH) / (lowerBodyLength / LOWER_BODY_LENGTH);
+            //left_hip.localScale = Vector3.one * (upperLegLength / UPPER_LEG_LENGTH) / (lowerBodyLength / LOWER_BODY_LENGTH);
+            //right_knee.localScale = Vector3.one * (lowerLegLength / LOWER_LEG_LENGTH) / (upperLegLength / UPPER_LEG_LENGTH) / (lowerBodyLength / LOWER_BODY_LENGTH);
+            //left_knee.localScale = Vector3.one * (lowerLegLength / LOWER_LEG_LENGTH) / (upperLegLength / UPPER_LEG_LENGTH) / (lowerBodyLength / LOWER_BODY_LENGTH);
+            // END SCALING
             Quaternion quaternionValue;
             //Debug.Log("CHEST VEC __________" + chest_vec);
             //Debug.Log("CHEST __________" + chest.position);

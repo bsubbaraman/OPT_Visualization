@@ -33,9 +33,9 @@ namespace RosSharp.RosBridgeClient
         public float ros_rcv_time;
         public Visualization viz;
 
-        // Test to store previous joint position, trying to interpolate bw:
-        public Dictionary<int, Vector3[]> previousJointsData = new Dictionary<int, Vector3[]>();
-        public Dictionary<int, Vector3[]> previousJointsDataTemp = new Dictionary<int, Vector3[]>();
+        //// Test to store previous joint position, trying to interpolate bw:
+        //public Dictionary<int, Vector3[]> previousJointsData = new Dictionary<int, Vector3[]>();
+        //public Dictionary<int, Vector3[]> previousJointsDataTemp = new Dictionary<int, Vector3[]>();
 
         protected override void Start()
         {
@@ -63,7 +63,7 @@ namespace RosSharp.RosBridgeClient
         private void ProcessMessage()
         {
             // ***** interpolate test
-            previousJointsData = jointsData;
+            //previousJointsData = jointsData;
             ros_rcv_time = Time.time;
             // *****
             jointsData.Clear();
@@ -113,12 +113,10 @@ namespace RosSharp.RosBridgeClient
                     Debug.Log("123 - ROS: Skipped track   # " + track.id);
                 }
             }
-            if (previousJointsData != jointsData){
-                Debug.Log("the two are different");
-            }
 
             OnReceive?.Invoke();
             isMessageReceived = false;
         }
     }
+
 }
