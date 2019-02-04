@@ -991,7 +991,7 @@ MonoBehaviour:
   emptyGameObject: {fileID: 0}
   centroidObject: {fileID: 1317426671309370, guid: 94c447eb110654d62893dff7743cc562,
     type: 2}
-  avatarPrefab: {fileID: 1673001971079120, guid: 8720e6737a6d64e1daac6c668852f091,
+  avatarPrefab: {fileID: 1097491844820352, guid: 1a13219cea8bf47a0a3b82dcd65ba345,
     type: 2}
   objectPrefab: {fileID: 1216508313281274, guid: 7e4343145b6a64ea18357b13c04b34e3,
     type: 2}

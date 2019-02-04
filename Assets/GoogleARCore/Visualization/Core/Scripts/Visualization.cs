@@ -549,7 +549,7 @@ namespace RosSharp.RosBridgeClient
             Transform right_hand = animator.GetBoneTransform(HumanBodyBones.RightHand);
             Transform left_shoulder = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
             Transform left_elbow = animator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
-            //Transform left_hand = animator.GetBoneTransform(HumanBodyBones.LeftHand);
+            Transform left_hand = animator.GetBoneTransform(HumanBodyBones.LeftHand);
             Transform right_hip = animator.GetBoneTransform(HumanBodyBones.RightUpperLeg);
             Transform right_knee = animator.GetBoneTransform(HumanBodyBones.RightLowerLeg);
             Transform right_foot = animator.GetBoneTransform(HumanBodyBones.RightFoot);
@@ -784,8 +784,8 @@ namespace RosSharp.RosBridgeClient
                 Vector3 p_l_elbow_wrist = p_l_elbow_vec - p_l_wrist_vec;
                 // lerp with vector
                 float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
-                Vector3 lerped_l_shoulder_elbow = Vector3.Lerp(p_l_elbow_wrist, l_elbow_wrist, lerp);
-                quaternionValue = XLookRotation(lerped_l_shoulder_elbow);
+                Vector3 lerped_l_elbow_wrist = Vector3.Lerp(p_l_elbow_wrist, l_elbow_wrist, lerp);
+                quaternionValue = XLookRotation(lerped_l_elbow_wrist);
                 // end lerp with vector
                 if (lerp > 1f)
                 {
@@ -799,6 +799,7 @@ namespace RosSharp.RosBridgeClient
                 //previousSkeletonData.Add(key, new Vector3[15]);
             }
             left_elbow.rotation = quaternionValue;
+            //left_elbow.rotation *= Quaternion.Euler(0f,0f,-45f);
             // ** end interp left elbow
 
             //Left upper body:
@@ -1074,7 +1075,9 @@ namespace RosSharp.RosBridgeClient
 
 
             //TRYING INVERSE KINEMATICS
-            if (interpFlag){
+            if (interpFlag)
+            {
+                // Lower Body IK
                 Vector3 p_l_ankle_vec = p_poseInput[13];
                 Vector3 p_l_knee_vec = p_poseInput[12];
                 Vector3 p_r_ankle_vec = p_poseInput[10];
@@ -1083,11 +1086,31 @@ namespace RosSharp.RosBridgeClient
                 Vector3 lerped_r_ankle_vec = Vector3.Lerp(p_r_ankle_vec, r_ankle_vec, lerp);
                 Vector3 p_l_knee_ankle = p_l_knee_vec - p_l_ankle_vec;
                 Vector3 lerped_l_knee_ankle = Vector3.Lerp(p_l_knee_ankle, l_knee_ankle, lerp);
-                l_ankle_vec = lerped_l_ankle_vec- 0.1f * Vector3.Normalize(lerped_l_knee_ankle);
+                l_ankle_vec = lerped_l_ankle_vec - 0.1f * Vector3.Normalize(lerped_l_knee_ankle);
                 r_ankle_vec = lerped_r_ankle_vec + 0.1f * Vector3.Normalize(r_knee_ankle);
+
+                //Upper Body IK
+                Vector3 p_l_shoulder_vec = p_poseInput[5];
+                Vector3 p_l_elbow_vec = p_poseInput[6];
+                Vector3 p_l_wrist_vec = p_poseInput[7];
+                Vector3 lerped_l_wrist_vec = Vector3.Lerp(p_l_wrist_vec, l_wrist_vec, lerp);
+                Vector3 p_l_elbow_wrist = p_l_elbow_vec - p_l_wrist_vec;
+                Vector3 lerped_l_elbow_wrist = Vector3.Lerp(p_l_elbow_wrist, l_elbow_wrist, lerp);
+                l_wrist_vec = lerped_l_wrist_vec;
+
+                Vector3 p_r_shoulder_vec = p_poseInput[2];
+                Vector3 p_r_elbow_vec = p_poseInput[3];
+                Vector3 p_r_wrist_vec = p_poseInput[4];
+                Vector3 lerped_r_wrist_vec = Vector3.Lerp(p_r_wrist_vec, r_wrist_vec, lerp);
+                Vector3 p_r_elbow_wrist = p_r_elbow_vec - p_r_wrist_vec;
+                Vector3 lerped_r_elbow_wrist = Vector3.Lerp(p_r_elbow_wrist, r_elbow_wrist, lerp);
+                r_wrist_vec = lerped_r_wrist_vec;
             }
+
             InverseKinematics(left_hip.transform, left_knee.transform, left_foot.transform, l_ankle_vec, 0);
             InverseKinematics(right_hip.transform, right_knee.transform, right_foot.transform, r_ankle_vec, 1);
+            InverseKinematics(left_shoulder.transform, left_elbow.transform, left_hand.transform, l_wrist_vec, 2);
+            InverseKinematics(right_shoulder.transform, right_elbow.transform, right_hand.transform, r_wrist_vec, 3);
         }
 
         //** TRYING INVERSE KINEMATICS
@@ -1096,17 +1119,29 @@ namespace RosSharp.RosBridgeClient
             Vector3 hip_OffsetRotation;
             Vector3 knee_OffsetRotation;
             Vector3 foot_OffsetRotation;
-            if (direction == 0){ // left
+            if (direction == 0){ // left leg
                 hip_OffsetRotation = new Vector3(180f, 90f, 0f);
                 knee_OffsetRotation = new Vector3(90f, 90f, 0f);
                 foot_OffsetRotation = Vector3.zero;
                 orientation = hip.parent.GetChild(2);
             }
-            else{
+            else if (direction == 1){ //right leg
                 hip_OffsetRotation = new Vector3(-180f, -90f, 0f);
                 knee_OffsetRotation = new Vector3(-90f, -90f, 0f);
                 foot_OffsetRotation = Vector3.zero;
                 orientation = hip.parent.GetChild(3);
+            }
+            else if (direction == 2){ // left arm
+                hip_OffsetRotation = new Vector3(90f, -90f, 180f);
+                knee_OffsetRotation = new Vector3(0f, 90f, -45f);
+                foot_OffsetRotation = Vector3.zero;
+                orientation = hip.parent.parent.GetChild(3);
+            }
+            else { // TODO: right arm
+                hip_OffsetRotation = new Vector3(-90f, -90f, 0f);
+                knee_OffsetRotation = new Vector3(180f, -90f, 0f);
+                foot_OffsetRotation = Vector3.zero;
+                orientation = hip.parent.parent.GetChild(4);
             }
         
             float angle;
