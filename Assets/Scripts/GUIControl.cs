@@ -7,7 +7,7 @@ namespace RosSharp.RosBridgeClient
 
     public class GUIControl : MonoBehaviour
     {
-        public Button m_CentroidButton, m_SkeletonButton, m_ObjectButton, m_ImageButton, m_SnapToButton, m_LabelButton;
+        public Button m_CentroidButton, m_SkeletonButton, m_ObjectButton, m_ShowImageButton, m_SnapToButton, m_LabelButton, m_GetSnapButton;
         public Camera main;
         public GameObject theConnector, theController, theImage, cameraRepresentation, Panel;
         public Visualization v;
@@ -22,9 +22,10 @@ namespace RosSharp.RosBridgeClient
             m_CentroidButton.onClick.AddListener(() => TaskOnClick(m_CentroidButton));
             m_SkeletonButton.onClick.AddListener(() => TaskOnClick(m_SkeletonButton));
             m_ObjectButton.onClick.AddListener(() => TaskOnClick(m_ObjectButton));
-            m_ImageButton.onClick.AddListener(() => TaskOnClick(m_ImageButton));
+            m_ShowImageButton.onClick.AddListener(() => TaskOnClick(m_ShowImageButton));
             m_SnapToButton.onClick.AddListener(() => TaskOnClick(m_SnapToButton));
             m_LabelButton.onClick.AddListener(() => TaskOnClick(m_LabelButton));
+            m_GetSnapButton.onClick.AddListener(() => TaskOnClick(m_GetSnapButton));
 
             // change panel components based on window size
 
@@ -40,11 +41,14 @@ namespace RosSharp.RosBridgeClient
             rT = m_ObjectButton.GetComponent<RectTransform>();
             rT.localPosition = new Vector2(rT.localPosition.x, -30f - 2*(Screen.height / 20f));
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 20f);
-            rT = m_ImageButton.GetComponent<RectTransform>();
+            rT = m_ShowImageButton.GetComponent<RectTransform>();
             rT.localPosition = new Vector2(rT.localPosition.x, -30f - 3*(Screen.height / 20f));
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 20f);
+            rT = m_GetSnapButton.GetComponent<RectTransform>();
+            rT.localPosition = new Vector2(rT.localPosition.x, -30f - 4 * (Screen.height / 20f));
+            rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 20f);
             rT = m_SnapToButton.GetComponent<RectTransform>();
-            rT.localPosition = new Vector2(rT.localPosition.x, -30f - 4*(Screen.height / 20f));
+            rT.localPosition = new Vector2(rT.localPosition.x, -30f - 5*(Screen.height / 20f));
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 20f);
             rT = m_LabelButton.GetComponent<RectTransform>();
             rT.localPosition = new Vector2(rT.localPosition.x, -30f - 5*(Screen.height / 20f));
@@ -54,14 +58,7 @@ namespace RosSharp.RosBridgeClient
         void TaskOnClick(Button b)
         {
             ColorBlock cb = b.colors;
-            if (b.colors.normalColor == Color.green)
-            {
-                cb.normalColor = Color.white;
-            }
-            else
-            {
-                cb.normalColor = Color.green;
-            }
+            cb.normalColor = b.colors.normalColor == Color.green ? Color.white : Color.green;
             cb.highlightedColor = cb.normalColor;
             b.colors = cb;
             // update viewmode for viz
@@ -76,10 +73,10 @@ namespace RosSharp.RosBridgeClient
                 case "ObjectsButton":
                     v.objectView = !v.objectView;
                     break;
-                case "ImageButton":
+                case "ShowImageButton":
                     //theConnector.GetComponent<ImageSubscriber>().enabled = !theConnector.GetComponent<ImageSubscriber>().enabled;
                     theImage.SetActive(!theImage.activeSelf);
-                    //iS.pulse = true;
+                    iS.pulse = true;
                     break;
                 case "SnapToCamView":
                     //Quaternion orient = Quaternion.LookRotation(s.cameraRot.eulerAngles, Vector3.up);

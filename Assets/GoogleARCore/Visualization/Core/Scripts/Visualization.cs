@@ -24,6 +24,7 @@ using GoogleARCore;
 using UnityEngine;
 using System;
 using System.Threading;
+using UnityEngine.SceneManagement;
 
 
 namespace RosSharp.RosBridgeClient
@@ -77,17 +78,19 @@ namespace RosSharp.RosBridgeClient
         const float LOWER_LEG_LENGTH = 0.43f;
         const float UPPER_BODY_LENGTH = 0.40f;
         const float LOWER_BODY_LENGTH = 1.04f;
-        public Dictionary<int, Dictionary<int, float>> scales = new Dictionary<int, Dictionary<int, float>>(); 
+        public Dictionary<int, Dictionary<int, float>> scales = new Dictionary<int, Dictionary<int, float>>();
 
         // ** interpolation
-        public bool lerpBool = true;
+        const float ROS_MSG_PERIOD = 0.15f; //found from ros publishing rate
         public Dictionary<int, Vector3[]> previousSkeletonData = new Dictionary<int, Vector3[]>();
+        public Dictionary<int, OPTObject> previousObjectData = new Dictionary<int, OPTObject>();
+
         private void Start()
         {
             PrintDebugMessage("D: -------- New execution --------");
             centroidView = false;
-
         }
+
         /// <summary>
         /// The Unity Update method.
         /// </summary>
@@ -109,7 +112,7 @@ namespace RosSharp.RosBridgeClient
 
             if (!rosConnector.ConnectionStatus())
             {
-                ServerConnection.SetActive(true);
+                //ServerConnection.SetActive(true);
                 return;
             }
 
@@ -376,15 +379,13 @@ namespace RosSharp.RosBridgeClient
             //Data from centroidSub
             Dictionary<int, Vector3> dataFromCentroidSub = centroidSub.processedTrackData;
 
+
             //Data from skeletonSub
             //Dictionary<int, Vector3> dataFromSkeletonSubCentroid = skeletonSub.centroidPose;
             PrintDebugMessage("I: Received data from CentroidSub length: " + dataFromCentroidSub.Count);
 
             foreach (KeyValuePair<int, Vector3> track in dataFromCentroidSub)
             {
-                //int id = track.Key;
-                //Vector3 poseInput = track.Value;
-
                 //add any people who have joined the scene
                 if (!activeTracks.ContainsKey(track.Key))
                 {
@@ -456,14 +457,16 @@ namespace RosSharp.RosBridgeClient
                     activeSkeleton.Add(track.Key, newSkeleton);
                     PrintDebugMessage("I: Crete skeleton Id # " + track.Key);
                     //SCALING
-                    Dictionary<int, float> jointLengths = new Dictionary<int, float>();
-                    jointLengths.Add(0,0);
-                    jointLengths.Add(1,0);
-                    jointLengths.Add(2,0);
-                    jointLengths.Add(3, 0);
-                    jointLengths.Add(4, 0);
-                    jointLengths.Add(5, 0);
-                    jointLengths.Add(6, 0);
+                    Dictionary<int, float> jointLengths = new Dictionary<int, float>
+                    {
+                        { 0, 0 },
+                        { 1, 0 },
+                        { 2, 0 },
+                        { 3, 0 },
+                        { 4, 0 },
+                        { 5, 0 },
+                        { 6, 0 }
+                    };
 
                     scales.Add(track.Key, jointLengths);
 
@@ -1119,31 +1122,34 @@ namespace RosSharp.RosBridgeClient
             Vector3 hip_OffsetRotation;
             Vector3 knee_OffsetRotation;
             Vector3 foot_OffsetRotation;
-            if (direction == 0){ // left leg
-                hip_OffsetRotation = new Vector3(180f, 90f, 0f);
-                knee_OffsetRotation = new Vector3(90f, 90f, 0f);
-                foot_OffsetRotation = Vector3.zero;
-                orientation = hip.parent.GetChild(2);
+            switch (direction)
+            {
+                case 0:
+                    hip_OffsetRotation = new Vector3(180f, 90f, 0f);
+                    knee_OffsetRotation = new Vector3(90f, 90f, 0f);
+                    foot_OffsetRotation = Vector3.zero;
+                    orientation = hip.parent.GetChild(2);
+                    break;
+                case 1:
+                    hip_OffsetRotation = new Vector3(-180f, -90f, 0f);
+                    knee_OffsetRotation = new Vector3(-90f, -90f, 0f);
+                    foot_OffsetRotation = Vector3.zero;
+                    orientation = hip.parent.GetChild(3);
+                    break;
+                case 2:
+                    hip_OffsetRotation = new Vector3(90f, -90f, 180f);
+                    knee_OffsetRotation = new Vector3(0f, 90f, -45f);
+                    foot_OffsetRotation = Vector3.zero;
+                    orientation = hip.parent.parent.GetChild(3);
+                    break;
+                default:
+                    hip_OffsetRotation = new Vector3(-90f, -90f, 0f);
+                    knee_OffsetRotation = new Vector3(180f, -90f, 0f);
+                    foot_OffsetRotation = Vector3.zero;
+                    orientation = hip.parent.parent.GetChild(4);
+                    break;
             }
-            else if (direction == 1){ //right leg
-                hip_OffsetRotation = new Vector3(-180f, -90f, 0f);
-                knee_OffsetRotation = new Vector3(-90f, -90f, 0f);
-                foot_OffsetRotation = Vector3.zero;
-                orientation = hip.parent.GetChild(3);
-            }
-            else if (direction == 2){ // left arm
-                hip_OffsetRotation = new Vector3(90f, -90f, 180f);
-                knee_OffsetRotation = new Vector3(0f, 90f, -45f);
-                foot_OffsetRotation = Vector3.zero;
-                orientation = hip.parent.parent.GetChild(3);
-            }
-            else { // TODO: right arm
-                hip_OffsetRotation = new Vector3(-90f, -90f, 0f);
-                knee_OffsetRotation = new Vector3(180f, -90f, 0f);
-                foot_OffsetRotation = Vector3.zero;
-                orientation = hip.parent.parent.GetChild(4);
-            }
-        
+
             float angle;
             float hip_Length;
             float knee_Length;
@@ -1169,6 +1175,21 @@ namespace RosSharp.RosBridgeClient
 
             knee.LookAt(target, cross);
             knee.Rotate(knee_OffsetRotation);
+        }
+
+
+        public GameObject grid;
+        public void PositionGround(){
+            Animator animator;
+            float min = 0;
+            foreach(GameObject avatar in activeSkeleton.Values){
+                animator = avatar.GetComponent<Animator>();
+                Transform left_foot = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
+                if (left_foot.transform.position.y < min){
+                    min = left_foot.transform.position.y;
+                }
+            }
+            grid.transform.position = new Vector3(0f, min, 0f);
         }
         /// <summary>
         /// XLs the ook rotation.
@@ -1213,6 +1234,13 @@ namespace RosSharp.RosBridgeClient
             {
                 //int id = track.Key;
                 //Vector3 poseInput = track.Value;
+                bool interpFlag = false;
+                if (previousObjectData.ContainsKey(track.Key)){
+                    interpFlag = true;
+                }
+                else{
+                    previousObjectData.Add(track.Key, track.Value);
+                }
 
                 //add any object which have joined the scene
                 if (!activeObjects.ContainsKey(track.Key))
@@ -1237,7 +1265,17 @@ namespace RosSharp.RosBridgeClient
                 }
                 else
                 {
-                    activeObjects[track.Key].transform.localPosition = track.Value.pos;
+                    Vector3 position = track.Value.pos;
+                    if (interpFlag){
+                        float lerp = (Time.time - objectSub.ros_rcv_time) / 0.08f;
+                        Vector3 lerped_position = Vector3.Lerp(previousObjectData[track.Key].pos, track.Value.pos, lerp);
+                        if (lerp > 1f)
+                        {
+                            previousObjectData[track.Key].pos = track.Value.pos;
+                        }
+                        position = lerped_position;
+                    }
+                    activeObjects[track.Key].transform.localPosition = position;
                     //PrintDebugMessage("I: Update centroid  -> Parent: " + activeTracks[id].transform.parent.name + " | Position: " + activeTracks[id].transform.localPosition.ToString() + " | Id: " + id);
                 }
 

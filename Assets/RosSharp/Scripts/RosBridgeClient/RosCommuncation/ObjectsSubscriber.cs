@@ -33,6 +33,7 @@ namespace RosSharp.RosBridgeClient
         public delegate void ReceiveTrackData();
         public static event ReceiveTrackData OnReceive;
 
+        public float ros_rcv_time;
         protected override void Start()
         {
             base.Start();
@@ -53,6 +54,7 @@ namespace RosSharp.RosBridgeClient
 
         private void ProcessMessage()
         {
+            ros_rcv_time = Time.time;
             objectTrackData.Clear();
             foreach (Messages.OPT.Track track in trackArray.tracks)
             {
@@ -79,6 +81,7 @@ namespace RosSharp.RosBridgeClient
             }
 
             OnReceive?.Invoke();
+            isMessageReceived = false;
         }
     }
 }

@@ -60,6 +60,7 @@ namespace RosSharp.RosBridgeClient
             }
 
             OnReceive?.Invoke();
+            isMessageReceived = false;
         }
     }
 }
