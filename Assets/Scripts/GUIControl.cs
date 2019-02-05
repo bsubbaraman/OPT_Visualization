@@ -78,6 +78,12 @@ namespace RosSharp.RosBridgeClient
                     theImage.SetActive(!theImage.activeSelf);
                     iS.pulse = true;
                     break;
+                case "GetSnapButton":
+                    iS.pulse = true;
+                    cb.normalColor = Color.white;
+                    cb.highlightedColor = cb.normalColor;
+                    b.colors = cb;
+                    break;
                 case "SnapToCamView":
                     //Quaternion orient = Quaternion.LookRotation(s.cameraRot.eulerAngles, Vector3.up);
                     main.transform.position = s.cameraPos;
