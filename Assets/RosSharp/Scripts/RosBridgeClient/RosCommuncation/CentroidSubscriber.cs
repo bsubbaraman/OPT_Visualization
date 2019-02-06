@@ -26,6 +26,11 @@ namespace RosSharp.RosBridgeClient
         public delegate void ReceiveTrackData();
         public static event ReceiveTrackData OnReceive;
 
+        //for system health averages
+        private float beginTime = 0f;
+        private int count  = 0;
+        public float centroidRate = 0f;
+
         protected override void Start()
         {
             base.Start();
@@ -33,8 +38,12 @@ namespace RosSharp.RosBridgeClient
 
         private void Update()
         {
-            if (isMessageReceived)
+
+            if (isMessageReceived){
+                MessageRate();
                 ProcessMessage();
+            }
+
         }
 
         protected override void ReceiveMessage(Messages.OPT.TrackArray message)
@@ -61,6 +70,17 @@ namespace RosSharp.RosBridgeClient
 
             OnReceive?.Invoke();
             isMessageReceived = false;
+        }
+
+        private void MessageRate(){
+            if (Time.time - beginTime < 1f){
+                count += 1;
+            }
+            else{
+                centroidRate = count / (Time.time - beginTime);
+                beginTime = Time.time;
+                count = 0;
+            } 
         }
     }
 }

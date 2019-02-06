@@ -33,6 +33,11 @@ namespace RosSharp.RosBridgeClient
         public float ros_rcv_time;
         public Visualization viz;
 
+        //for system health averages
+        private float beginTime = 0f;
+        private int count = 0;
+        public float skeletonRate = 0f;
+
         //// Test to store previous joint position, trying to interpolate bw:
         //public Dictionary<int, Vector3[]> previousJointsData = new Dictionary<int, Vector3[]>();
         //public Dictionary<int, Vector3[]> previousJointsDataTemp = new Dictionary<int, Vector3[]>();
@@ -45,10 +50,9 @@ namespace RosSharp.RosBridgeClient
         private void Update()
         {
             if (isMessageReceived)
+            {
+                MessageRate();
                 ProcessMessage();
-            if (checkTime){
-                //Debug.Log(Time.time);
-                checkTime = false;
             }
 
         }
@@ -116,6 +120,20 @@ namespace RosSharp.RosBridgeClient
 
             OnReceive?.Invoke();
             isMessageReceived = false;
+        }
+
+        private void MessageRate()
+        {
+            if (Time.time - beginTime < 1f)
+            {
+                count += 1;
+            }
+            else
+            {
+                skeletonRate = count / (Time.time - beginTime);
+                beginTime = Time.time;
+                count = 0;
+            }
         }
     }
 

@@ -169,7 +169,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: ad83dc05d34bd414680b6108d12415b5, type: 3}
-    m_FontSize: 16
+    m_FontSize: 26
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -442,7 +442,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: ad83dc05d34bd414680b6108d12415b5, type: 3}
-    m_FontSize: 16
+    m_FontSize: 26
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -583,7 +583,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: ad83dc05d34bd414680b6108d12415b5, type: 3}
-    m_FontSize: 16
+    m_FontSize: 26
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -1021,7 +1021,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: ad83dc05d34bd414680b6108d12415b5, type: 3}
-    m_FontSize: 16
+    m_FontSize: 26
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -1875,6 +1875,9 @@ MonoBehaviour:
   s: {fileID: 1533692834}
   activeColour: {r: 0.33333334, g: 0.78431374, b: 0.33333334, a: 1}
   healthPopup: 0
+  centroidSub: {fileID: 1533692830}
+  skeletonSub: {fileID: 1533692827}
+  objectSub: {fileID: 1533692831}
 --- !u!1 &1029081169
 GameObject:
   m_ObjectHideFlags: 0
@@ -1931,7 +1934,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: ad83dc05d34bd414680b6108d12415b5, type: 3}
-    m_FontSize: 16
+    m_FontSize: 26
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -2127,7 +2130,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: ad83dc05d34bd414680b6108d12415b5, type: 3}
-    m_FontSize: 16
+    m_FontSize: 26
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -2563,7 +2566,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: ad83dc05d34bd414680b6108d12415b5, type: 3}
-    m_FontSize: 16
+    m_FontSize: 26
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -3062,6 +3065,7 @@ MonoBehaviour:
   TimeStep: 0
   ros_rcv_time: 0
   viz: {fileID: 1055780065}
+  skeletonRate: 0
 --- !u!114 &1533692828
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3103,6 +3107,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Topic: /tracker/tracks_smoothed
   TimeStep: 0
+  centroidRate: 0
 --- !u!114 &1533692831
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3117,6 +3122,7 @@ MonoBehaviour:
   Topic: /tracker/object_tracks_smoothed
   TimeStep: 0
   ros_rcv_time: 0
+  objectRate: 0
 --- !u!114 &1533692832
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3418,7 +3424,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: ad83dc05d34bd414680b6108d12415b5, type: 3}
-    m_FontSize: 16
+    m_FontSize: 26
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -3755,11 +3761,11 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: ad83dc05d34bd414680b6108d12415b5, type: 3}
-    m_FontSize: 16
+    m_FontSize: 26
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
-    m_MaxSize: 40
+    m_MaxSize: 62
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
