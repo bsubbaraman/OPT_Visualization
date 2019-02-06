@@ -36,30 +36,30 @@ namespace RosSharp.RosBridgeClient
         private bool connectionEstablished = false;
 
         //CHANGE IP
-        private Rect windowRect = new Rect(Screen.width / 2 - (Screen.width / 4 / 2), Screen.height / 2 - Screen.height / 4 / 2, Screen.width / 4, Screen.height / 4);
-        public string IPEnter = "theIP";
+        //private Rect windowRect = new Rect(Screen.width / 2 - (Screen.width / 4 / 2), Screen.height / 2 - Screen.height / 4 / 2, Screen.width / 4, Screen.height / 4);
+        //public string IPEnter = "theIP";
 
-        void OnGUI()
-        {
-            if (!connectionEstablished)
-            {
-                windowRect = GUI.Window(0, windowRect, DoMyWindow, "Server Not Connected");
-            }
-        }
+        //void OnGUI()
+        //{
+        //    if (!connectionEstablished)
+        //    {
+        //        windowRect = GUI.Window(0, windowRect, DoMyWindow, "Server Not Connected");
+        //    }
+        //}
 
-        // Make the contents of the window
-        void DoMyWindow(int windowID)
-        {
-            IPEnter = GUI.TextField(new Rect(20, 40, Screen.width / 4 - 40, 20), IPEnter);
-            if (GUI.Button(new Rect(windowRect.width / 2 - (Screen.width / 4 - 60) / 2, windowRect.height / 2 - 10, 150, 40), "Set New IP"))
-            {
-                print("Got a click");
-                TearDown();
-                SetAddress("ws://" + IPEnter + ":9090");
-                ConnectAndWait();
-                Restart();
-            }
-        }
+        //// Make the contents of the window
+        //void DoMyWindow(int windowID)
+        //{
+        //    IPEnter = GUI.TextField(new Rect(20, 40, Screen.width / 4 - 40, 20), IPEnter);
+        //    if (GUI.Button(new Rect(windowRect.width / 2 - (Screen.width / 4 - 60) / 2, windowRect.height / 2 - 10, 150, 40), "Set New IP"))
+        //    {
+        //        print("Got a click");
+        //        TearDown();
+        //        SetAddress("ws://" + IPEnter + ":9090");
+        //        ConnectAndWait();
+        //        Restart();
+        //    }
+        //}
 
         //END CHANGE IP
         //

@@ -85,6 +85,7 @@ namespace RosSharp.RosBridgeClient
         public Dictionary<int, Vector3[]> previousSkeletonData = new Dictionary<int, Vector3[]>();
         public Dictionary<int, OPTObject> previousObjectData = new Dictionary<int, OPTObject>();
 
+
         private void Start()
         {
             PrintDebugMessage("D: -------- New execution --------");
@@ -96,7 +97,6 @@ namespace RosSharp.RosBridgeClient
         /// </summary>
         public void Update()
         {
-
             // Exit the app when the 'back' button is pressed.
             if (Input.GetKey(KeyCode.Escape))
             {
