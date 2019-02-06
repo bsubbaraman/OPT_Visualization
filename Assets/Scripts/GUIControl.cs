@@ -7,7 +7,7 @@ namespace RosSharp.RosBridgeClient
 
     public class GUIControl : MonoBehaviour
     {
-        public Button m_CentroidButton, m_SkeletonButton, m_ObjectButton, m_ShowImageButton, m_SnapToButton, m_LabelButton, m_GetSnapButton;
+        public Button m_CentroidButton, m_SkeletonButton, m_ObjectButton, m_FacesButton, m_ShowImageButton, m_SnapToButton, m_LabelButton, m_GetSnapButton;
         public Camera main;
         public GameObject theConnector, theController, theImage, cameraRepresentation, Panel, PanelText;
         public Visualization v;
@@ -25,6 +25,7 @@ namespace RosSharp.RosBridgeClient
             m_CentroidButton.onClick.AddListener(() => TaskOnClick(m_CentroidButton));
             m_SkeletonButton.onClick.AddListener(() => TaskOnClick(m_SkeletonButton));
             m_ObjectButton.onClick.AddListener(() => TaskOnClick(m_ObjectButton));
+            m_FacesButton.onClick.AddListener(() => TaskOnClick(m_FacesButton));
             m_ShowImageButton.onClick.AddListener(() => TaskOnClick(m_ShowImageButton));
             m_SnapToButton.onClick.AddListener(() => TaskOnClick(m_SnapToButton));
             m_LabelButton.onClick.AddListener(() => TaskOnClick(m_LabelButton));
@@ -32,30 +33,43 @@ namespace RosSharp.RosBridgeClient
 
             // change panel components based on window size
 
+
             RectTransform rT = Panel.GetComponent<RectTransform>();
             //rT.sizeDelta = new Vector2(rT.sizeDelta.x, Screen.height - 20f);
             rT.sizeDelta = new Vector2(Screen.width/8f, Screen.height-20f);
+
             rT = m_CentroidButton.GetComponent<RectTransform>();
             rT.localPosition = new Vector2(rT.localPosition.x, -35f);
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height/25f);
+
             rT = m_SkeletonButton.GetComponent<RectTransform>();
             rT.localPosition = new Vector2(rT.localPosition.x, -35f - (Screen.height / 25f));
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
+
             rT = m_ObjectButton.GetComponent<RectTransform>();
             rT.localPosition = new Vector2(rT.localPosition.x, -35f - 2*(Screen.height / 25f));
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
+
+            rT = m_FacesButton.GetComponent<RectTransform>();
+            rT.localPosition = new Vector2(rT.localPosition.x, -35f - 3 * (Screen.height / 25f));
+            rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
+
             rT = m_ShowImageButton.GetComponent<RectTransform>();
-            rT.localPosition = new Vector2(rT.localPosition.x, -35f - 3*(Screen.height / 25f));
+            rT.localPosition = new Vector2(rT.localPosition.x, -35f - 4*(Screen.height / 25f));
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
+
             rT = m_GetSnapButton.GetComponent<RectTransform>();
-            rT.localPosition = new Vector2(rT.localPosition.x, -35f - 4 * (Screen.height / 25f));
+            rT.localPosition = new Vector2(rT.localPosition.x, -35f - 5 * (Screen.height / 25f));
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
+
             rT = m_SnapToButton.GetComponent<RectTransform>();
-            rT.localPosition = new Vector2(rT.localPosition.x, -35f - 5*(Screen.height / 25f));
-            rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
-            rT = m_LabelButton.GetComponent<RectTransform>();
             rT.localPosition = new Vector2(rT.localPosition.x, -35f - 6*(Screen.height / 25f));
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
+
+            rT = m_LabelButton.GetComponent<RectTransform>();
+            rT.localPosition = new Vector2(rT.localPosition.x, -35f - 7*(Screen.height / 25f));
+            rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
+
             rT = PanelText.GetComponent<RectTransform>();
             rT.sizeDelta = new Vector2(Screen.width / 8f, Screen.height - 20f);
 
@@ -63,6 +77,7 @@ namespace RosSharp.RosBridgeClient
 
         void TaskOnClick(Button b)
         {
+            Debug.Log("******************* click");
             ColorBlock cb = b.colors;
             //cb.normalColor = b.colors.normalColor == Color.green ? Color.white : Color.green;
             //cb.normalColor = aC;
@@ -80,6 +95,8 @@ namespace RosSharp.RosBridgeClient
                     break;
                 case "ObjectsButton":
                     v.objectView = !v.objectView;
+                    break;
+                case "FacesButton":
                     break;
                 case "ShowImageButton":
                     //theConnector.GetComponent<ImageSubscriber>().enabled = !theConnector.GetComponent<ImageSubscriber>().enabled;

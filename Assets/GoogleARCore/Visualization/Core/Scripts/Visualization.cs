@@ -58,6 +58,7 @@ namespace RosSharp.RosBridgeClient
         public bool skeletonView;
         public bool objectView;
         public bool labelView;
+        public bool facesView;
 
         const float DISTANCE_ANGLE = 4.0f;
         const float DISTANCE_METER = 0.05f;
@@ -140,9 +141,14 @@ namespace RosSharp.RosBridgeClient
             {
                 RemoveAllObjects();
             }
+            if (facesView)
+            {
+                FaceRecognition();
+            }
+
             RotateLabels(labels);
             RecognizePoseGlow();
-            FaceRecognition();
+
             PrintDebugMessage("I: Update complete correctly!");
 
         }
@@ -167,7 +173,8 @@ namespace RosSharp.RosBridgeClient
                         Destroy(activeTracks[key]);
                         activeTracks.Remove(key);
                     }
-                    if (labels[key]){
+                    if (labels[key])
+                    {
                         Destroy(labels[key]);
                         labels.Remove(key);
                     }
@@ -216,11 +223,12 @@ namespace RosSharp.RosBridgeClient
                         Destroy(activeObjects[key]);
                         activeObjects.Remove(key);
                     }
-                    if (labels[key]){
+                    if (labels[key])
+                    {
                         Destroy(labels[key]);
                         labels.Remove(key);
                     }
-                    
+
 
                     PrintDebugMessage("I: Destroy object: " + key);
                 }
@@ -362,8 +370,10 @@ namespace RosSharp.RosBridgeClient
         /// <summary>
         ///  Rotates labels so they always look at the main camera
         /// </summary>
-        private void RotateLabels(Dictionary<int, GameObject> d){
-            foreach(KeyValuePair<int, GameObject> kvp in d){
+        private void RotateLabels(Dictionary<int, GameObject> d)
+        {
+            foreach (KeyValuePair<int, GameObject> kvp in d)
+            {
                 TextMesh tm = kvp.Value.GetComponent<TextMesh>();
                 Vector3 v = main.transform.position - tm.transform.position;
                 v.x = v.z = 0.0f;
@@ -537,10 +547,12 @@ namespace RosSharp.RosBridgeClient
             bool interpFlag = previousSkeletonData.ContainsKey(key);
             //float lerp = 0f;
             Vector3[] p_poseInput = new Vector3[0];
-            if (interpFlag){
+            if (interpFlag)
+            {
                 p_poseInput = previousSkeletonData[key];
             }
-            else{
+            else
+            {
                 previousSkeletonData.Add(key, new Vector3[15]);
             }
 
@@ -611,19 +623,22 @@ namespace RosSharp.RosBridgeClient
             //Debug.Log("CHEST VEC __________" + chest_vec);
             //Debug.Log("CHEST __________" + chest.position);
             // ** chest interp
-            if (interpFlag){
+            if (interpFlag)
+            {
                 Vector3 p_chest_vec = p_poseInput[14];
                 float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
                 Vector3 lerped_chest_vec = Vector3.Lerp(p_chest_vec, chest_vec, lerp);
                 chest_vec = lerped_chest_vec;
-                if (lerp > 1f){
+                if (lerp > 1f)
+                {
                     previousSkeletonData[key][14] = chest_vec;
                 }
             }
             chest.position = chest_vec;
 
             Vector3 shoulder_shoulder_vec = l_shoulder_vec - r_shoulder_vec;
-            if (interpFlag){
+            if (interpFlag)
+            {
                 Vector3 p_l_shoulder_vec = p_poseInput[5];
                 Vector3 p_r_shoulder_vec = p_poseInput[2];
                 Vector3 p_shoulder_shoulder_vec = p_l_shoulder_vec - p_r_shoulder_vec;
@@ -631,7 +646,8 @@ namespace RosSharp.RosBridgeClient
                 Vector3 lerped_shoulder_shoulder_vec = Vector3.Lerp(p_shoulder_shoulder_vec, shoulder_shoulder_vec, lerp);
                 quaternionValue = Quaternion.LookRotation(lerped_shoulder_shoulder_vec);
             }
-            else{
+            else
+            {
                 quaternionValue = Quaternion.LookRotation(shoulder_shoulder_vec);
             }
             quaternionValue *= Quaternion.Euler(0.0f, 0.0f, -90.0f);
@@ -657,12 +673,13 @@ namespace RosSharp.RosBridgeClient
 
             // ** test interpolation: r shoulder
             Vector3 r_shoulder_elbow = r_elbow_vec - r_shoulder_vec;
-            if (interpFlag){
+            if (interpFlag)
+            {
                 Vector3 p_r_elbow_vec = p_poseInput[3];
                 Vector3 p_r_shoulder_vec = p_poseInput[2];
                 Vector3 p_r_shoulder_elbow = p_r_elbow_vec - p_r_shoulder_vec;
                 // lerp vector
-                float lerp = (Time.time - skeletonSub.ros_rcv_time)/lerp_period;
+                float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
                 Vector3 lerped_r_shoulder_elbow = Vector3.Lerp(p_r_shoulder_elbow, r_shoulder_elbow, lerp);
                 quaternionValue = XLookRotation(lerped_r_shoulder_elbow);
                 // end lerp vector
@@ -674,19 +691,21 @@ namespace RosSharp.RosBridgeClient
                 //Debug.Log(from + " " + to + " " + lerp/0.15f);
                 // ** end angle lerp
 
-                if (lerp > 1f){
+                if (lerp > 1f)
+                {
                     previousSkeletonData[key][2] = r_shoulder_vec;
                     previousSkeletonData[key][3] = r_elbow_vec;
                 }
             }
-            else{
+            else
+            {
                 quaternionValue = XLookRotation(r_shoulder_elbow);
                 //previousSkeletonData.Add(key, new Vector3[15]);
             }
             quaternionValue *= Quaternion.Euler(180.0f, 0.0f, 0.0f);
             right_shoulder.rotation = quaternionValue;
 
-        
+
 
             // ** test interpolation: r elbow
             Vector3 r_elbow_wrist = r_wrist_vec - r_elbow_vec;
@@ -700,7 +719,8 @@ namespace RosSharp.RosBridgeClient
                 Vector3 lerped_r_elbow_wrist = Vector3.Lerp(p_r_elbow_wrist, r_elbow_wrist, lerp);
                 quaternionValue = XLookRotation(lerped_r_elbow_wrist);
                 // end lerp with vector
-                if (lerp > 1f){
+                if (lerp > 1f)
+                {
                     previousSkeletonData[key][4] = r_wrist_vec;
                 }
 
@@ -828,7 +848,8 @@ namespace RosSharp.RosBridgeClient
 
             // ** interpolate hip
             Vector3 hip_midpoint = (l_hip_vec + r_hip_vec) / 2;
-            if (interpFlag){
+            if (interpFlag)
+            {
                 Vector3 p_l_hip_vec = p_poseInput[11];
                 Vector3 p_r_hip_vec = p_poseInput[8];
                 Vector3 p_hip_midpoint = (p_l_hip_vec + p_r_hip_vec) / 2;
@@ -846,7 +867,8 @@ namespace RosSharp.RosBridgeClient
             hip.position = hip_midpoint;
 
             Vector3 hip_hip_vec = r_hip_vec - l_hip_vec;
-            if (interpFlag){
+            if (interpFlag)
+            {
                 Vector3 p_l_hip_vec = p_poseInput[11];
                 Vector3 p_r_hip_vec = p_poseInput[8];
                 Vector3 p_hip_hip_vec = p_r_hip_vec - p_l_hip_vec;
@@ -1117,7 +1139,8 @@ namespace RosSharp.RosBridgeClient
         }
 
         //** TRYING INVERSE KINEMATICS
-        public void InverseKinematics(Transform hip, Transform knee, Transform foot, Vector3 target, int direction){
+        public void InverseKinematics(Transform hip, Transform knee, Transform foot, Vector3 target, int direction)
+        {
             Transform orientation;
             Vector3 hip_OffsetRotation;
             Vector3 knee_OffsetRotation;
@@ -1179,13 +1202,16 @@ namespace RosSharp.RosBridgeClient
 
 
         public GameObject grid;
-        public void PositionGround(){
+        public void PositionGround()
+        {
             Animator animator;
             float min = 0;
-            foreach(GameObject avatar in activeSkeleton.Values){
+            foreach (GameObject avatar in activeSkeleton.Values)
+            {
                 animator = avatar.GetComponent<Animator>();
                 Transform left_foot = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
-                if (left_foot.transform.position.y < min){
+                if (left_foot.transform.position.y < min)
+                {
                     min = left_foot.transform.position.y;
                 }
             }
@@ -1235,10 +1261,12 @@ namespace RosSharp.RosBridgeClient
                 //int id = track.Key;
                 //Vector3 poseInput = track.Value;
                 bool interpFlag = false;
-                if (previousObjectData.ContainsKey(track.Key)){
+                if (previousObjectData.ContainsKey(track.Key))
+                {
                     interpFlag = true;
                 }
-                else{
+                else
+                {
                     previousObjectData.Add(track.Key, track.Value);
                 }
 
@@ -1266,7 +1294,8 @@ namespace RosSharp.RosBridgeClient
                 else
                 {
                     Vector3 position = track.Value.pos;
-                    if (interpFlag){
+                    if (interpFlag)
+                    {
                         float lerp = (Time.time - objectSub.ros_rcv_time) / 0.08f;
                         Vector3 lerped_position = Vector3.Lerp(previousObjectData[track.Key].pos, track.Value.pos, lerp);
                         if (lerp > 1f)
@@ -1306,11 +1335,14 @@ namespace RosSharp.RosBridgeClient
             }
         }
 
-        private void FaceRecognition(){
+        private void FaceRecognition()
+        {
             // only adding name to centroid for now
             Dictionary<int, string> dataFromFaceSub = recognizedFacesSub.recognizedFaceData;
-            foreach (KeyValuePair<int, string> face_track in dataFromFaceSub){
-                if (labels.ContainsKey(face_track.Key)){
+            foreach (KeyValuePair<int, string> face_track in dataFromFaceSub)
+            {
+                if (labels.ContainsKey(face_track.Key))
+                {
                     TextMesh tm = labels[face_track.Key].GetComponent<TextMesh>();
                     tm.text = face_track.Key.ToString() + "\n" + dataFromFaceSub[face_track.Key];
                 }
@@ -1320,7 +1352,7 @@ namespace RosSharp.RosBridgeClient
         private void RecognizePoseGlow()
         {
             Dictionary<int, RecognizedPose> dataFromPoseRecognitionSub = recognizedPoseSub.recognizedPoseData;
-          
+
             PrintDebugMessage("I: Received data from objectSub length: " + dataFromPoseRecognitionSub.Count);
 
             foreach (KeyValuePair<int, GameObject> track in activeSkeleton)
@@ -1328,10 +1360,12 @@ namespace RosSharp.RosBridgeClient
                 int id = track.Key;
                 GameObject r2 = track.Value.transform.GetChild(0).gameObject;
                 Material m = r2.GetComponent<Renderer>().material;
-                if (dataFromPoseRecognitionSub.ContainsKey(id)){
+                if (dataFromPoseRecognitionSub.ContainsKey(id))
+                {
                     m.SetFloat("_MKGlowPower", 0.5f);
                 }
-                else {
+                else
+                {
                     m.SetFloat("_MKGlowPower", 0.0f);
                 }
             }
