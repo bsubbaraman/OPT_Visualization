@@ -2,53 +2,63 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraMovement : MonoBehaviour
+
+namespace RosSharp.RosBridgeClient
 {
-    public Camera main;
-
-    //drag movement
-    public float dragSpeed = 2f;
-    private Vector3 dragOrigin;
-
-    //orbit movement
-    public float orbitSensitivity = 2f;
-    private float xRotate;
-    private float yRotate;
-
-    // Update is called once per frame
-    void Update()
+    public class CameraMovement : MonoBehaviour
     {
-        Zoom();
-        Drag();
-        Orbit();
-    }
+        public Camera main;
+        public GUIControl guiControl;
 
-    void Zoom(){
-        transform.position += transform.forward * Input.GetAxis("Mouse ScrollWheel");
-    }
 
-    void Drag()
-    {
-        if (Input.GetMouseButtonDown(0))
+        //drag movement
+        public float dragSpeed = 2f;
+        private Vector3 dragOrigin;
+
+        //orbit movement
+        public float orbitSensitivity = 2f;
+        private float xRotate;
+        private float yRotate;
+
+        // Update is called once per frame
+        void Update()
         {
-            dragOrigin = Input.mousePosition;
-            return;
+            Zoom();
+            Drag();
+            Orbit();
         }
 
-        if (!Input.GetMouseButton(0)) return;
-
-        Vector3 pos = main.ScreenToViewportPoint(Input.mousePosition - dragOrigin);
-        Vector3 move = new Vector3(pos.x * dragSpeed, pos.y * dragSpeed, 0);
-
-        transform.Translate(move, Space.World);
-    }
-
-    void Orbit(){
-        if (Input.GetMouseButton(1))
+        void Zoom()
         {
-            xRotate = orbitSensitivity * Input.GetAxis("Mouse X");
-            yRotate = orbitSensitivity * Input.GetAxis("Mouse Y");
-            transform.eulerAngles += new Vector3(xRotate, xRotate, 0);
+            transform.position += transform.forward * Input.GetAxis("Mouse ScrollWheel");
+        }
+
+        void Drag()
+        {
+            if (!guiControl.healthPopup){
+                if (Input.GetMouseButtonDown(0))
+                {
+                    dragOrigin = Input.mousePosition;
+                    return;
+                }
+
+                if (!Input.GetMouseButton(0)) return;
+
+                Vector3 pos = main.ScreenToViewportPoint(Input.mousePosition - dragOrigin);
+                Vector3 move = new Vector3(pos.x * dragSpeed, pos.y * dragSpeed, 0);
+
+                transform.Translate(move, Space.World);
+            }
+        }
+
+        void Orbit()
+        {
+            if (Input.GetMouseButton(1))
+            {
+                xRotate = orbitSensitivity * Input.GetAxis("Mouse X");
+                yRotate = orbitSensitivity * Input.GetAxis("Mouse Y");
+                transform.eulerAngles += new Vector3(xRotate, xRotate, 0);
+            }
         }
     }
 }

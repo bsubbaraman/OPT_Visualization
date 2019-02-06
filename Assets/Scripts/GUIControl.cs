@@ -7,15 +7,16 @@ namespace RosSharp.RosBridgeClient
 
     public class GUIControl : MonoBehaviour
     {
-        public Button m_CentroidButton, m_SkeletonButton, m_ObjectButton, m_FacesButton, m_ShowImageButton, m_SnapToButton, m_LabelButton, m_GetSnapButton;
+        public Button m_CentroidButton, m_SkeletonButton, m_ObjectButton, m_FacesButton, m_ShowImageButton, m_SnapToButton, m_LabelButton, m_GetSnapButton, m_SystemHealth;
         public Camera main;
         public GameObject theConnector, theController, theImage, cameraRepresentation, Panel, PanelText;
         public Visualization v;
         public ImageSubscriber iS;
         public TFSubscriber s;
-        
 
-        public Color aC;
+        public Color activeColour;
+        public bool healthPopup;
+        private Rect windowRect = new Rect(Screen.width / 2 - (Screen.width / 4 / 2), Screen.height / 2 - Screen.height / 4 / 2, Screen.width / 4, Screen.height / 4);
 
         // Use this for initialization
         void Start()
@@ -30,7 +31,7 @@ namespace RosSharp.RosBridgeClient
             m_SnapToButton.onClick.AddListener(() => TaskOnClick(m_SnapToButton));
             m_LabelButton.onClick.AddListener(() => TaskOnClick(m_LabelButton));
             m_GetSnapButton.onClick.AddListener(() => TaskOnClick(m_GetSnapButton));
-
+            m_SystemHealth.onClick.AddListener(() => TaskOnClick(m_SystemHealth));
             // change panel components based on window size
 
 
@@ -39,35 +40,39 @@ namespace RosSharp.RosBridgeClient
             rT.sizeDelta = new Vector2(Screen.width/8f, Screen.height-20f);
 
             rT = m_CentroidButton.GetComponent<RectTransform>();
-            rT.localPosition = new Vector2(rT.localPosition.x, -35f);
+            rT.localPosition = new Vector2(rT.localPosition.x, -50f);
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height/25f);
 
             rT = m_SkeletonButton.GetComponent<RectTransform>();
-            rT.localPosition = new Vector2(rT.localPosition.x, -35f - (Screen.height / 25f));
+            rT.localPosition = new Vector2(rT.localPosition.x, -50f - (Screen.height / 25f));
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
 
             rT = m_ObjectButton.GetComponent<RectTransform>();
-            rT.localPosition = new Vector2(rT.localPosition.x, -35f - 2*(Screen.height / 25f));
+            rT.localPosition = new Vector2(rT.localPosition.x, -50f - 2*(Screen.height / 25f));
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
 
             rT = m_FacesButton.GetComponent<RectTransform>();
-            rT.localPosition = new Vector2(rT.localPosition.x, -35f - 3 * (Screen.height / 25f));
+            rT.localPosition = new Vector2(rT.localPosition.x, -50f - 3 * (Screen.height / 25f));
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
 
             rT = m_ShowImageButton.GetComponent<RectTransform>();
-            rT.localPosition = new Vector2(rT.localPosition.x, -35f - 4*(Screen.height / 25f));
+            rT.localPosition = new Vector2(rT.localPosition.x, -50f - 4*(Screen.height / 25f));
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
 
             rT = m_GetSnapButton.GetComponent<RectTransform>();
-            rT.localPosition = new Vector2(rT.localPosition.x, -35f - 5 * (Screen.height / 25f));
+            rT.localPosition = new Vector2(rT.localPosition.x, -50f - 5 * (Screen.height / 25f));
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
 
             rT = m_SnapToButton.GetComponent<RectTransform>();
-            rT.localPosition = new Vector2(rT.localPosition.x, -35f - 6*(Screen.height / 25f));
+            rT.localPosition = new Vector2(rT.localPosition.x, -50f - 6*(Screen.height / 25f));
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
 
             rT = m_LabelButton.GetComponent<RectTransform>();
-            rT.localPosition = new Vector2(rT.localPosition.x, -35f - 7*(Screen.height / 25f));
+            rT.localPosition = new Vector2(rT.localPosition.x, -50f - 7*(Screen.height / 25f));
+            rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
+
+            rT = m_SystemHealth.GetComponent<RectTransform>();
+            rT.localPosition = new Vector2(rT.localPosition.x, -50f - 8 * (Screen.height / 25f));
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
 
             rT = PanelText.GetComponent<RectTransform>();
@@ -77,11 +82,10 @@ namespace RosSharp.RosBridgeClient
 
         void TaskOnClick(Button b)
         {
-            Debug.Log("******************* click");
             ColorBlock cb = b.colors;
             //cb.normalColor = b.colors.normalColor == Color.green ? Color.white : Color.green;
             //cb.normalColor = aC;
-            cb.normalColor = b.colors.normalColor == aC ? Color.white : aC;
+            cb.normalColor = b.colors.normalColor == activeColour ? Color.white : activeColour;
             cb.highlightedColor = cb.normalColor;
             b.colors = cb;
             // update viewmode for viz
@@ -97,6 +101,7 @@ namespace RosSharp.RosBridgeClient
                     v.objectView = !v.objectView;
                     break;
                 case "FacesButton":
+                    v.facesView = !v.facesView;
                     break;
                 case "ShowImageButton":
                     //theConnector.GetComponent<ImageSubscriber>().enabled = !theConnector.GetComponent<ImageSubscriber>().enabled;
@@ -123,9 +128,28 @@ namespace RosSharp.RosBridgeClient
                 case "LabelsButton":
                     v.ToggleLabels();
                     break;
+                case "SystemHealth":
+                    healthPopup = !healthPopup;
+                    break;
             }
         }
 
+        private void OnGUI()
+        {
+            if (healthPopup){
+                windowRect = GUI.Window(0, windowRect, DoMyWindow, "System Health");
+            }
+        }
+
+        void DoMyWindow(int windowID)
+        {
+            GUI.DragWindow(new Rect(0, 0, 10000, 20));
+            //IPEnter = GUI.TextField(new Rect(20, 40, Screen.width / 4 - 40, 20), IPEnter);
+            if (GUI.Button(new Rect(windowRect.width / 2 - (Screen.width / 4 - 60) / 2, windowRect.height / 2 - 10, 150, 40), "Set New IP"))
+            {
+                print("Got a click");
+            }
+        }
         // Update is called once per frame
         void Update()
         {
