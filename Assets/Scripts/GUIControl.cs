@@ -138,8 +138,15 @@ namespace RosSharp.RosBridgeClient
             }
         }
 
+
+        private GUIStyle systemHealthStyle = new GUIStyle();
+        public Font font;
+
+        //public Font font;
         private void OnGUI()
         {
+            systemHealthStyle.normal.textColor = Color.white;
+            systemHealthStyle.fontSize = 30;
             if (healthPopup){
                 windowRect = GUI.Window(0, windowRect, DoMyWindow, "System Health");
             }
@@ -147,15 +154,15 @@ namespace RosSharp.RosBridgeClient
 
         void DoMyWindow(int windowID)
         {
-            GUI.DragWindow(new Rect(0, 0, 10000, 20));
-            GUI.Label(new Rect(10, 20, 200, 20), "Topic Name");
-            GUI.Label(new Rect(Screen.width / 3 - 40, 20, 50, 20), "f (hz)");
-            GUI.Label(new Rect(10, 40, 200, 20), "/tracker/tracks_smoothed:");
-            GUI.Label(new Rect(Screen.width / 3 - 40, 40, 50, 20), centroidSub.centroidRate.ToString("F1"));
-            GUI.Label(new Rect(10, 60, 200, 20), "/tracker/skeleton_tracks:");
-            GUI.Label(new Rect(Screen.width / 3 - 40, 60, 50, 20), skeletonSub.skeletonRate.ToString("F1"));
-            GUI.Label(new Rect(10, 80, 200, 20), "tracker/object_tracks:");
-            GUI.Label(new Rect(Screen.width / 3 - 40, 80, 50, 20), objectSub.objectRate.ToString("F1"));
+            GUI.DragWindow(new Rect(0, 0, 10000, 50));
+            GUI.Label(new Rect(10, 20, 200, 20), "Topic Name", systemHealthStyle);
+            GUI.Label(new Rect(Screen.width / 3 - 80, 20, 50, 20), "f (hz)", systemHealthStyle);
+            GUI.Label(new Rect(10, 50, 200, 20), "/tracker/tracks_smoothed:", systemHealthStyle);
+            GUI.Label(new Rect(Screen.width / 3 - 80, 50, 50, 20), centroidSub.centroidRate.ToString("F1"), systemHealthStyle);
+            GUI.Label(new Rect(10, 80, 200, 20), "/tracker/skeleton_tracks:", systemHealthStyle);
+            GUI.Label(new Rect(Screen.width / 3 - 80, 80, 50, 20), skeletonSub.skeletonRate.ToString("F1"), systemHealthStyle);
+            GUI.Label(new Rect(10, 110, 200, 20), "/tracker/object_tracks:", systemHealthStyle);
+            GUI.Label(new Rect(Screen.width / 3 - 80, 110, 50, 20), objectSub.objectRate.ToString("F1"), systemHealthStyle);
 
             //IPEnter = GUI.TextField(new Rect(20, 40, Screen.width / 4 - 40, 20), IPEnter);
             //if (GUI.Button(new Rect(windowRect.width / 2 - (Screen.width / 4 - 60) / 2, windowRect.height / 2 - 10, 150, 40), "Set New IP"))

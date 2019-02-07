@@ -85,12 +85,12 @@ TextMesh:
   m_GameObject: {fileID: 1723776156424130}
   m_Text: hello
   m_OffsetZ: 0
-  m_CharacterSize: 1
+  m_CharacterSize: 0.03
   m_LineSpacing: 1
   m_Anchor: 7
   m_Alignment: 1
   m_TabSize: 4
-  m_FontSize: 0
+  m_FontSize: 300
   m_FontStyle: 0
   m_RichText: 1
   m_Font: {fileID: 12800000, guid: f66655b38428d40769e9e41ee237cbdc, type: 3}

@@ -145,6 +145,9 @@ namespace RosSharp.RosBridgeClient
             {
                 FaceRecognition();
             }
+            else{
+                RemoveAllFaceData();
+            }
 
             RotateLabels(labels);
             RecognizePoseGlow();
@@ -236,6 +239,12 @@ namespace RosSharp.RosBridgeClient
 
         }
 
+        public void RemoveAllFaceData(){
+            foreach (KeyValuePair<int, GameObject> label in labels){
+                TextMesh tm = label.Value.GetComponent<TextMesh>();
+                tm.text = label.Key.ToString();
+            }
+        }
         /// <summary>
         /// Prints the debug message.
         /// </summary>
@@ -619,6 +628,7 @@ namespace RosSharp.RosBridgeClient
             }
 
             // END SCALING
+
             Quaternion quaternionValue;
             //Debug.Log("CHEST VEC __________" + chest_vec);
             //Debug.Log("CHEST __________" + chest.position);
@@ -672,156 +682,160 @@ namespace RosSharp.RosBridgeClient
             // ** end original chest
 
             // ** test interpolation: r shoulder
-            Vector3 r_shoulder_elbow = r_elbow_vec - r_shoulder_vec;
-            if (interpFlag)
-            {
-                Vector3 p_r_elbow_vec = p_poseInput[3];
-                Vector3 p_r_shoulder_vec = p_poseInput[2];
-                Vector3 p_r_shoulder_elbow = p_r_elbow_vec - p_r_shoulder_vec;
-                // lerp vector
-                float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
-                Vector3 lerped_r_shoulder_elbow = Vector3.Lerp(p_r_shoulder_elbow, r_shoulder_elbow, lerp);
-                quaternionValue = XLookRotation(lerped_r_shoulder_elbow);
-                // end lerp vector
-                // lerp with angle
-                //Quaternion from = XLookRotation(p_r_shoulder_elbow);
-                //Quaternion to = XLookRotation(r_shoulder_elbow);
-                //float lerp = Time.time - skeletonSub.ros_rcv_time;
-                //quaternionValue = Quaternion.Lerp(from, to, lerp/0.15f);
-                //Debug.Log(from + " " + to + " " + lerp/0.15f);
-                // ** end angle lerp
 
-                if (lerp > 1f)
-                {
-                    previousSkeletonData[key][2] = r_shoulder_vec;
-                    previousSkeletonData[key][3] = r_elbow_vec;
-                }
-            }
-            else
-            {
-                quaternionValue = XLookRotation(r_shoulder_elbow);
-                //previousSkeletonData.Add(key, new Vector3[15]);
-            }
-            quaternionValue *= Quaternion.Euler(180.0f, 0.0f, 0.0f);
-            right_shoulder.rotation = quaternionValue;
-
-
-
-            // ** test interpolation: r elbow
-            Vector3 r_elbow_wrist = r_wrist_vec - r_elbow_vec;
-            if (interpFlag)
-            {
-                Vector3 p_r_elbow_vec = p_poseInput[3];
-                Vector3 p_r_wrist_vec = p_poseInput[4];
-                Vector3 p_r_elbow_wrist = p_r_wrist_vec - p_r_elbow_vec;
-                // lerp with vector
-                float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
-                Vector3 lerped_r_elbow_wrist = Vector3.Lerp(p_r_elbow_wrist, r_elbow_wrist, lerp);
-                quaternionValue = XLookRotation(lerped_r_elbow_wrist);
-                // end lerp with vector
-                if (lerp > 1f)
-                {
-                    previousSkeletonData[key][4] = r_wrist_vec;
-                }
-
-            }
-            else
-            {
-                quaternionValue = XLookRotation(r_shoulder_elbow);
-                //previousSkeletonData.Add(key, new Vector3[15]);
-            }
-            quaternionValue *= Quaternion.Euler(180.0f, 0.0f, 0.0f);
-            right_elbow.rotation = quaternionValue;
-
-            //quaternionValue = XLookRotation(r_elbow_wrist);
-            //PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, right_elbow.rotation.eulerAngles) % 360);
-            //if (Vector3.Distance(quaternionValue.eulerAngles, right_elbow.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
-            //{
-            //    right_elbow.rotation = quaternionValue;
-            //}
-
-            //quaternionValue = XLookRotation(r_shoulder_elbow);
-
-            //PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, right_shoulder.rotation.eulerAngles) % 360);
-            //if (Vector3.Distance(quaternionValue.eulerAngles, right_shoulder.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
-            //{
-            //    right_shoulder.rotation = quaternionValue;
-            //    Debug.Log("rotated");
-            //}
-            // ** end test
-
-            // ** original r shoulder
+            // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             //Vector3 r_shoulder_elbow = r_elbow_vec - r_shoulder_vec;
-            //quaternionValue = XLookRotation(r_shoulder_elbow);
+            //if (interpFlag)
+            //{
+            //    Vector3 p_r_elbow_vec = p_poseInput[3];
+            //    Vector3 p_r_shoulder_vec = p_poseInput[2];
+            //    Vector3 p_r_shoulder_elbow = p_r_elbow_vec - p_r_shoulder_vec;
+            //    // lerp vector
+            //    float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
+            //    Vector3 lerped_r_shoulder_elbow = Vector3.Lerp(p_r_shoulder_elbow, r_shoulder_elbow, lerp);
+            //    quaternionValue = XLookRotation(lerped_r_shoulder_elbow);
+            //    // end lerp vector
+            //    // lerp with angle
+            //    //Quaternion from = XLookRotation(p_r_shoulder_elbow);
+            //    //Quaternion to = XLookRotation(r_shoulder_elbow);
+            //    //float lerp = Time.time - skeletonSub.ros_rcv_time;
+            //    //quaternionValue = Quaternion.Lerp(from, to, lerp/0.15f);
+            //    //Debug.Log(from + " " + to + " " + lerp/0.15f);
+            //    // ** end angle lerp
+
+            //    if (lerp > 1f)
+            //    {
+            //        previousSkeletonData[key][2] = r_shoulder_vec;
+            //        previousSkeletonData[key][3] = r_elbow_vec;
+            //    }
+            //}
+            //else
+            //{
+            //    quaternionValue = XLookRotation(r_shoulder_elbow);
+            //    //previousSkeletonData.Add(key, new Vector3[15]);
+            //}
             //quaternionValue *= Quaternion.Euler(180.0f, 0.0f, 0.0f);
-            //PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, right_shoulder.rotation.eulerAngles) % 360);
-            //if (Vector3.Distance(quaternionValue.eulerAngles, right_shoulder.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
-            //{
-            //    right_shoulder.rotation = quaternionValue;
-            //}
-            // ** end original 
+            //right_shoulder.rotation = quaternionValue;
 
-            // **original r elbow
-            // place elbow correctly
+
+
+            //// ** test interpolation: r elbow
             //Vector3 r_elbow_wrist = r_wrist_vec - r_elbow_vec;
-            //quaternionValue = XLookRotation(r_elbow_wrist);
-            //PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, right_elbow.rotation.eulerAngles) % 360);
-            //if (Vector3.Distance(quaternionValue.eulerAngles, right_elbow.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
+            //if (interpFlag)
             //{
-            //    right_elbow.rotation = quaternionValue;
+            //    Vector3 p_r_elbow_vec = p_poseInput[3];
+            //    Vector3 p_r_wrist_vec = p_poseInput[4];
+            //    Vector3 p_r_elbow_wrist = p_r_wrist_vec - p_r_elbow_vec;
+            //    // lerp with vector
+            //    float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
+            //    Vector3 lerped_r_elbow_wrist = Vector3.Lerp(p_r_elbow_wrist, r_elbow_wrist, lerp);
+            //    quaternionValue = XLookRotation(lerped_r_elbow_wrist);
+            //    // end lerp with vector
+            //    if (lerp > 1f)
+            //    {
+            //previousSkeletonData[key][4] = r_wrist_vec;
+            //    }
+
             //}
-            // ** end original
-            // ** interp left shoulder
-            Vector3 l_shoulder_elbow = l_shoulder_vec - l_elbow_vec;
-            if (interpFlag)
-            {
-                Vector3 p_l_shoulder_vec = p_poseInput[5];
-                Vector3 p_l_elbow_vec = p_poseInput[6];
-                Vector3 p_l_shoulder_elbow = p_l_shoulder_vec - p_l_elbow_vec;
-                // lerp with vector
-                float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
-                Vector3 lerped_l_shoulder_elbow = Vector3.Lerp(p_l_shoulder_elbow, l_shoulder_elbow, lerp);
-                quaternionValue = XLookRotation(lerped_l_shoulder_elbow);
-                // end lerp with vector
-                if (lerp > 1f)
-                {
-                    previousSkeletonData[key][5] = l_shoulder_vec;
-                    previousSkeletonData[key][6] = l_elbow_vec;
-                }
+            //else
+            //{
+            //    quaternionValue = XLookRotation(r_shoulder_elbow);
+            //    //previousSkeletonData.Add(key, new Vector3[15]);
+            //}
+            //quaternionValue *= Quaternion.Euler(180.0f, 0.0f, 0.0f);
+            //right_elbow.rotation = quaternionValue;
 
-            }
-            else
-            {
-                quaternionValue = XLookRotation(l_shoulder_elbow);
-                //previousSkeletonData.Add(key, new Vector3[15]);
-            }
-            left_shoulder.rotation = quaternionValue;
-            // ** end interp left shoulder
+            ////quaternionValue = XLookRotation(r_elbow_wrist);
+            ////PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, right_elbow.rotation.eulerAngles) % 360);
+            ////if (Vector3.Distance(quaternionValue.eulerAngles, right_elbow.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
+            ////{
+            ////    right_elbow.rotation = quaternionValue;
+            ////}
 
-            // ** interp left elbow
-            Vector3 l_elbow_wrist = l_elbow_vec - l_wrist_vec;
-            if (interpFlag)
-            {
-                Vector3 p_l_elbow_vec = p_poseInput[6];
-                Vector3 p_l_wrist_vec = p_poseInput[7];
-                Vector3 p_l_elbow_wrist = p_l_elbow_vec - p_l_wrist_vec;
-                // lerp with vector
-                float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
-                Vector3 lerped_l_elbow_wrist = Vector3.Lerp(p_l_elbow_wrist, l_elbow_wrist, lerp);
-                quaternionValue = XLookRotation(lerped_l_elbow_wrist);
-                // end lerp with vector
-                if (lerp > 1f)
-                {
-                    previousSkeletonData[key][7] = l_wrist_vec;
-                }
+            ////quaternionValue = XLookRotation(r_shoulder_elbow);
 
-            }
-            else
-            {
-                quaternionValue = XLookRotation(l_elbow_wrist);
-                //previousSkeletonData.Add(key, new Vector3[15]);
-            }
-            left_elbow.rotation = quaternionValue;
+            ////PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, right_shoulder.rotation.eulerAngles) % 360);
+            ////if (Vector3.Distance(quaternionValue.eulerAngles, right_shoulder.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
+            ////{
+            ////    right_shoulder.rotation = quaternionValue;
+            ////    Debug.Log("rotated");
+            ////}
+            //// ** end test
+
+            //// ** original r shoulder
+            ////Vector3 r_shoulder_elbow = r_elbow_vec - r_shoulder_vec;
+            ////quaternionValue = XLookRotation(r_shoulder_elbow);
+            ////quaternionValue *= Quaternion.Euler(180.0f, 0.0f, 0.0f);
+            ////PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, right_shoulder.rotation.eulerAngles) % 360);
+            ////if (Vector3.Distance(quaternionValue.eulerAngles, right_shoulder.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
+            ////{
+            ////    right_shoulder.rotation = quaternionValue;
+            ////}
+            //// ** end original 
+
+            //// **original r elbow
+            //// place elbow correctly
+            Vector3 r_elbow_wrist = r_wrist_vec - r_elbow_vec;
+            ////quaternionValue = XLookRotation(r_elbow_wrist);
+            ////PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, right_elbow.rotation.eulerAngles) % 360);
+            ////if (Vector3.Distance(quaternionValue.eulerAngles, right_elbow.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
+            ////{
+            ////    right_elbow.rotation = quaternionValue;
+            ////}
+            //// ** end original
+            //// ** interp left shoulder
+            //Vector3 l_shoulder_elbow = l_shoulder_vec - l_elbow_vec;
+            //if (interpFlag)
+            //{
+            //    Vector3 p_l_shoulder_vec = p_poseInput[5];
+            //    Vector3 p_l_elbow_vec = p_poseInput[6];
+            //    Vector3 p_l_shoulder_elbow = p_l_shoulder_vec - p_l_elbow_vec;
+            //    // lerp with vector
+            //    float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
+            //    Vector3 lerped_l_shoulder_elbow = Vector3.Lerp(p_l_shoulder_elbow, l_shoulder_elbow, lerp);
+            //    quaternionValue = XLookRotation(lerped_l_shoulder_elbow);
+            //    // end lerp with vector
+            //    if (lerp > 1f)
+            //    {
+            //previousSkeletonData[key][5] = l_shoulder_vec;
+            //previousSkeletonData[key][6] = l_elbow_vec;
+            //    }
+
+            //}
+            //else
+            //{
+            //    quaternionValue = XLookRotation(l_shoulder_elbow);
+            //    //previousSkeletonData.Add(key, new Vector3[15]);
+            //}
+            //left_shoulder.rotation = quaternionValue;
+            //// ** end interp left shoulder
+
+            //// ** interp left elbow
+            //Vector3 l_elbow_wrist = l_elbow_vec - l_wrist_vec;
+            //if (interpFlag)
+            //{
+            //    Vector3 p_l_elbow_vec = p_poseInput[6];
+            //    Vector3 p_l_wrist_vec = p_poseInput[7];
+            //    Vector3 p_l_elbow_wrist = p_l_elbow_vec - p_l_wrist_vec;
+            //    // lerp with vector
+            //    float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
+            //    Vector3 lerped_l_elbow_wrist = Vector3.Lerp(p_l_elbow_wrist, l_elbow_wrist, lerp);
+            //    quaternionValue = XLookRotation(lerped_l_elbow_wrist);
+            //    // end lerp with vector
+            //    if (lerp > 1f)
+            //    {
+            //previousSkeletonData[key][7] = l_wrist_vec;
+            //    }
+
+            //}
+            //else
+            //{
+            //    quaternionValue = XLookRotation(l_elbow_wrist);
+            //    //previousSkeletonData.Add(key, new Vector3[15]);
+            //}
+            //left_elbow.rotation = quaternionValue;
+            // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
             //left_elbow.rotation *= Quaternion.Euler(0f,0f,-45f);
             // ** end interp left elbow
 
@@ -837,7 +851,7 @@ namespace RosSharp.RosBridgeClient
             // ** end original left shoulder
 
             // ** original l elbow
-            //Vector3 l_elbow_wrist = l_elbow_vec - l_wrist_vec;
+            Vector3 l_elbow_wrist = l_elbow_vec - l_wrist_vec;
             //quaternionValue = YLookRotation(l_elbow_wrist);
             //PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, left_elbow.rotation.eulerAngles) % 360);
             //if (Vector3.Distance(quaternionValue.eulerAngles, left_elbow.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
@@ -913,157 +927,159 @@ namespace RosSharp.RosBridgeClient
             // ** end original hip
 
             // ** interpolate left leg
-            Vector3 l_hip_knee = l_hip_vec - l_knee_vec;
-            if (interpFlag)
-            {
-                Vector3 p_l_hip_vec = p_poseInput[11];
-                Vector3 p_l_knee_vec = p_poseInput[12];
-                Vector3 p_l_hip_knee = p_l_hip_vec - p_l_knee_vec;
-                // lerp with vector
-                float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
-                Vector3 lerped_l_hip_knee = Vector3.Lerp(p_l_hip_knee, l_hip_knee, lerp);
-                quaternionValue = XLookRotation(lerped_l_hip_knee);
-                // end lerp with vector
-                if (lerp > 1f)
-                {
-                    previousSkeletonData[key][12] = l_knee_vec;
-                }
+            // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            //Vector3 l_hip_knee = l_hip_vec - l_knee_vec;
+            //if (interpFlag)
+            //{
+            //    Vector3 p_l_hip_vec = p_poseInput[11];
+            //    Vector3 p_l_knee_vec = p_poseInput[12];
+            //    Vector3 p_l_hip_knee = p_l_hip_vec - p_l_knee_vec;
+            //    // lerp with vector
+            //    float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
+            //    Vector3 lerped_l_hip_knee = Vector3.Lerp(p_l_hip_knee, l_hip_knee, lerp);
+            //    quaternionValue = XLookRotation(lerped_l_hip_knee);
+            //    // end lerp with vector
+            //    if (lerp > 1f)
+            //    {
+            //previousSkeletonData[key][12] = l_knee_vec;
+            //    }
 
-            }
-            else
-            {
-                quaternionValue = XLookRotation(l_hip_knee);
-                //previousSkeletonData.Add(key, new Vector3[15]);
-            }
-            left_hip.rotation = quaternionValue;
-            Vector3 localZ = left_hip.TransformDirection(Vector3.forward);
-            if (Vector3.Dot(hip_hip_vec, localZ) > 0)
-            {
-                PrintDebugMessage("I: Enter in refinement");
-                left_hip.RotateAround(left_hip.position, left_hip.right, 180f);
-            }
+            //}
+            //else
+            //{
+            //    quaternionValue = XLookRotation(l_hip_knee);
+            //    //previousSkeletonData.Add(key, new Vector3[15]);
+            //}
+            //left_hip.rotation = quaternionValue;
+            //Vector3 localZ = left_hip.TransformDirection(Vector3.forward);
+            //if (Vector3.Dot(hip_hip_vec, localZ) > 0)
+            //{
+            //    PrintDebugMessage("I: Enter in refinement");
+            //    left_hip.RotateAround(left_hip.position, left_hip.right, 180f);
+            //}
 
 
             Vector3 l_knee_ankle = l_knee_vec - l_ankle_vec;
-            if (interpFlag)
-            {
-                Vector3 p_l_knee_vec = p_poseInput[12];
-                Vector3 p_l_ankle_vec = p_poseInput[13];
-                Vector3 p_l_knee_ankle = p_l_knee_vec - p_l_ankle_vec;
-                // lerp with vector
-                float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
-                Vector3 lerped_l_knee_ankle = Vector3.Lerp(p_l_knee_ankle, l_knee_ankle, lerp);
-                quaternionValue = XLookRotation(lerped_l_knee_ankle);
-                // end lerp with vector
-                if (lerp > 1f)
-                {
-                    previousSkeletonData[key][13] = l_ankle_vec;
-                }
-
-            }
-            else
-            {
-                quaternionValue = XLookRotation(l_knee_ankle);
-                //previousSkeletonData.Add(key, new Vector3[15]);
-            }
-            left_knee.rotation = quaternionValue;
-            localZ = left_knee.TransformDirection(Vector3.forward);
-            if (Vector3.Dot(hip_hip_vec, localZ) > 0)
-            {
-                left_knee.RotateAround(left_knee.position, left_knee.right, 180f);
-            }
-            // ** end interpolate left leg
-            // ** original left leg
-            //orient left leg:
-            //Vector3 l_hip_knee = l_hip_vec - l_knee_vec;
-            //quaternionValue = XLookRotation(l_hip_knee);
-            //PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, left_hip.rotation.eulerAngles) % 360);
-            //if (Vector3.Distance(quaternionValue.eulerAngles, left_hip.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
+            //if (interpFlag)
             //{
-            //    left_hip.rotation = quaternionValue;
-            //    Vector3 localZ = left_hip.TransformDirection(Vector3.forward);
-            //    if (Vector3.Dot(hip_hip_vec, localZ) > 0)
+            //    Vector3 p_l_knee_vec = p_poseInput[12];
+            //    Vector3 p_l_ankle_vec = p_poseInput[13];
+            //    Vector3 p_l_knee_ankle = p_l_knee_vec - p_l_ankle_vec;
+            //    // lerp with vector
+            //    float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
+            //    Vector3 lerped_l_knee_ankle = Vector3.Lerp(p_l_knee_ankle, l_knee_ankle, lerp);
+            //    quaternionValue = XLookRotation(lerped_l_knee_ankle);
+            //    // end lerp with vector
+            //    if (lerp > 1f)
             //    {
-            //        PrintDebugMessage("I: Enter in refinement");
-            //        left_hip.RotateAround(left_hip.position, left_hip.right, 180f);
+            //previousSkeletonData[key][13] = l_ankle_vec;
             //    }
+
             //}
-
-
-            //Vector3 l_knee_ankle = l_knee_vec - l_ankle_vec;
-            //quaternionValue = XLookRotation(l_knee_ankle);
-            //PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, left_knee.rotation.eulerAngles) % 360);
-            //if (Vector3.Distance(quaternionValue.eulerAngles, left_knee.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
+            //else
             //{
-            //    left_knee.rotation = quaternionValue;
-            //    Vector3 localZ = left_knee.TransformDirection(Vector3.forward);
-            //    if (Vector3.Dot(hip_hip_vec, localZ) > 0)
-            //    {
-            //        left_knee.RotateAround(left_knee.position, left_knee.right, 180f);
-            //    }
+            //    quaternionValue = XLookRotation(l_knee_ankle);
+            //    //previousSkeletonData.Add(key, new Vector3[15]);
             //}
-            //** end original left leg
+            //left_knee.rotation = quaternionValue;
+            //localZ = left_knee.TransformDirection(Vector3.forward);
+            //if (Vector3.Dot(hip_hip_vec, localZ) > 0)
+            //{
+            //    left_knee.RotateAround(left_knee.position, left_knee.right, 180f);
+            //}
+            //// ** end interpolate left leg
+            //// ** original left leg
+            ////orient left leg:
+            ////Vector3 l_hip_knee = l_hip_vec - l_knee_vec;
+            ////quaternionValue = XLookRotation(l_hip_knee);
+            ////PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, left_hip.rotation.eulerAngles) % 360);
+            ////if (Vector3.Distance(quaternionValue.eulerAngles, left_hip.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
+            ////{
+            ////    left_hip.rotation = quaternionValue;
+            ////    Vector3 localZ = left_hip.TransformDirection(Vector3.forward);
+            ////    if (Vector3.Dot(hip_hip_vec, localZ) > 0)
+            ////    {
+            ////        PrintDebugMessage("I: Enter in refinement");
+            ////        left_hip.RotateAround(left_hip.position, left_hip.right, 180f);
+            ////    }
+            ////}
 
-            // ** interpolate right leg
-            Vector3 r_hip_knee = r_knee_vec - r_hip_vec;
-            if (interpFlag)
-            {
-                Vector3 p_r_hip_vec = p_poseInput[8];
-                Vector3 p_r_knee_vec = p_poseInput[9];
-                Vector3 p_r_hip_knee = p_r_knee_vec - p_r_hip_vec;
-                // lerp with vector
-                float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
-                Vector3 lerped_r_hip_knee = Vector3.Lerp(p_r_hip_knee, r_hip_knee, lerp);
-                quaternionValue = XLookRotation(lerped_r_hip_knee);
-                // end lerp with vector
-                if (lerp > 1f)
-                {
-                    previousSkeletonData[key][9] = r_knee_vec;
-                }
 
-            }
-            else
-            {
-                quaternionValue = XLookRotation(r_hip_knee);
-                //previousSkeletonData.Add(key, new Vector3[15]);
-            }
-            right_hip.rotation = quaternionValue;
-            localZ = right_hip.TransformDirection(Vector3.forward);
+            ////Vector3 l_knee_ankle = l_knee_vec - l_ankle_vec;
+            ////quaternionValue = XLookRotation(l_knee_ankle);
+            ////PrintDebugMessage("I: " + Vector3.Distance(quaternionValue.eulerAngles, left_knee.rotation.eulerAngles) % 360);
+            ////if (Vector3.Distance(quaternionValue.eulerAngles, left_knee.rotation.eulerAngles) % 360 > DISTANCE_ANGLE)
+            ////{
+            ////    left_knee.rotation = quaternionValue;
+            ////    Vector3 localZ = left_knee.TransformDirection(Vector3.forward);
+            ////    if (Vector3.Dot(hip_hip_vec, localZ) > 0)
+            ////    {
+            ////        left_knee.RotateAround(left_knee.position, left_knee.right, 180f);
+            ////    }
+            ////}
+            ////** end original left leg
 
-            if (Vector3.Dot(hip_hip_vec, localZ) < 0)
-            {
-                right_hip.RotateAround(right_hip.position, right_hip.right, 180f);
-            }
+            //// ** interpolate right leg
+            //Vector3 r_hip_knee = r_knee_vec - r_hip_vec;
+            //if (interpFlag)
+            //{
+            //    Vector3 p_r_hip_vec = p_poseInput[8];
+            //    Vector3 p_r_knee_vec = p_poseInput[9];
+            //    Vector3 p_r_hip_knee = p_r_knee_vec - p_r_hip_vec;
+            //    // lerp with vector
+            //    float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
+            //    Vector3 lerped_r_hip_knee = Vector3.Lerp(p_r_hip_knee, r_hip_knee, lerp);
+            //    quaternionValue = XLookRotation(lerped_r_hip_knee);
+            //    // end lerp with vector
+            //    if (lerp > 1f)
+            //    {
+            //previousSkeletonData[key][9] = r_knee_vec;
+            //    }
+
+            //}
+            //else
+            //{
+            //    quaternionValue = XLookRotation(r_hip_knee);
+            //    //previousSkeletonData.Add(key, new Vector3[15]);
+            //}
+            //right_hip.rotation = quaternionValue;
+            //localZ = right_hip.TransformDirection(Vector3.forward);
+
+            //if (Vector3.Dot(hip_hip_vec, localZ) < 0)
+            //{
+            //    right_hip.RotateAround(right_hip.position, right_hip.right, 180f);
+            //}
 
 
             Vector3 r_knee_ankle = r_ankle_vec - r_knee_vec;
-            if (interpFlag)
-            {
-                Vector3 p_r_knee_vec = p_poseInput[9];
-                Vector3 p_r_ankle_vec = p_poseInput[10];
-                Vector3 p_r_knee_ankle = p_r_ankle_vec - p_r_knee_vec;
-                // lerp with vector
-                float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
-                Vector3 lerped_r_knee_ankle = Vector3.Lerp(p_r_knee_ankle, r_knee_ankle, lerp);
-                quaternionValue = XLookRotation(lerped_r_knee_ankle);
-                // end lerp with vector
-                if (lerp > 1f)
-                {
-                    previousSkeletonData[key][10] = r_ankle_vec;
-                }
+            //if (interpFlag)
+            //{
+            //    Vector3 p_r_knee_vec = p_poseInput[9];
+            //    Vector3 p_r_ankle_vec = p_poseInput[10];
+            //    Vector3 p_r_knee_ankle = p_r_ankle_vec - p_r_knee_vec;
+            //    // lerp with vector
+            //    float lerp = (Time.time - skeletonSub.ros_rcv_time) / lerp_period;
+            //    Vector3 lerped_r_knee_ankle = Vector3.Lerp(p_r_knee_ankle, r_knee_ankle, lerp);
+            //    quaternionValue = XLookRotation(lerped_r_knee_ankle);
+            //    // end lerp with vector
+            //    if (lerp > 1f)
+            //    {
+            //previousSkeletonData[key][10] = r_ankle_vec;
+            //    }
 
-            }
-            else
-            {
-                quaternionValue = XLookRotation(r_knee_ankle);
-                //previousSkeletonData.Add(key, new Vector3[15]);
-            }
-            right_knee.rotation = quaternionValue;
-            localZ = right_knee.TransformDirection(Vector3.forward);
-            if (Vector3.Dot(hip_hip_vec, localZ) < 0)
-            {
-                right_knee.RotateAround(right_knee.position, right_knee.right, 180f);
-            }
+            //}
+            //else
+            //{
+            //    quaternionValue = XLookRotation(r_knee_ankle);
+            //    //previousSkeletonData.Add(key, new Vector3[15]);
+            //}
+            //right_knee.rotation = quaternionValue;
+            //localZ = right_knee.TransformDirection(Vector3.forward);
+            //if (Vector3.Dot(hip_hip_vec, localZ) < 0)
+            //{
+            //    right_knee.RotateAround(right_knee.position, right_knee.right, 180f);
+            //}
+            // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             // ** end interpolate right leg
             // ** original right leg
             //orient right leg:
@@ -1130,6 +1146,24 @@ namespace RosSharp.RosBridgeClient
                 Vector3 p_r_elbow_wrist = p_r_elbow_vec - p_r_wrist_vec;
                 Vector3 lerped_r_elbow_wrist = Vector3.Lerp(p_r_elbow_wrist, r_elbow_wrist, lerp);
                 r_wrist_vec = lerped_r_wrist_vec;
+
+                if (lerp > 1f)
+                {
+                    previousSkeletonData[key][2] = r_shoulder_vec;
+                    previousSkeletonData[key][3] = r_elbow_vec;
+                    previousSkeletonData[key][4] = r_wrist_vec;
+                    previousSkeletonData[key][5] = l_shoulder_vec;
+                    previousSkeletonData[key][6] = l_elbow_vec;
+                    previousSkeletonData[key][7] = l_wrist_vec;
+
+                    previousSkeletonData[key][11] = l_hip_vec;
+                    previousSkeletonData[key][8] = r_hip_vec;
+                    previousSkeletonData[key][12] = l_knee_vec;
+                    previousSkeletonData[key][13] = l_ankle_vec;
+                    previousSkeletonData[key][9] = r_knee_vec;
+                    previousSkeletonData[key][10] = r_ankle_vec;
+                }
+
             }
 
             InverseKinematics(left_hip.transform, left_knee.transform, left_foot.transform, l_ankle_vec, 0);
@@ -1139,37 +1173,37 @@ namespace RosSharp.RosBridgeClient
         }
 
         //** TRYING INVERSE KINEMATICS
-        public void InverseKinematics(Transform hip, Transform knee, Transform foot, Vector3 target, int direction)
+        public void InverseKinematics(Transform startJoint, Transform midJoint, Transform endJoint, Vector3 target, int appendage)
         {
             Transform orientation;
-            Vector3 hip_OffsetRotation;
-            Vector3 knee_OffsetRotation;
-            Vector3 foot_OffsetRotation;
-            switch (direction)
+            Vector3 startJoint_OffsetRotation;
+            Vector3 midJoint_OffsetRotation;
+            Vector3 endJoint_OffsetRotation;
+            switch (appendage)
             {
                 case 0:
-                    hip_OffsetRotation = new Vector3(180f, 90f, 0f);
-                    knee_OffsetRotation = new Vector3(90f, 90f, 0f);
-                    foot_OffsetRotation = Vector3.zero;
-                    orientation = hip.parent.GetChild(2);
+                    startJoint_OffsetRotation = new Vector3(180f, 90f, 0f);
+                    midJoint_OffsetRotation = new Vector3(90f, 90f, 0f);
+                    endJoint_OffsetRotation = Vector3.zero;
+                    orientation = startJoint.parent.GetChild(2);
                     break;
                 case 1:
-                    hip_OffsetRotation = new Vector3(-180f, -90f, 0f);
-                    knee_OffsetRotation = new Vector3(-90f, -90f, 0f);
-                    foot_OffsetRotation = Vector3.zero;
-                    orientation = hip.parent.GetChild(3);
+                    startJoint_OffsetRotation = new Vector3(-180f, -90f, 0f);
+                    midJoint_OffsetRotation = new Vector3(-90f, -90f, 0f);
+                    endJoint_OffsetRotation = Vector3.zero;
+                    orientation = startJoint.parent.GetChild(3);
                     break;
                 case 2:
-                    hip_OffsetRotation = new Vector3(90f, -90f, 180f);
-                    knee_OffsetRotation = new Vector3(0f, 90f, -45f);
-                    foot_OffsetRotation = Vector3.zero;
-                    orientation = hip.parent.parent.GetChild(3);
+                    startJoint_OffsetRotation = new Vector3(90f, -90f, 180f);
+                    midJoint_OffsetRotation = new Vector3(0f, 90f, -45f);
+                    endJoint_OffsetRotation = Vector3.zero;
+                    orientation = startJoint.parent.parent.GetChild(3);
                     break;
                 default:
-                    hip_OffsetRotation = new Vector3(-90f, -90f, 0f);
-                    knee_OffsetRotation = new Vector3(180f, -90f, 0f);
-                    foot_OffsetRotation = Vector3.zero;
-                    orientation = hip.parent.parent.GetChild(4);
+                    startJoint_OffsetRotation = new Vector3(-90f, -90f, 0f);
+                    midJoint_OffsetRotation = new Vector3(180f, -90f, 0f);
+                    endJoint_OffsetRotation = Vector3.zero;
+                    orientation = startJoint.parent.parent.GetChild(4);
                     break;
             }
 
@@ -1179,25 +1213,25 @@ namespace RosSharp.RosBridgeClient
             float leg_Length;
             float targetDistance;
             float adjacent;
-            hip.LookAt(target, orientation.position - hip.position);
-            hip.Rotate(hip_OffsetRotation);
+            startJoint.LookAt(target, orientation.position - startJoint.position);
+            startJoint.Rotate(startJoint_OffsetRotation);
 
-            Vector3 cross = Vector3.Cross(orientation.position - hip.position, knee.position - hip.position);
+            Vector3 cross = Vector3.Cross(orientation.position - startJoint.position, midJoint.position - startJoint.position);
 
-            hip_Length = Vector3.Distance(hip.position, knee.position);
-            knee_Length = Vector3.Distance(knee.position, foot.position);
+            hip_Length = Vector3.Distance(startJoint.position, midJoint.position);
+            knee_Length = Vector3.Distance(midJoint.position, endJoint.position);
             leg_Length = hip_Length + knee_Length;
-            targetDistance = Vector3.Distance(hip.position, target);
+            targetDistance = Vector3.Distance(startJoint.position, target);
             targetDistance = Mathf.Min(targetDistance, leg_Length - leg_Length * 0.001f);
 
             adjacent = ((hip_Length * hip_Length) - (knee_Length * knee_Length) + (targetDistance * targetDistance)) / (2 * targetDistance);
 
             angle = Mathf.Acos(adjacent / hip_Length) * Mathf.Rad2Deg;
 
-            hip.RotateAround(hip.position, cross, -angle);
+            startJoint.RotateAround(startJoint.position, cross, -angle);
 
-            knee.LookAt(target, cross);
-            knee.Rotate(knee_OffsetRotation);
+            midJoint.LookAt(target, cross);
+            midJoint.Rotate(midJoint_OffsetRotation);
         }
 
 
@@ -1341,11 +1375,8 @@ namespace RosSharp.RosBridgeClient
             Dictionary<int, string> dataFromFaceSub = recognizedFacesSub.recognizedFaceData;
             foreach (KeyValuePair<int, string> face_track in dataFromFaceSub)
             {
-                if (labels.ContainsKey(face_track.Key))
-                {
-                    TextMesh tm = labels[face_track.Key].GetComponent<TextMesh>();
-                    tm.text = face_track.Key.ToString() + "\n" + dataFromFaceSub[face_track.Key];
-                }
+                TextMesh tm = labels[face_track.Key].GetComponent<TextMesh>();
+                tm.text = labels.ContainsKey(face_track.Key) ? dataFromFaceSub[face_track.Key] : face_track.Key.ToString();
             }
         }
 
