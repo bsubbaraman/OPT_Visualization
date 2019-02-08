@@ -362,8 +362,8 @@ namespace RosSharp.RosBridgeClient
             tm.text = info;
             tm.transform.localPosition = new Vector3(0f, 1f, 0f); // to position just above marker
             tm.transform.localScale = new Vector3(1f, 1f, 1f);
-
             label.SetActive(labelView);
+
             return label;
         }
 
@@ -488,6 +488,7 @@ namespace RosSharp.RosBridgeClient
                     };
 
                     scales.Add(track.Key, jointLengths);
+                    //labels.Add(track.Key, CreateLabel(newSkeleton, track.Key.ToString()));
 
                 }
 
@@ -514,6 +515,11 @@ namespace RosSharp.RosBridgeClient
                         }
                         //SCALING
                         scales.Remove(key);
+                        //if (labels[key])
+                        //{
+                        //    Destroy(labels[key]);
+                        //    labels.Remove(key);
+                        //}
                     }
                 }
             }
@@ -1318,7 +1324,6 @@ namespace RosSharp.RosBridgeClient
                     newObject.transform.localPosition = track.Value.pos;
                     newObject.name = "object_" + track.Key;
                     newObject.GetComponent<Renderer>().material.color = color;
-
                     particles.Add(track.Key, CreateParticleSystem(newObject, color));
                     activeObjects.Add(track.Key, newObject);
                     labels.Add(track.Key, CreateLabel(newObject, track.Value.objectID));
@@ -1338,6 +1343,7 @@ namespace RosSharp.RosBridgeClient
                         }
                         position = lerped_position;
                     }
+
                     activeObjects[track.Key].transform.localPosition = position;
                     //PrintDebugMessage("I: Update centroid  -> Parent: " + activeTracks[id].transform.parent.name + " | Position: " + activeTracks[id].transform.localPosition.ToString() + " | Id: " + id);
                 }

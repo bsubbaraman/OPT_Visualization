@@ -20,6 +20,11 @@ namespace RosSharp.RosBridgeClient
         public UDPReceive receiver;
         private bool newData = false;
         public Dictionary<int, RecognizedPose> recognizedPoseData = new Dictionary<int, RecognizedPose>();
+
+        //for system health averages
+        private float beginTime = 0f;
+        private int count = 0;
+        public float recognizedPoseRate = 0f;
         void Start()
         {
 
@@ -49,6 +54,8 @@ namespace RosSharp.RosBridgeClient
                 var N = JSON.Parse(data);
                 if (N["pose_tracks"] != null)
                 {
+                    MessageRate();
+                    Debug.Log("pose track UDP1! " + Time.time);
                     recognizedPoseData.Clear();
                     for (int count = 0; count < N["pose_tracks"].Count; count++)
                     {
@@ -69,6 +76,20 @@ namespace RosSharp.RosBridgeClient
 
 
                 }
+            }
+        }
+
+        private void MessageRate()
+        {
+            if (Time.time - beginTime < 1f)
+            {
+                count += 1;
+            }
+            else
+            {
+                recognizedPoseRate = count / (Time.time - beginTime);
+                beginTime = Time.time;
+                count = 0;
             }
         }
     }

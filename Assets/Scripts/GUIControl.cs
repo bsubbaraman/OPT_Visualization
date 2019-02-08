@@ -21,6 +21,7 @@ namespace RosSharp.RosBridgeClient
         public CentroidSubscriber centroidSub;
         public SkeletonSubscriber skeletonSub;
         public ObjectsSubscriber objectSub;
+        public UDPSubscriber_Pose poseSub;
 
         // Use this for initialization
         void Start()
@@ -105,6 +106,13 @@ namespace RosSharp.RosBridgeClient
                     v.objectView = !v.objectView;
                     break;
                 case "FacesButton":
+                    if (v.facesView == false)
+                    {
+                        if (v.labelView == false)
+                        {
+                            TaskOnClick(m_LabelButton);
+                        }
+                    }
                     v.facesView = !v.facesView;
                     break;
                 case "ShowImageButton":
@@ -163,6 +171,10 @@ namespace RosSharp.RosBridgeClient
             GUI.Label(new Rect(Screen.width / 3 - 80, 80, 50, 20), skeletonSub.skeletonRate.ToString("F1"), systemHealthStyle);
             GUI.Label(new Rect(10, 110, 200, 20), "/tracker/object_tracks:", systemHealthStyle);
             GUI.Label(new Rect(Screen.width / 3 - 80, 110, 50, 20), objectSub.objectRate.ToString("F1"), systemHealthStyle);
+
+            GUI.Label(new Rect(10, 140, 200, 20), "UDP: Recognized Poses", systemHealthStyle);
+            GUI.Label(new Rect(Screen.width / 3 - 80, 140, 50, 20), poseSub.recognizedPoseRate.ToString("F1"), systemHealthStyle);
+
 
             //IPEnter = GUI.TextField(new Rect(20, 40, Screen.width / 4 - 40, 20), IPEnter);
             //if (GUI.Button(new Rect(windowRect.width / 2 - (Screen.width / 4 - 60) / 2, windowRect.height / 2 - 10, 150, 40), "Set New IP"))

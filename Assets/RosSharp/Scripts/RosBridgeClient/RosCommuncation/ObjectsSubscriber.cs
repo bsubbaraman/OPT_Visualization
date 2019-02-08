@@ -21,6 +21,7 @@ namespace RosSharp.RosBridgeClient
         public Vector3 pos;
         public string objectID;
         public float age;
+        public float confidence;
     }
 
     public class ObjectsSubscriber : Subscriber<Messages.OPT.TrackArray>
@@ -74,7 +75,8 @@ namespace RosSharp.RosBridgeClient
                         //pos = new Vector3(track.x, track.height, track.y),
                         pos = RHtoLHTransform(v),
                         objectID = track.object_name,
-                        age = track.age
+                        age = track.age,
+                        confidence = track.confidence
 
                     };
                     //objectTrackData.Add(track.id, new Vector3(track.x, track.height, track.y));
