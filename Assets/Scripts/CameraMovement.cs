@@ -12,11 +12,11 @@ namespace RosSharp.RosBridgeClient
 
 
         //drag movement
-        public float dragSpeed = 2f;
+        public float dragSpeed = 1f;
         private Vector3 dragOrigin;
 
         //orbit movement
-        public float orbitSensitivity = 2f;
+        public float orbitSensitivity = 1f;
         private float xRotate;
         private float yRotate;
 
@@ -57,7 +57,7 @@ namespace RosSharp.RosBridgeClient
             {
                 xRotate = orbitSensitivity * Input.GetAxis("Mouse X");
                 yRotate = orbitSensitivity * Input.GetAxis("Mouse Y");
-                transform.eulerAngles += new Vector3(xRotate, xRotate, 0);
+                transform.eulerAngles += new Vector3(-yRotate, xRotate, 0);
             }
         }
     }
