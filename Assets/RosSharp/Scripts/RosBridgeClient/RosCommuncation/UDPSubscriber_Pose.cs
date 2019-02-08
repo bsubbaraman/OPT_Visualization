@@ -54,8 +54,8 @@ namespace RosSharp.RosBridgeClient
                 var N = JSON.Parse(data);
                 if (N["pose_tracks"] != null)
                 {
-                    MessageRate();
-                    Debug.Log("pose track UDP1! " + Time.time);
+                    //MessageRate();
+                    //Debug.Log("pose track UDP1! " + Time.time);
                     recognizedPoseData.Clear();
                     for (int count = 0; count < N["pose_tracks"].Count; count++)
                     {

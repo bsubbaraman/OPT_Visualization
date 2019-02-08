@@ -172,8 +172,8 @@ namespace RosSharp.RosBridgeClient
             GUI.Label(new Rect(10, 110, 200, 20), "/tracker/object_tracks:", systemHealthStyle);
             GUI.Label(new Rect(Screen.width / 3 - 80, 110, 50, 20), objectSub.objectRate.ToString("F1"), systemHealthStyle);
 
-            GUI.Label(new Rect(10, 140, 200, 20), "UDP: Recognized Poses", systemHealthStyle);
-            GUI.Label(new Rect(Screen.width / 3 - 80, 140, 50, 20), poseSub.recognizedPoseRate.ToString("F1"), systemHealthStyle);
+            //GUI.Label(new Rect(10, 140, 200, 20), "UDP: Recognized Poses", systemHealthStyle);
+            //GUI.Label(new Rect(Screen.width / 3 - 80, 140, 50, 20), poseSub.recognizedPoseRate.ToString("F1"), systemHealthStyle);
 
 
             //IPEnter = GUI.TextField(new Rect(20, 40, Screen.width / 4 - 40, 20), IPEnter);

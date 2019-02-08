@@ -67,7 +67,8 @@ namespace RosSharp.RosBridgeClient
             objectTrackData.Clear();
             foreach (Messages.OPT.Track track in trackArray.tracks)
             {
-                Vector3 v = new Vector3(track.x, track.y, track.height);
+                //Vector3 v = new Vector3(track.x, track.y, track.height);
+                Vector3 v = new Vector3(track.x, track.y, 0.07f); // to be on ground
                 if (!objectTrackData.ContainsKey(track.id))
                 {
                     OPTObject o = new OPTObject
