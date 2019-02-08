@@ -240,10 +240,10 @@ namespace RosSharp.RosBridgeClient
         }
 
         public void RemoveAllFaceData(){
-            foreach (KeyValuePair<int, GameObject> label in labels){
-                TextMesh tm = label.Value.GetComponent<TextMesh>();
-                tm.text = label.Key.ToString();
-            }
+            //foreach (KeyValuePair<int, GameObject> label in labels){
+            //    TextMesh tm = label.Value.GetComponent<TextMesh>();
+            //    tm.text = label.Key.ToString();
+            //}
         }
         /// <summary>
         /// Prints the debug message.
