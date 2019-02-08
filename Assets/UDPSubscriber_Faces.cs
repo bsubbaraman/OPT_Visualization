@@ -48,8 +48,9 @@ namespace RosSharp.RosBridgeClient
                     {
                         int id = N["people_tracks"][count]["id"];
                         string face_name = N["people_tracks"][count]["face_name"];
-                        if (name != "")
+                        if (!string.IsNullOrEmpty(face_name))
                         {
+                            Debug.Log(face_name);
                             recognizedFaceData.Add(id, face_name);
                         }
                     }

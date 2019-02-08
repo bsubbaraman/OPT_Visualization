@@ -1381,8 +1381,12 @@ namespace RosSharp.RosBridgeClient
             Dictionary<int, string> dataFromFaceSub = recognizedFacesSub.recognizedFaceData;
             foreach (KeyValuePair<int, string> face_track in dataFromFaceSub)
             {
-                TextMesh tm = labels[face_track.Key].GetComponent<TextMesh>();
-                tm.text = labels.ContainsKey(face_track.Key) ? dataFromFaceSub[face_track.Key] : face_track.Key.ToString();
+                Debug.Log("FACETRACK");
+                if (activeTracks.ContainsKey(face_track.Key))
+                {
+                    TextMesh tm = labels[face_track.Key].GetComponent<TextMesh>();
+                    tm.text = labels.ContainsKey(face_track.Key) ? dataFromFaceSub[face_track.Key] : face_track.Key.ToString();
+                }
             }
         }
 
@@ -1406,6 +1410,10 @@ namespace RosSharp.RosBridgeClient
                     m.SetFloat("_MKGlowPower", 0.0f);
                 }
             }
+        }
+
+        private void AgeConfidenceLabels(){
+
         }
 
     }
