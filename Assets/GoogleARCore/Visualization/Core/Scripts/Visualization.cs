@@ -44,6 +44,12 @@ namespace RosSharp.RosBridgeClient
         public GameObject GUIPanel;
         public Camera main;
 
+        // OBJECT PREFABS
+        [Header("YOLO Objects")]
+        public List<GameObject> YOLOobjects;
+        private Dictionary<string, GameObject> objectPrefabs = new Dictionary<string, GameObject>();
+        //public GameObject chair;
+        //public GameObject tvmonitor;
         public ParticleSystem partSystem;
 
         public Dictionary<int, GameObject> activeTracks = new Dictionary<int, GameObject>(); //person tracks
@@ -96,11 +102,18 @@ namespace RosSharp.RosBridgeClient
             centroidView = false;
 
             // managing materials for (un)applying face textures
-            foreach (Texture2D face in faceImages) {
+            foreach (Texture2D face in faceImages)
+            {
                 Material mat = new Material(Shader.Find("Standard"));
                 mat.SetTexture("_MainTex", face);
                 faceMaterials.Add(face.name, mat);
             }
+
+            // making dictionary for objects:
+            foreach (GameObject YOLOobject in YOLOobjects){
+                objectPrefabs.Add(YOLOobject.name, YOLOobject);
+            }
+            
         }
 
         /// <summary>
@@ -155,7 +168,8 @@ namespace RosSharp.RosBridgeClient
             {
                 FaceRecognition();
             }
-            else{
+            else
+            {
                 RemoveAllFaceData();
             }
 
@@ -249,7 +263,8 @@ namespace RosSharp.RosBridgeClient
 
         }
 
-        public void RemoveAllFaceData(){
+        public void RemoveAllFaceData()
+        {
             //foreach (KeyValuePair<int, GameObject> label in labels){
             //    TextMesh tm = label.Value.GetComponent<TextMesh>();
             //    tm.text = label.Key.ToString();
@@ -1313,7 +1328,7 @@ namespace RosSharp.RosBridgeClient
                 bool interpFlag = false;
                 if (previousObjectData.ContainsKey(track.Key))
                 {
-                    interpFlag = true;
+                    //interpFlag = true;
                 }
                 else
                 {
@@ -1323,23 +1338,48 @@ namespace RosSharp.RosBridgeClient
                 //add any object which have joined the scene
                 if (!activeObjects.ContainsKey(track.Key))
                 {
+
                     Color color = new Color(
-                          UnityEngine.Random.Range(0f, 1f),
-                          UnityEngine.Random.Range(0f, 1f),
-                          UnityEngine.Random.Range(0f, 1f),
-                                            1);
+                         UnityEngine.Random.Range(0f, 1f),
+                         UnityEngine.Random.Range(0f, 1f),
+                         UnityEngine.Random.Range(0f, 1f),
+                                           1);
+                    if (objectPrefabs.ContainsKey(track.Value.objectID)){
+                        GameObject newObject = Instantiate(objectPrefabs[track.Value.objectID]);
+                        PlaceObject(newObject, track, color);
+                    }
+                    else if (track.Value.objectID != "person"){ // guessing we don't want double person tracking?
+                        GameObject newObject = Instantiate(objectPrefab);
+                        //newCentroid.transform.SetParent(anchorOrigin.transform);
+                        newObject.transform.localPosition = track.Value.pos;
+                        newObject.name = "object_" + track.Key;
+                        newObject.GetComponent<Renderer>().material.color = color;
+                        particles.Add(track.Key, CreateParticleSystem(newObject, color));
+                        activeObjects.Add(track.Key, newObject);
+                        labels.Add(track.Key, CreateLabel(newObject, track.Value.objectID));
+                        //PlaceObject(newObject, track, color);
+                    }
 
-                    GameObject newObject = Instantiate(objectPrefab);
-                    //newCentroid.transform.SetParent(anchorOrigin.transform);
-                    newObject.transform.localPosition = track.Value.pos;
-                    newObject.name = "object_" + track.Key;
-                    newObject.GetComponent<Renderer>().material.color = color;
-                    particles.Add(track.Key, CreateParticleSystem(newObject, color));
-                    activeObjects.Add(track.Key, newObject);
-                    labels.Add(track.Key, CreateLabel(newObject, track.Value.objectID));
 
-                    //PrintDebugMessage("I: Crete centroid -> Parent: " + activeTracks[id].transform.parent.name + " | Position: " + activeTracks[id].transform.localPosition.ToString() + " | Id: " + id);
+                    // OLD
+                    //Color color = new Color(
+                    //      UnityEngine.Random.Range(0f, 1f),
+                    //      UnityEngine.Random.Range(0f, 1f),
+                    //      UnityEngine.Random.Range(0f, 1f),
+                    //                        1);
+
+                    //GameObject newObject = Instantiate(objectPrefab);
+                    ////newCentroid.transform.SetParent(anchorOrigin.transform);
+                    //newObject.transform.localPosition = track.Value.pos;
+                    //newObject.name = "object_" + track.Key;
+                    //newObject.GetComponent<Renderer>().material.color = color;
+                    //particles.Add(track.Key, CreateParticleSystem(newObject, color));
+                    //activeObjects.Add(track.Key, newObject);
+                    //labels.Add(track.Key, CreateLabel(newObject, track.Value.objectID));
+                    //END OLD
                 }
+
+
                 else
                 {
                     Vector3 position = track.Value.pos;
@@ -1385,6 +1425,14 @@ namespace RosSharp.RosBridgeClient
             }
         }
 
+        private void PlaceObject(GameObject newObject, KeyValuePair<int, OPTObject> track, Color color)
+        {
+            newObject.transform.localPosition = track.Value.pos;
+            newObject.name = "object_" + track.Key;
+            particles.Add(track.Key, CreateParticleSystem(newObject, color));
+            activeObjects.Add(track.Key, newObject);
+            labels.Add(track.Key, CreateLabel(newObject, track.Value.objectID));
+        }
         private void FaceRecognition()
         {
             // add name label and image to centroid
@@ -1422,7 +1470,8 @@ namespace RosSharp.RosBridgeClient
             }
         }
 
-        private void AgeConfidenceLabels(){
+        private void AgeConfidenceLabels()
+        {
 
         }
 
