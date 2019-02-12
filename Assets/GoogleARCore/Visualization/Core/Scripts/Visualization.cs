@@ -52,6 +52,8 @@ namespace RosSharp.RosBridgeClient
         public Dictionary<int, GameObject> activeObjects = new Dictionary<int, GameObject>();
         public Dictionary<int, GameObject> labels = new Dictionary<int, GameObject>();
         private Dictionary<int, Color> colors = new Dictionary<int, Color>();
+        public List<Texture2D> faceImages = new List<Texture2D>();
+        private Dictionary<string, Material> faceMaterials = new Dictionary<string, Material>();
 
 
         public bool centroidView;
@@ -91,6 +93,15 @@ namespace RosSharp.RosBridgeClient
         {
             PrintDebugMessage("D: -------- New execution --------");
             centroidView = false;
+
+            foreach (Texture2D face in faceImages) {
+                Material mat = new Material(Shader.Find("Standard"));
+                mat.SetTexture("_MainTex", face);
+                faceMaterials.Add(face.name, mat);
+                GameObject test = Instantiate(centroidObject);
+                test.GetComponent<Renderer>().material = mat;
+            
+            }
         }
 
         /// <summary>
@@ -1381,7 +1392,6 @@ namespace RosSharp.RosBridgeClient
             Dictionary<int, string> dataFromFaceSub = recognizedFacesSub.recognizedFaceData;
             foreach (KeyValuePair<int, string> face_track in dataFromFaceSub)
             {
-                Debug.Log("FACETRACK");
                 if (activeTracks.ContainsKey(face_track.Key))
                 {
                     TextMesh tm = labels[face_track.Key].GetComponent<TextMesh>();

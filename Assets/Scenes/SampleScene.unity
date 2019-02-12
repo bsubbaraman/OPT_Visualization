@@ -1886,6 +1886,9 @@ MonoBehaviour:
   main: {fileID: 534669904}
   partSystem: {fileID: 198775328465513110, guid: 50c7238da49dc4036b401cbcfd1f7e6b,
     type: 2}
+  faceImages:
+  - {fileID: 2800000, guid: 7e1aa8d20223641adb21ab5e51b6e599, type: 3}
+  - {fileID: 2800000, guid: 3fe69c5e776f54ba3b4c052949e3b940, type: 3}
   centroidView: 1
   skeletonView: 0
   objectView: 0
