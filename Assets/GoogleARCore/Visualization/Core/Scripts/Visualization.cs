@@ -54,6 +54,7 @@ namespace RosSharp.RosBridgeClient
         private Dictionary<int, Color> colors = new Dictionary<int, Color>();
         public List<Texture2D> faceImages = new List<Texture2D>();
         private Dictionary<string, Material> faceMaterials = new Dictionary<string, Material>();
+        public Material defaultMat;
 
 
         public bool centroidView;
@@ -94,13 +95,11 @@ namespace RosSharp.RosBridgeClient
             PrintDebugMessage("D: -------- New execution --------");
             centroidView = false;
 
+            // managing materials for (un)applying face textures
             foreach (Texture2D face in faceImages) {
                 Material mat = new Material(Shader.Find("Standard"));
                 mat.SetTexture("_MainTex", face);
                 faceMaterials.Add(face.name, mat);
-                GameObject test = Instantiate(centroidObject);
-                test.GetComponent<Renderer>().material = mat;
-            
             }
         }
 
@@ -1388,7 +1387,7 @@ namespace RosSharp.RosBridgeClient
 
         private void FaceRecognition()
         {
-            // only adding name to centroid for now
+            // add name label and image to centroid
             Dictionary<int, string> dataFromFaceSub = recognizedFacesSub.recognizedFaceData;
             foreach (KeyValuePair<int, string> face_track in dataFromFaceSub)
             {
@@ -1396,6 +1395,7 @@ namespace RosSharp.RosBridgeClient
                 {
                     TextMesh tm = labels[face_track.Key].GetComponent<TextMesh>();
                     tm.text = labels.ContainsKey(face_track.Key) ? dataFromFaceSub[face_track.Key] : face_track.Key.ToString();
+                    activeTracks[face_track.Key].GetComponent<Renderer>().material = faceMaterials[tm.text];
                 }
             }
         }
