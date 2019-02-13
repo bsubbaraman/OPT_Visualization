@@ -25,7 +25,7 @@ using UnityEngine;
 using System;
 using System.Threading;
 using UnityEngine.SceneManagement;
-
+using UnityEngine.UI;
 
 namespace RosSharp.RosBridgeClient
 {
@@ -1448,6 +1448,7 @@ namespace RosSharp.RosBridgeClient
             }
         }
 
+        public GameObject PoseText;
         private void RecognizePoseGlow()
         {
             Dictionary<int, RecognizedPose> dataFromPoseRecognitionSub = recognizedPoseSub.recognizedPoseData;
@@ -1461,10 +1462,12 @@ namespace RosSharp.RosBridgeClient
                 Material m = r2.GetComponent<Renderer>().material;
                 if (dataFromPoseRecognitionSub.ContainsKey(id))
                 {
+                    PoseText.GetComponent<Text>().text = "Skeleton " + id.ToString() + ": " + dataFromPoseRecognitionSub[id].pose_name;
                     m.SetFloat("_MKGlowPower", 0.5f);
                 }
                 else
                 {
+                    PoseText.GetComponent<Text>().text = "";
                     m.SetFloat("_MKGlowPower", 0.0f);
                 }
             }
