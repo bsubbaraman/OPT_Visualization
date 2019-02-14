@@ -47,7 +47,7 @@ namespace RosSharp.RosBridgeClient
                 Vector3 pos = main.ScreenToViewportPoint(Input.mousePosition - dragOrigin);
                 Vector3 move = new Vector3(pos.x * dragSpeed, pos.y * dragSpeed, 0);
 
-                transform.Translate(move, Space.World);
+                transform.Translate(move, Space.Self);
             }
         }
 

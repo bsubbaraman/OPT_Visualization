@@ -386,7 +386,10 @@ namespace RosSharp.RosBridgeClient
             label.transform.SetParent(theMarker.transform);
             tm.text = info;
             tm.transform.localPosition = new Vector3(0f, 1f, 0f); // to position just above marker
-            tm.transform.localScale = new Vector3(1f, 1f, 1f);
+            // need to change label scale to adjust for differenes in scale of parent objects
+            Vector3 scale = theMarker.transform.localScale;
+            scale = new Vector3(.2f / scale.x, .2f / scale.y, .2f / scale.z);
+            tm.transform.localScale = scale;
             label.SetActive(labelView);
 
             return label;
@@ -1475,7 +1478,7 @@ namespace RosSharp.RosBridgeClient
 
         private void AgeConfidenceLabels()
         {
-
+            //TODO
         }
 
     }

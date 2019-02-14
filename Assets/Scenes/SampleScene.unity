@@ -2428,7 +2428,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1130118783}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 692b5a4332b83410aabaa95f52c35854, type: 3}
   m_Name: 
@@ -3178,7 +3178,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59cb50544e4b642d9adba650496f0bc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Topic: 
+  Topic: /face_recognition/people_tracks
   TimeStep: 0
 --- !u!1 &1548117385
 GameObject:

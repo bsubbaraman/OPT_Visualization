@@ -46,10 +46,14 @@ namespace RosSharp.RosBridgeClient
             foreach (Messages.OPT.Track track in trackArray.tracks)
             {
                 string face_name = track.face_name;
-                if (!faceData.ContainsKey(track.id))
-                {
-                    faceData.Add(track.id, face_name);
+                int id = track.id;
+                if (!string.IsNullOrEmpty(face_name)){
+                    if (!faceData.ContainsKey(track.id))
+                    {
+                        faceData.Add(track.id, face_name);
+                    }
                 }
+               
                 else
                 {
                     // do i need this?  should just stay the same
