@@ -44,10 +44,11 @@ namespace RosSharp.RosBridgeClient
         //CHANGE IP
 
         private Rect windowRect = new Rect(Screen.width / 3, 2 * Screen.height / 5, Screen.width / 3, Screen.height / 5);
-        public string IPEnter = "theIP:thePort";
+        public string IPEnter = "ws://192.168.0.1:9090";
         public GUISkin skin;
         public GUISkin defaultSkin;
         private bool setDefaultIP = false;
+        private bool buttonToggle = false;
 
         void OnGUI()
         {
@@ -63,20 +64,21 @@ namespace RosSharp.RosBridgeClient
         void DoMyWindow(int windowID)
         {
             GUI.Label(new Rect(20, 40, 50, 40), "ws://");
-            IPEnter = GUI.TextField(new Rect(60, 40, windowRect.width / 2 - 40, 40), IPEnter);
-            if (GUI.Button(new Rect(windowRect.width / 3 - 150, windowRect.height / 2 - 20, 150, 40), "Set New IP"))
+            IPEnter = GUI.TextField(new Rect(60, 40, windowRect.width - 120, 40), IPEnter);
+            if (GUI.Button(new Rect(windowRect.width / 2 - 150, windowRect.height / 2 - 20, 150, 40), "Set New IP"))
             {
-                print("Got a click");
+                print("Button click");
                 TearDown();
                 SetAddress("ws://" + IPEnter);
                 ConnectAndWait();
                 Restart();
             }
-
-
-            if (GUI.Toggle(new Rect(windowRect.width / 3 - 100, 3 * windowRect.height / 4 - 25, 100, 50), setDefaultIP, "Set Default?")){
-                Debug.Log("Toggle Click");
-                setDefaultIP = !setDefaultIP;
+            if (GUI.Toggle(new Rect(windowRect.width/2 - 50, 3 * windowRect.height / 4 - 25, 100, 50), setDefaultIP, "Set Default?") != buttonToggle)
+            {
+                buttonToggle = !buttonToggle;
+                if (buttonToggle){
+                    setDefaultIP = !setDefaultIP;
+                }
             }
             //if (GUI.Button(new Rect(windowRect.width / 3 - 100, 3*windowRect.height / 4 - 25, 100, 50), "Set Default?")){
             //    setDefaultIP = !setDefaultIP;
@@ -86,7 +88,10 @@ namespace RosSharp.RosBridgeClient
         //END CHANGE IP
         //
 
-
+        void Start()
+        {
+            IPEnter = PlayerPrefs.GetString("defaultIP", "ws://theIP:thePort");
+        }
         public void Awake()
         {
             //ConnectAndWait();
@@ -122,6 +127,10 @@ namespace RosSharp.RosBridgeClient
                     imageSubscriber.enabled = true;
                     subscribersEnabled = false;
                 }
+            }
+
+            if (setDefaultIP){
+                PlayerPrefs.SetString("defaultIP", IPEnter);
             }
         }
            
