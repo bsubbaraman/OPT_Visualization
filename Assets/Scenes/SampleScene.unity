@@ -1838,6 +1838,7 @@ MonoBehaviour:
   s: {fileID: 1533692834}
   activeColour: {r: 0.33333334, g: 0.78431374, b: 0.33333334, a: 1}
   healthPopup: 0
+  rosConnector: {fileID: 1533692828}
   centroidSub: {fileID: 1533692830}
   skeletonSub: {fileID: 1533692827}
   objectSub: {fileID: 1533692831}
@@ -3175,6 +3176,8 @@ MonoBehaviour:
   cam: {fileID: 115028804}
   cameraPos: {x: 0, y: 0, z: 0}
   cameraRot: {x: 0, y: 0, z: 0, w: 0}
+  sensors:
+  - /kinect01
 --- !u!114 &1533692835
 MonoBehaviour:
   m_ObjectHideFlags: 0

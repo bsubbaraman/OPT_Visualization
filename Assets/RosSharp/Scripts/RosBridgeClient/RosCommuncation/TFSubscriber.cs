@@ -27,6 +27,9 @@ namespace RosSharp.RosBridgeClient
         public Vector3 cameraPos;
         public Quaternion cameraRot;
 
+        //for now, just manually add sensor names.  see if ros can publish sensor names to avoid needing gui selection
+        public List<string> sensors = new List<string>();
+
         protected override void Start()
         {
             base.Start();
@@ -46,7 +49,9 @@ namespace RosSharp.RosBridgeClient
 
         private void ProcessMessage()
         {
-            if(tf.transforms[0].child_frame_id == "/kinect01"){
+            //if(tf.transforms[0].child_frame_id == "/kinect01"){
+            if (sensors.Contains(tf.transforms[0].child_frame_id))
+            {
                 cam.SetActive(true);
                 Vector3 v = new Vector3(tf.transforms[0].transform.translation.x, tf.transforms[0].transform.translation.y, tf.transforms[0].transform.translation.z);
                 Quaternion q = new Quaternion(tf.transforms[0].transform.rotation.x, tf.transforms[0].transform.rotation.y, tf.transforms[0].transform.rotation.z, tf.transforms[0].transform.rotation.w);
