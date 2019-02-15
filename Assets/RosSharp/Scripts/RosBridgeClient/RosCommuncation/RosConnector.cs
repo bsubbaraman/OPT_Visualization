@@ -26,7 +26,10 @@ namespace RosSharp.RosBridgeClient
 
         //
         public CentroidSubscriber centroidSubscriber;
+        public SkeletonSubscriber skeletonSubscriber;
         public ObjectsSubscriber objectsSubscriber;
+        public ImageSubscriber imageSubscriber;
+        public FaceSubscriber faceSubscriber;
         public TFSubscriber tfSubscriber;
         //
         public int Timeout = 10;
@@ -114,6 +117,9 @@ namespace RosSharp.RosBridgeClient
                     tfSubscriber.enabled = true;
                     centroidSubscriber.enabled = true;
                     objectsSubscriber.enabled = true;
+                    skeletonSubscriber.enabled = true;
+                    faceSubscriber.enabled = true;
+                    imageSubscriber.enabled = true;
                     subscribersEnabled = false;
                 }
             }

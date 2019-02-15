@@ -78,7 +78,8 @@ namespace RosSharp.RosBridgeClient
         public RosSharp.RosBridgeClient.ObjectsSubscriber objectSub;
         public RosSharp.RosBridgeClient.PoseStampedPublisher posePub;
         public RosSharp.RosBridgeClient.UDPSubscriber_Pose recognizedPoseSub;
-        public RosSharp.RosBridgeClient.UDPSubscriber_Faces recognizedFacesSub;
+        public RosSharp.RosBridgeClient.FaceSubscriber recognizedFacesSub;
+        //public RosSharp.RosBridgeClient.UDPSubscriber_Faces recognizedFacesSub;
 
         // scaling
         //found directly from avatar
@@ -385,7 +386,7 @@ namespace RosSharp.RosBridgeClient
             TextMesh tm = label.GetComponent<TextMesh>();
             label.transform.SetParent(theMarker.transform);
             tm.text = info;
-            tm.transform.localPosition = new Vector3(0f, 1f, 0f); // to position just above marker
+            tm.transform.localPosition = Vector3.up; // to position just above marker
             // need to change label scale to adjust for differenes in scale of parent objects
             Vector3 scale = theMarker.transform.localScale;
             scale = new Vector3(.2f / scale.x, .2f / scale.y, .2f / scale.z);
@@ -1439,7 +1440,7 @@ namespace RosSharp.RosBridgeClient
         private void FaceRecognition()
         {
             // add name label and image to centroid
-            Dictionary<int, string> dataFromFaceSub = recognizedFacesSub.recognizedFaceData;
+            Dictionary<int, string> dataFromFaceSub = recognizedFacesSub.faceData;
             foreach (KeyValuePair<int, string> face_track in dataFromFaceSub)
             {
                 if (activeTracks.ContainsKey(face_track.Key))
@@ -1447,6 +1448,7 @@ namespace RosSharp.RosBridgeClient
                     TextMesh tm = labels[face_track.Key].GetComponent<TextMesh>();
                     tm.text = labels.ContainsKey(face_track.Key) ? dataFromFaceSub[face_track.Key] : face_track.Key.ToString();
                     activeTracks[face_track.Key].GetComponent<Renderer>().material = faceMaterials[tm.text];
+
                 }
             }
         }

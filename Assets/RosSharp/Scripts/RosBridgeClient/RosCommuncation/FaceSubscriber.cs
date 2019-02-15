@@ -57,7 +57,7 @@ namespace RosSharp.RosBridgeClient
                 else
                 {
                     // do i need this?  should just stay the same
-                    faceData[track.id] = face_name;
+                    //faceData[track.id] = face_name;
                 }
 
             }
