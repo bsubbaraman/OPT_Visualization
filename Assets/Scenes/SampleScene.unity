@@ -3055,7 +3055,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1533692826}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f365aeafbe53a400f9a4c6ab36fa75c5, type: 3}
   m_Name: 
@@ -3077,9 +3077,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   centroidSubscriber: {fileID: 1533692830}
+  objectsSubscriber: {fileID: 1533692831}
+  tfSubscriber: {fileID: 1533692834}
   Timeout: 10
   Protocol: 0
-  RosBridgeServerUrl: ws://131.179.142.106:9090
+  RosBridgeServerUrl: ws://131.179.142.107:9090
+  IPEnter: theIP:thePort
+  skin: {fileID: 11400000, guid: 5535f1c3c705346aebf99e8927363d78, type: 2}
+  defaultSkin: {fileID: 11400000, guid: c34f1b5b9059a487d9f280f9b1049c5b, type: 2}
 --- !u!4 &1533692829
 Transform:
   m_ObjectHideFlags: 0
@@ -3099,7 +3104,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1533692826}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bebdaba3e00b24407aef46bf5298d564, type: 3}
   m_Name: 
@@ -3113,7 +3118,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1533692826}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 64c611bd9882a4685b5786509973ad2d, type: 3}
   m_Name: 
@@ -3128,7 +3133,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1533692826}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ef6e2677fa36b0c46a9f6d8bd354c686, type: 3}
   m_Name: 
@@ -3157,7 +3162,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1533692826}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9c26637e1e54c4fc9af9e6be7874eaac, type: 3}
   m_Name: 
@@ -3173,7 +3178,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1533692826}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 59cb50544e4b642d9adba650496f0bc3, type: 3}
   m_Name: 

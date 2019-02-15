@@ -25,7 +25,9 @@ namespace RosSharp.RosBridgeClient
     {
 
         //
-        public CentroidSubscriber centroidSubscriber; 
+        public CentroidSubscriber centroidSubscriber;
+        public ObjectsSubscriber objectsSubscriber;
+        public TFSubscriber tfSubscriber;
         //
         public int Timeout = 10;
 
@@ -34,36 +36,53 @@ namespace RosSharp.RosBridgeClient
         public Protocols Protocol;
         public string RosBridgeServerUrl = "ws://192.168.0.1:9090";
         private bool connectionEstablished = false;
-
+        private bool subscribersEnabled = false;
+        private ManualResetEvent isConnected = new ManualResetEvent(false);
         //CHANGE IP
-        //private Rect windowRect = new Rect(Screen.width / 2 - (Screen.width / 4 / 2), Screen.height / 2 - Screen.height / 4 / 2, Screen.width / 4, Screen.height / 4);
-        //public string IPEnter = "theIP";
 
-        //void OnGUI()
-        //{
-        //    if (!connectionEstablished)
-        //    {
-        //        windowRect = GUI.Window(0, windowRect, DoMyWindow, "Server Not Connected");
-        //    }
-        //}
+        private Rect windowRect = new Rect(Screen.width / 3, 2 * Screen.height / 5, Screen.width / 3, Screen.height / 5);
+        public string IPEnter = "theIP:thePort";
+        public GUISkin skin;
+        public GUISkin defaultSkin;
+        private bool setDefaultIP = false;
 
-        //// Make the contents of the window
-        //void DoMyWindow(int windowID)
-        //{
-        //    IPEnter = GUI.TextField(new Rect(20, 40, Screen.width / 4 - 40, 20), IPEnter);
-        //    if (GUI.Button(new Rect(windowRect.width / 2 - (Screen.width / 4 - 60) / 2, windowRect.height / 2 - 10, 150, 40), "Set New IP"))
-        //    {
-        //        print("Got a click");
-        //        TearDown();
-        //        SetAddress("ws://" + IPEnter + ":9090");
-        //        ConnectAndWait();
-        //        Restart();
-        //    }
-        //}
+        void OnGUI()
+        {
+            skin.toggle = defaultSkin.toggle;
+            GUI.skin = skin;
+            if (!connectionEstablished && Time.realtimeSinceStartup > 10f)
+            {
+                windowRect = GUI.Window(0, windowRect, DoMyWindow, "Server Not Connected");
+            }
+        }
+
+        // Make the contents of the window
+        void DoMyWindow(int windowID)
+        {
+            GUI.Label(new Rect(20, 40, 50, 40), "ws://");
+            IPEnter = GUI.TextField(new Rect(60, 40, windowRect.width / 2 - 40, 40), IPEnter);
+            if (GUI.Button(new Rect(windowRect.width / 3 - 150, windowRect.height / 2 - 20, 150, 40), "Set New IP"))
+            {
+                print("Got a click");
+                TearDown();
+                SetAddress("ws://" + IPEnter);
+                ConnectAndWait();
+                Restart();
+            }
+
+
+            if (GUI.Toggle(new Rect(windowRect.width / 3 - 100, 3 * windowRect.height / 4 - 25, 100, 50), setDefaultIP, "Set Default?")){
+                Debug.Log("Toggle Click");
+                setDefaultIP = !setDefaultIP;
+            }
+            //if (GUI.Button(new Rect(windowRect.width / 3 - 100, 3*windowRect.height / 4 - 25, 100, 50), "Set Default?")){
+            //    setDefaultIP = !setDefaultIP;
+            //}
+        }
 
         //END CHANGE IP
         //
-        private ManualResetEvent isConnected = new ManualResetEvent(false);
+
 
         public void Awake()
         {
@@ -87,6 +106,19 @@ namespace RosSharp.RosBridgeClient
                 //PrintDebugMessage("entro qua 2");
             }
         }
+
+        void Update(){
+            if (!subscribersEnabled){
+                if (connectionEstablished)
+                {
+                    tfSubscriber.enabled = true;
+                    centroidSubscriber.enabled = true;
+                    objectsSubscriber.enabled = true;
+                    subscribersEnabled = false;
+                }
+            }
+        }
+           
 
         public bool ConnectionStatus()
         {
