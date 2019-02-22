@@ -129,7 +129,7 @@ namespace RosSharp.RosBridgeClient
                     break;
                 case "SnapToCamView":
                     //Quaternion orient = Quaternion.LookRotation(s.cameraRot.eulerAngles, Vector3.up);
-                    main.transform.position = s.cameraPos;
+                    //main.transform.position = s.cameraPos;
                     //main.transform.rotation = s.cameraRot;
                     main.transform.rotation = cameraRepresentation.transform.rotation;
                     main.transform.Rotate(-90f,0f,0f, Space.Self);

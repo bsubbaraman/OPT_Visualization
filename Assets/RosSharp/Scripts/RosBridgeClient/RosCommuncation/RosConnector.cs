@@ -128,7 +128,7 @@ namespace RosSharp.RosBridgeClient
                     centroidSubscriber.enabled = true;
                     objectsSubscriber.enabled = true;
                     skeletonSubscriber.enabled = true;
-                    faceSubscriber.enabled = true;
+                    //faceSubscriber.enabled = true;
                     imageSubscriber.enabled = true;
                     subscribersEnabled = false;
                 }
