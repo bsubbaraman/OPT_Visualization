@@ -1459,12 +1459,12 @@ namespace RosSharp.RosBridgeClient
             Dictionary<int, RecognizedPose> dataFromPoseRecognitionSub = recognizedPoseSub.recognizedPoseData;
             // TODO: fade recognized pose text out, have 'scroll' that shows skeleton + id for multiple recognized poses simultaneously
             PrintDebugMessage("I: Received data from objectSub length: " + dataFromPoseRecognitionSub.Count);
-            PoseText.GetComponent<Text>().color = Color.Lerp(PoseText.GetComponent<Text>().color, Color.clear, Time.deltaTime);
-            Debug.Log(PoseText.GetComponent<Text>().color);
-            if (PoseText.GetComponent<Text>().color != Color.clear){
-                Debug.Log("lerping");
-                PoseText.GetComponent<Text>().color = Color.Lerp(PoseText.GetComponent<Text>().color, Color.clear, Time.deltaTime);
-            }
+            //PoseText.GetComponent<Text>().color = Color.Lerp(PoseText.GetComponent<Text>().color, Color.clear, Time.deltaTime);
+            //Debug.Log(PoseText.GetComponent<Text>().color);
+            //if (PoseText.GetComponent<Text>().color != Color.clear){
+            //    Debug.Log("lerping");
+            //    PoseText.GetComponent<Text>().color = Color.Lerp(PoseText.GetComponent<Text>().color, Color.clear, Time.deltaTime);
+            //}
                 
             foreach (KeyValuePair<int, GameObject> track in activeSkeleton)
             {

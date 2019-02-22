@@ -90,17 +90,22 @@ namespace RosSharp.RosBridgeClient
 
         void Start()
         {
-            IPEnter = PlayerPrefs.GetString("defaultIP", "ws://theIP:thePort");
+            //RosBridgeServerUrl = PlayerPrefs.GetString("defaultIP", "ThisIsTheDefault");
+            //Debug.Log("The default server url is: " + RosBridgeServerUrl);
         }
         public void Awake()
         {
             //ConnectAndWait();
             //PrintDebugMessage("entro qua 0");
+            RosBridgeServerUrl = PlayerPrefs.GetString("defaultIP", "ThisIsTheDefault");
+            Debug.Log("The default server url is: " + RosBridgeServerUrl);
             new Thread(ConnectAndWait).Start();
         }
 
         public void ConnectAndWait()
         {
+            //RosBridgeServerUrl = "ws://" + RosBridgeServerUrl;
+            Debug.Log("I am trying to connect to " + RosBridgeServerUrl);
             RosSocket = ConnectToRos(Protocol, RosBridgeServerUrl, OnConnected, OnClosed);
             //PrintDebugMessage("entro qua");
             if (!isConnected.WaitOne(Timeout * 1000))
@@ -130,7 +135,7 @@ namespace RosSharp.RosBridgeClient
             }
 
             if (setDefaultIP){
-                PlayerPrefs.SetString("defaultIP", IPEnter);
+                PlayerPrefs.SetString("defaultIP", "ws://" + IPEnter);
             }
         }
            
