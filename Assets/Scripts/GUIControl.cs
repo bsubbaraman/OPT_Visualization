@@ -7,12 +7,15 @@ namespace RosSharp.RosBridgeClient
 
     public class GUIControl : MonoBehaviour
     {
-        public Button m_CentroidButton, m_SkeletonButton, m_ObjectButton, m_FacesButton, m_ShowImageButton, m_SnapToButton, m_LabelButton, m_GetSnapButton, m_SystemHealth;
+        public Button m_CentroidButton, m_SkeletonButton, m_ObjectButton, m_FacesButton, m_ShowImageButton, m_GetSnapButton, m_LabelButton, m_SystemHealth; //SnapToButton
         public Camera main;
         public GameObject theConnector, theController, theImage, cameraRepresentation, Panel, PanelText;
         public Visualization v;
         public ImageSubscriber iS;
-        public TFSubscriber s;
+        public TFSubscriber tfSub;
+        public GameObject ButtonPrefab;
+        private List<GameObject> SnapToButtonsList = new List<GameObject>();
+        private GameObject[] SnapToButtons;
 
         public Color activeColour;
         public bool healthPopup;
@@ -22,7 +25,8 @@ namespace RosSharp.RosBridgeClient
         public CentroidSubscriber centroidSub;
         public SkeletonSubscriber skeletonSub;
         public ObjectsSubscriber objectSub;
-        public UDPSubscriber_Pose poseSub;
+        //public UDPSubscriber_Pose poseSub;
+        
 
         // Use this for initialization
         void Start()
@@ -34,10 +38,21 @@ namespace RosSharp.RosBridgeClient
             m_ObjectButton.onClick.AddListener(() => TaskOnClick(m_ObjectButton));
             m_FacesButton.onClick.AddListener(() => TaskOnClick(m_FacesButton));
             m_ShowImageButton.onClick.AddListener(() => TaskOnClick(m_ShowImageButton));
-            m_SnapToButton.onClick.AddListener(() => TaskOnClick(m_SnapToButton));
-            m_LabelButton.onClick.AddListener(() => TaskOnClick(m_LabelButton));
             m_GetSnapButton.onClick.AddListener(() => TaskOnClick(m_GetSnapButton));
+            m_LabelButton.onClick.AddListener(() => TaskOnClick(m_LabelButton));
             m_SystemHealth.onClick.AddListener(() => TaskOnClick(m_SystemHealth));
+            //m_SnapToButton.onClick.AddListener(() => TaskOnClick(m_SnapToButton));
+
+            // add as many 'snap-to camera' buttons as there are sensors 
+            foreach (var sensor in tfSub.sensors) 
+            {
+                GameObject newButton = Instantiate(ButtonPrefab);
+                SnapToButtonsList.Add(newButton);
+                newButton.transform.parent = Panel.transform;
+                newButton.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Snap-to " + sensor;
+            }
+            SnapToButtons = SnapToButtonsList.ToArray();
+
             // change panel components based on window size
 
 
@@ -69,20 +84,33 @@ namespace RosSharp.RosBridgeClient
             rT.localPosition = new Vector2(rT.localPosition.x, -50f - 5 * (Screen.height / 25f));
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
 
-            rT = m_SnapToButton.GetComponent<RectTransform>();
+            rT = m_LabelButton.GetComponent<RectTransform>();
             rT.localPosition = new Vector2(rT.localPosition.x, -50f - 6*(Screen.height / 25f));
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
 
-            rT = m_LabelButton.GetComponent<RectTransform>();
-            rT.localPosition = new Vector2(rT.localPosition.x, -50f - 7*(Screen.height / 25f));
+            rT = m_SystemHealth.GetComponent<RectTransform>();
+            rT.localPosition = new Vector2(rT.localPosition.x, -50f - 7 * (Screen.height / 25f));
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
 
-            rT = m_SystemHealth.GetComponent<RectTransform>();
-            rT.localPosition = new Vector2(rT.localPosition.x, -50f - 8 * (Screen.height / 25f));
-            rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
+            int p = 8;
+            foreach (var button in SnapToButtons)
+            {
+                Button b = button.GetComponent<Button>();
+                b.onClick.AddListener(() => TaskOnClick(b));
+                rT = button.GetComponent<RectTransform>();
+                rT.localPosition = new Vector2(rT.localPosition.x, -50f - p * (Screen.height / 25f));
+                rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
+                p += 1;
+            }
+
+            //rT = m_SnapToButton.GetComponent<RectTransform>();
+            //rT.localPosition = new Vector2(rT.localPosition.x, -50f - 5*(Screen.height / 25f));
+            //rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
 
             rT = PanelText.GetComponent<RectTransform>();
             rT.sizeDelta = new Vector2(Screen.width / 8f, Screen.height - 20f);
+
+          
 
         }
 
