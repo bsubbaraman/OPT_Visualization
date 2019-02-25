@@ -61,6 +61,7 @@ namespace RosSharp.RosBridgeClient
             {
                 if (!sensors_dict[sensorname]){
                     GameObject newSensor = Instantiate(SensorPrefab);
+                    newSensor.name = sensorname.Remove(0,1);
                     newSensor.transform.parent = PartsManager.transform;
                     Vector3 v = new Vector3(tf.transforms[0].transform.translation.x, tf.transforms[0].transform.translation.y, tf.transforms[0].transform.translation.z);
                     Quaternion q = new Quaternion(tf.transforms[0].transform.rotation.x, tf.transforms[0].transform.rotation.y, tf.transforms[0].transform.rotation.z, tf.transforms[0].transform.rotation.w);

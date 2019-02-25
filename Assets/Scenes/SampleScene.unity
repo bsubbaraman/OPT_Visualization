@@ -1583,9 +1583,9 @@ MonoBehaviour:
   theConnector: {fileID: 1533692826}
   theController: {fileID: 1055780064}
   theImage: {fileID: 1106671785}
-  cameraRepresentation: {fileID: 0}
   Panel: {fileID: 187979362}
   PanelText: {fileID: 1444525548}
+  PartsManager: {fileID: 776284470}
   v: {fileID: 1055780065}
   iS: {fileID: 1533692832}
   tfSub: {fileID: 1533692834}

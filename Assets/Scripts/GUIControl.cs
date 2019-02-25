@@ -9,7 +9,7 @@ namespace RosSharp.RosBridgeClient
     {
         public Button m_CentroidButton, m_SkeletonButton, m_ObjectButton, m_FacesButton, m_ShowImageButton, m_GetSnapButton, m_LabelButton, m_SystemHealth; //SnapToButton
         public Camera main;
-        public GameObject theConnector, theController, theImage, cameraRepresentation, Panel, PanelText;
+        public GameObject theConnector, theController, theImage, Panel, PanelText, PartsManager;
         public Visualization v;
         public ImageSubscriber iS;
         public TFSubscriber tfSub;
@@ -50,11 +50,11 @@ namespace RosSharp.RosBridgeClient
                 SnapToButtonsList.Add(newButton);
                 newButton.transform.parent = Panel.transform;
                 newButton.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Snap-to " + sensor;
+                newButton.name = sensor.Remove(0,1);
             }
             SnapToButtons = SnapToButtonsList.ToArray();
 
             // change panel components based on window size
-
 
             RectTransform rT = Panel.GetComponent<RectTransform>();
             //rT.sizeDelta = new Vector2(rT.sizeDelta.x, Screen.height - 20f);
@@ -159,7 +159,7 @@ namespace RosSharp.RosBridgeClient
                     //Quaternion orient = Quaternion.LookRotation(s.cameraRot.eulerAngles, Vector3.up);
                     //main.transform.position = s.cameraPos;
                     //main.transform.rotation = s.cameraRot;
-                    main.transform.rotation = cameraRepresentation.transform.rotation;
+                    //main.transform.rotation = cameraRepresentation.transform.rotation;
                     main.transform.Rotate(-90f,0f,0f, Space.Self);
                     main.transform.Rotate(0f, 0f, 90f, Space.Self);
                     cb.normalColor = Color.white;
@@ -171,6 +171,27 @@ namespace RosSharp.RosBridgeClient
                     break;
                 case "SystemHealth":
                     healthPopup = !healthPopup;
+                    break;
+               default:
+                    foreach (var sensor in tfSub.sensors)
+                    {
+                        string trimmed = sensor.Remove(0, 1);
+                        if (trimmed == b.name){
+                            try{
+                                GameObject theSensor = PartsManager.transform.Find(trimmed).gameObject;
+                                main.transform.position = theSensor.transform.position;
+                                main.transform.rotation = theSensor.transform.rotation;
+                                main.transform.Rotate(-90f, 0f, 0f, Space.Self);
+                                main.transform.Rotate(0f, 0f, 90f, Space.Self);
+                                cb.normalColor = Color.white;
+                                cb.highlightedColor = cb.normalColor;
+                                b.colors = cb;
+                            }
+                            catch{
+                                Debug.Log("problem with snapping to camera view");
+                            }
+                        }
+                    }
                     break;
             }
         }
