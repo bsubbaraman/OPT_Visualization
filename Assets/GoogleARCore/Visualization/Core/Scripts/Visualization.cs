@@ -45,7 +45,7 @@ namespace RosSharp.RosBridgeClient
         public Camera main;
 
         // OBJECT PREFABS
-        [Header("YOLO Objects")]
+        [Header("YOLO  Objects")]
         public List<GameObject> YOLOobjects;
         private Dictionary<string, GameObject> objectPrefabs = new Dictionary<string, GameObject>();
         //public GameObject chair;
@@ -77,8 +77,9 @@ namespace RosSharp.RosBridgeClient
         public RosSharp.RosBridgeClient.SkeletonSubscriber skeletonSub;
         public RosSharp.RosBridgeClient.ObjectsSubscriber objectSub;
         public RosSharp.RosBridgeClient.PoseStampedPublisher posePub;
-        public RosSharp.RosBridgeClient.UDPSubscriber_Pose recognizedPoseSub;
         public RosSharp.RosBridgeClient.FaceSubscriber recognizedFacesSub;
+        public RosSharp.RosBridgeClient.PoseSubscriber poseSub;
+        //public RosSharp.RosBridgeClient.UDPSubscriber_Pose recognizedPoseSub;
         //public RosSharp.RosBridgeClient.UDPSubscriber_Faces recognizedFacesSub;
 
         // scaling
@@ -1455,7 +1456,7 @@ namespace RosSharp.RosBridgeClient
         public GameObject PoseText;
         private void RecognizePoseGlow()
         {
-            Dictionary<int, RecognizedPose> dataFromPoseRecognitionSub = recognizedPoseSub.recognizedPoseData;
+            Dictionary<int, string> dataFromPoseRecognitionSub = poseSub.poseData;
             // TODO: fade recognized pose text out, have 'scroll' that shows skeleton + id for multiple recognized poses simultaneously
             PrintDebugMessage("I: Received data from objectSub length: " + dataFromPoseRecognitionSub.Count);
             //PoseText.GetComponent<Text>().color = Color.Lerp(PoseText.GetComponent<Text>().color, Color.clear, Time.deltaTime);
@@ -1468,11 +1469,11 @@ namespace RosSharp.RosBridgeClient
             foreach (KeyValuePair<int, GameObject> track in activeSkeleton)
             {
                 int id = track.Key;
-                GameObject r2 = track.Value.transform.GetChild(0).gameObject;
+                GameObject r2 = track.Value.transform.GetChild(0).gameObject; //where the skeleton material is stored, which has shader for MK Glow
                 Material m = r2.GetComponent<Renderer>().material;
                 if (dataFromPoseRecognitionSub.ContainsKey(id))
                 {
-                    PoseText.GetComponent<Text>().text = "Skeleton " + id.ToString() + ": " + dataFromPoseRecognitionSub[id].pose_name;
+                    PoseText.GetComponent<Text>().text = "Skeleton " + id.ToString() + ": " + dataFromPoseRecognitionSub[id];
                     m.SetFloat("_MKGlowPower", 0.5f);
                 }
                 else

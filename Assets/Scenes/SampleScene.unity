@@ -1866,8 +1866,8 @@ MonoBehaviour:
   skeletonSub: {fileID: 1533692827}
   objectSub: {fileID: 1533692831}
   posePub: {fileID: 0}
-  recognizedPoseSub: {fileID: 1130118784}
   recognizedFacesSub: {fileID: 1533692835}
+  poseSub: {fileID: 1533692836}
   grid: {fileID: 0}
   PoseText: {fileID: 881625623}
 --- !u!4 &1055780066
@@ -2243,7 +2243,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1130118784
 MonoBehaviour:
   m_ObjectHideFlags: 0
