@@ -1093,67 +1093,6 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 531243974}
   m_CullTransparentMesh: 0
---- !u!1001 &534649915
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4705053009403866, guid: a556aed0ee2cf40b0b8c6e64b0ecdca7, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4705053009403866, guid: a556aed0ee2cf40b0b8c6e64b0ecdca7, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0.18914917
-      objectReference: {fileID: 0}
-    - target: {fileID: 4705053009403866, guid: a556aed0ee2cf40b0b8c6e64b0ecdca7, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: -0.000000029802322
-      objectReference: {fileID: 0}
-    - target: {fileID: 4705053009403866, guid: a556aed0ee2cf40b0b8c6e64b0ecdca7, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4705053009403866, guid: a556aed0ee2cf40b0b8c6e64b0ecdca7, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4705053009403866, guid: a556aed0ee2cf40b0b8c6e64b0ecdca7, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4705053009403866, guid: a556aed0ee2cf40b0b8c6e64b0ecdca7, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4705053009403866, guid: a556aed0ee2cf40b0b8c6e64b0ecdca7, type: 2}
-      propertyPath: m_RootOrder
-      value: 8
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: a556aed0ee2cf40b0b8c6e64b0ecdca7, type: 2}
-  m_IsPrefabAsset: 0
---- !u!1 &534649916 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1972563761301396, guid: a556aed0ee2cf40b0b8c6e64b0ecdca7,
-    type: 2}
-  m_PrefabInternal: {fileID: 534649915}
---- !u!114 &534649917
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 534649916}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b03aae1e567b94909bd0cfff433c1036, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  faceImages: []
-  recognizedFacesSub: {fileID: 1533692835}
-  visualization: {fileID: 1055780065}
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0
@@ -2311,7 +2250,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1130118783}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e6c6d953efe8f4dbe88bcbaf261b713f, type: 3}
   m_Name: 
@@ -2324,7 +2263,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1130118783}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6e447fe3766f40d099cf02521850fbe, type: 3}
   m_Name: 
@@ -2965,6 +2904,7 @@ GameObject:
   - component: {fileID: 1533692833}
   - component: {fileID: 1533692834}
   - component: {fileID: 1533692835}
+  - component: {fileID: 1533692836}
   m_Layer: 0
   m_Name: RosConnector
   m_TagString: Untagged
@@ -3005,6 +2945,7 @@ MonoBehaviour:
   imageSubscriber: {fileID: 1533692832}
   faceSubscriber: {fileID: 1533692835}
   tfSubscriber: {fileID: 1533692834}
+  poseSubscriber: {fileID: 1533692836}
   Timeout: 10
   Protocol: 0
   RosBridgeServerUrl: ws://131.179.142.108:9090
@@ -3113,6 +3054,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Topic: /face_recognition/people_tracks
+  TimeStep: 0
+--- !u!114 &1533692836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1533692826}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6db5a50d46f084de49942fd12fe07431, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Topic: /recognizer/poses
   TimeStep: 0
 --- !u!1 &1548117385
 GameObject:

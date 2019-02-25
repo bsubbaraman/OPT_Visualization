@@ -165,14 +165,14 @@ namespace RosSharp.RosBridgeClient
             {
                 RemoveAllObjects();
             }
-            if (facesView)
-            {
-                FaceRecognition();
-            }
-            else
-            {
-                RemoveAllFaceData();
-            }
+            //if (facesView)
+            //{
+            //    FaceRecognition();
+            //}
+            //else
+            //{
+            //    RemoveAllFaceData();
+            //}
 
             RotateLabels(labels);
             RecognizePoseGlow();
@@ -180,7 +180,6 @@ namespace RosSharp.RosBridgeClient
             PrintDebugMessage("I: Update complete correctly!");
 
         }
-
         /// <summary>
         /// Removes all centroids.
         /// </summary>

@@ -24,6 +24,7 @@ public class FaceRecognition : MonoBehaviour {
         Dictionary<int, string> dataFromFaceSub = recognizedFacesSub.faceData;
         foreach (KeyValuePair<int, string> face_track in dataFromFaceSub)
         {
+            Debug.Log(face_track.Value);
             if (visualization.activeTracks.ContainsKey(face_track.Key))
             {
                 string face_name = face_track.Value;

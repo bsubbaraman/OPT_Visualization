@@ -52,7 +52,7 @@ namespace RosSharp.RosBridgeClient
 
                 var data = receiver.getLatestUDPPacket();
                 var N = JSON.Parse(data);
-                Debug.Log(N);
+                //Debug.Log(N);
                 if (N["pose_tracks"] != null)
                 {
                     //MessageRate();
