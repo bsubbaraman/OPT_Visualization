@@ -1475,7 +1475,7 @@ namespace RosSharp.RosBridgeClient
             //    t += Time.time / duration;
             //}
 
-            const float TEXT_DURATION = 500f;
+            const float TEXT_DURATION = 100f;
             int count = 0;
             foreach (KeyValuePair<int, GameObject> track in activeSkeleton)
             {
@@ -1494,7 +1494,7 @@ namespace RosSharp.RosBridgeClient
                             Text = Instantiate(PoseTextPrefab, GUICanvas.transform, false)
                         };
                         RectTransform rt = pt.Text.GetComponent<RectTransform>();
-                        rt.localPosition = new Vector2(rt.localPosition.x, rt.localPosition.y - 10f * count);
+                        rt.localPosition = new Vector2(rt.localPosition.x, rt.localPosition.y - 20f * count);
                         Debug.Log(rt.localPosition.x + " " + rt.localPosition.y);
                         pt.Text.GetComponent<Text>().text = "Skeleton " + id.ToString() + ": " + dataFromPoseRecognitionSub[id];
                         PoseText.Add(id, pt);

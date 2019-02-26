@@ -32,6 +32,7 @@ namespace RosSharp.RosBridgeClient
         public FaceSubscriber faceSubscriber;
         public TFSubscriber tfSubscriber;
         public PoseSubscriber poseSubscriber;
+        public PoseStampedSubscriber mobilePhonePosSub;
         //
         public int Timeout = 10;
 
@@ -132,6 +133,8 @@ namespace RosSharp.RosBridgeClient
                     faceSubscriber.enabled = true;
                     imageSubscriber.enabled = true;
                     poseSubscriber.enabled = true;
+                    //mobilePhonePosSub.enabled = true;
+
                     subscribersEnabled = false;
                 }
             }

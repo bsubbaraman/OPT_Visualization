@@ -14,16 +14,19 @@ limitations under the License.
 */
 
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace RosSharp.RosBridgeClient
 {
     public class PoseStampedSubscriber : Subscriber<Messages.Geometry.PoseStamped>
     {
-        private Transform PublishedTransform;
-
+        public Dictionary<int, Transform> PublishedTransforms = new Dictionary<int, Transform>(); //for when multiple phones are possible
         private Vector3 position;
         private Quaternion rotation;
         private bool isMessageReceived;
+
+        public GameObject MobilePhonePrefab;
+        public bool phoneInScene = false; // for now, there is only capability for 1 phone in optar mobile 
 
         protected override void Start()
         {
@@ -34,6 +37,16 @@ namespace RosSharp.RosBridgeClient
         {
             if (isMessageReceived)
                 ProcessMessage();
+
+            if (!phoneInScene){
+                GameObject newPhone = Instantiate(MobilePhonePrefab, position, rotation);
+                PublishedTransforms.Add(0, newPhone.transform);
+                phoneInScene = true;
+            }
+
+            PublishedTransforms[0].position = position;
+            PublishedTransforms[0].rotation = rotation;
+
         }
 
         protected override void ReceiveMessage(Messages.Geometry.PoseStamped message)
@@ -45,8 +58,16 @@ namespace RosSharp.RosBridgeClient
 
         private void ProcessMessage()
         {
-            PublishedTransform.position = position;
-            PublishedTransform.rotation = rotation;
+            //PublishedTransform.position = position;
+            //PublishedTransform.rotation = rotation;
+
+            //Debug.Log(PublishedTransform.position);
+            //Debug.Log(PublishedTransform.rotation);
+
+            //if (!phoneInScene){
+            //    Instantiate(MobilePhonePrefab, GetPosition(), PublishedTransform.rotation);
+            //    phoneInScene = true;
+            //}
         }
 
         public Vector3 GetPosition(Messages.Geometry.PoseStamped message)

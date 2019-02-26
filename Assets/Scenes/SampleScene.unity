@@ -1353,7 +1353,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 654027741}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.5, z: 0}
+  m_LocalPosition: {x: 0, y: -0.86, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 776284471}
@@ -2724,6 +2724,7 @@ GameObject:
   - component: {fileID: 1533692834}
   - component: {fileID: 1533692835}
   - component: {fileID: 1533692836}
+  - component: {fileID: 1533692837}
   m_Layer: 0
   m_Name: RosConnector
   m_TagString: Untagged
@@ -2765,6 +2766,7 @@ MonoBehaviour:
   faceSubscriber: {fileID: 1533692835}
   tfSubscriber: {fileID: 1533692834}
   poseSubscriber: {fileID: 1533692836}
+  mobilePhonePosSub: {fileID: 1533692837}
   Timeout: 10
   Protocol: 0
   RosBridgeServerUrl: ws://131.179.142.108:9090
@@ -2887,6 +2889,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Topic: /recognizer/poses
   TimeStep: 0
+--- !u!114 &1533692837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1533692826}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6cd27ba95adab14d85c327244d65eb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Topic: /optar/arcore_pose
+  TimeStep: 0
+  MobilePhonePrefab: {fileID: 1050049885203312, guid: cc2f697e599064095a0e4276a8ad9592,
+    type: 2}
+  phoneInScene: 0
 --- !u!1 &1548117385
 GameObject:
   m_ObjectHideFlags: 0

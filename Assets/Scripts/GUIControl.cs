@@ -98,7 +98,7 @@ namespace RosSharp.RosBridgeClient
                 Button b = button.GetComponent<Button>();
                 b.onClick.AddListener(() => TaskOnClick(b));
                 rT = button.GetComponent<RectTransform>();
-                rT.localPosition = new Vector2(rT.localPosition.x, -50f - p * (Screen.height / 25f));
+                rT.localPosition = new Vector2(10f + rT.localPosition.x, -50f - p * (Screen.height / 25f));
                 rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
                 p += 1;
             }
