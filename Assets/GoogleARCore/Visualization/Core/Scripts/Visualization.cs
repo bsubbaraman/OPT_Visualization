@@ -29,6 +29,7 @@ using UnityEngine.UI;
 
 namespace RosSharp.RosBridgeClient
 {
+
     /// <summary>
     /// Controller for AugmentedImage example.
     /// </summary>
@@ -112,10 +113,11 @@ namespace RosSharp.RosBridgeClient
             }
 
             // making dictionary for objects:
-            foreach (GameObject YOLOobject in YOLOobjects){
+            foreach (GameObject YOLOobject in YOLOobjects)
+            {
                 objectPrefabs.Add(YOLOobject.name, YOLOobject);
             }
-            
+
         }
 
         /// <summary>
@@ -1348,11 +1350,13 @@ namespace RosSharp.RosBridgeClient
                          UnityEngine.Random.Range(0f, 1f),
                          UnityEngine.Random.Range(0f, 1f),
                                            1);
-                    if (objectPrefabs.ContainsKey(track.Value.objectID)){
+                    if (objectPrefabs.ContainsKey(track.Value.objectID))
+                    {
                         GameObject newObject = Instantiate(objectPrefabs[track.Value.objectID]);
                         PlaceObject(newObject, track, color);
                     }
-                    else if (track.Value.objectID != "person"){ // guessing we don't want double person tracking?
+                    else if (track.Value.objectID != "person")
+                    { // guessing we don't want double person tracking?
                         GameObject newObject = Instantiate(objectPrefab);
                         //newCentroid.transform.SetParent(anchorOrigin.transform);
                         newObject.transform.localPosition = track.Value.pos;
@@ -1453,19 +1457,23 @@ namespace RosSharp.RosBridgeClient
             }
         }
 
-        public GameObject PoseText;
+        public Dictionary<int, PoseText> PoseText = new Dictionary<int, PoseText>();
+        public GameObject PoseTextPrefab;
+        public GameObject GUICanvas;
         private void RecognizePoseGlow()
         {
             Dictionary<int, string> dataFromPoseRecognitionSub = poseSub.poseData;
             // TODO: fade recognized pose text out, have 'scroll' that shows skeleton + id for multiple recognized poses simultaneously
             PrintDebugMessage("I: Received data from objectSub length: " + dataFromPoseRecognitionSub.Count);
-            //PoseText.GetComponent<Text>().color = Color.Lerp(PoseText.GetComponent<Text>().color, Color.clear, Time.deltaTime);
+            //PoseText.GetComponent<Text>().color = Color.Lerp(PoseText.GetComponent<Text>().color, Color.clear, t);
             //Debug.Log(PoseText.GetComponent<Text>().color);
             //if (PoseText.GetComponent<Text>().color != Color.clear){
             //    Debug.Log("lerping");
-            //    PoseText.GetComponent<Text>().color = Color.Lerp(PoseText.GetComponent<Text>().color, Color.clear, Time.deltaTime);
+            //    PoseText.GetComponent<Text>().color = Color.Lerp(PoseText.GetComponent<Text>().color, Color.clear, t);
+            //    t += Time.time / duration;
             //}
-                
+
+            const float TEXT_DURATION = 50f;
             foreach (KeyValuePair<int, GameObject> track in activeSkeleton)
             {
                 int id = track.Key;
@@ -1473,13 +1481,68 @@ namespace RosSharp.RosBridgeClient
                 Material m = r2.GetComponent<Renderer>().material;
                 if (dataFromPoseRecognitionSub.ContainsKey(id))
                 {
-                    PoseText.GetComponent<Text>().text = "Skeleton " + id.ToString() + ": " + dataFromPoseRecognitionSub[id];
                     m.SetFloat("_MKGlowPower", 0.5f);
+                    if (!PoseText.ContainsKey(id))
+                    {
+                        PoseText pt = new PoseText
+                        {
+                            id = id,
+                            t = 0f,
+                            Text = Instantiate(PoseTextPrefab, GUICanvas.transform, false)
+                        };
+                        RectTransform rt = pt.Text.GetComponent<RectTransform>();
+                        rt.localPosition = new Vector2(rt.localPosition.x, 312f);
+                        Debug.Log(rt.localPosition.x + " " + rt.localPosition.y);
+                        pt.Text.GetComponent<Text>().text = "Skeleton " + id.ToString() + ": " + dataFromPoseRecognitionSub[id];
+                        PoseText.Add(id, pt);
+                    }
+                    //else
+                    //{
+                    //    PoseText pt = PoseText[id];
+                    //    RectTransform rt = pt.Text.GetComponent<RectTransform>();
+                    //    rt.localPosition = new Vector3(0f, 0f, 0f);
+                    //    pt.t += Time.deltaTime / TEXT_DURATION;
+                    //    if (pt.Text.GetComponent<Text>().color != Color.clear)
+                    //    {
+                    //        Debug.Log("lerping");
+                    //        pt.Text.GetComponent<Text>().color = Color.Lerp(pt.Text.GetComponent<Text>().color, Color.clear, pt.t);
+                    //    }
+                    //    else
+                    //    {
+                    //        Destroy(pt.Text);
+                    //        PoseText.Remove(id);
+                    //    }
+                    //}
                 }
                 else
                 {
-                    PoseText.GetComponent<Text>().text = "";
                     m.SetFloat("_MKGlowPower", 0.0f);
+                }
+
+                int count = 0;
+                foreach (KeyValuePair<int, PoseText> pose in PoseText)
+                {
+                    PoseText pt = pose.Value;
+                    //RectTransform rt = pt.Text.GetComponent<RectTransform>();
+                    //rt.localPosition = new Vector3(0f, -10 * count, 0f);
+                    pt.t += Time.deltaTime / TEXT_DURATION;
+                    if (pt.Text.GetComponent<Text>().color != Color.clear)
+                    {
+                        Debug.Log("lerping");
+                        pt.Text.GetComponent<Text>().color = Color.Lerp(pt.Text.GetComponent<Text>().color, Color.clear, pt.t);
+                    }
+                }
+            }
+
+            //delete objects when faded out
+            List<int> keyList = new List<int>(PoseText.Keys);
+            foreach (int key in keyList)
+            {
+                if (PoseText[key].Text.GetComponent<Text>().color == Color.clear)
+                {
+                    Destroy(PoseText[key].Text);
+                    PoseText.Remove(key);
+
                 }
             }
         }
@@ -1489,5 +1552,12 @@ namespace RosSharp.RosBridgeClient
             //TODO
         }
 
+    }
+
+    public class PoseText
+    {
+        public int id;
+        public float t;
+        public GameObject Text;
     }
 }

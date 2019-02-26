@@ -65,7 +65,6 @@ namespace RosSharp.RosBridgeClient
                     newSensor.transform.parent = PartsManager.transform;
                     Vector3 v = new Vector3(tf.transforms[0].transform.translation.x, tf.transforms[0].transform.translation.y, tf.transforms[0].transform.translation.z);
                     Quaternion q = new Quaternion(tf.transforms[0].transform.rotation.x, tf.transforms[0].transform.rotation.y, tf.transforms[0].transform.rotation.z, tf.transforms[0].transform.rotation.w);
-                    Debug.Log(v);
                     Debug.Log(q.eulerAngles);
 
                     Vector3 cameraPos = RHtoLHTransform(v);
