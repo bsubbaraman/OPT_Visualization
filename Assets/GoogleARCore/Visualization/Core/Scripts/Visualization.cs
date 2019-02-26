@@ -26,6 +26,7 @@ using System;
 using System.Threading;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Linq;
 
 namespace RosSharp.RosBridgeClient
 {
@@ -1462,6 +1463,7 @@ namespace RosSharp.RosBridgeClient
         public GameObject GUICanvas;
         private void RecognizePoseGlow()
         {
+            const float MIN_ALPHA = 0.2f;
             Dictionary<int, string> dataFromPoseRecognitionSub = poseSub.poseData;
             // TODO: fade recognized pose text out, have 'scroll' that shows skeleton + id for multiple recognized poses simultaneously
             PrintDebugMessage("I: Received data from objectSub length: " + dataFromPoseRecognitionSub.Count);
@@ -1473,7 +1475,8 @@ namespace RosSharp.RosBridgeClient
             //    t += Time.time / duration;
             //}
 
-            const float TEXT_DURATION = 50f;
+            const float TEXT_DURATION = 500f;
+            int count = 0;
             foreach (KeyValuePair<int, GameObject> track in activeSkeleton)
             {
                 int id = track.Key;
@@ -1491,10 +1494,25 @@ namespace RosSharp.RosBridgeClient
                             Text = Instantiate(PoseTextPrefab, GUICanvas.transform, false)
                         };
                         RectTransform rt = pt.Text.GetComponent<RectTransform>();
-                        rt.localPosition = new Vector2(rt.localPosition.x, 312f);
+                        rt.localPosition = new Vector2(rt.localPosition.x, rt.localPosition.y - 10f * count);
                         Debug.Log(rt.localPosition.x + " " + rt.localPosition.y);
                         pt.Text.GetComponent<Text>().text = "Skeleton " + id.ToString() + ": " + dataFromPoseRecognitionSub[id];
                         PoseText.Add(id, pt);
+                        count += 1;
+                    }
+                    else if (dataFromPoseRecognitionSub[id] != PoseText[id].Text.GetComponent<Text>().text.Split(' ').Last()) {
+                        PoseText[id].Text.GetComponent<Text>().text = "Skeleton " + id.ToString() + ": " + dataFromPoseRecognitionSub[id];
+                        Color c = PoseText[id].Text.GetComponent<Text>().color;
+                        c.a = 1f;
+                        PoseText[id].Text.GetComponent<Text>().color = c;
+                        PoseText[id].t = 0f;
+                    }
+                    else{
+                        Debug.Log("HOLDING");
+                        Color c = PoseText[id].Text.GetComponent<Text>().color;
+                        c.a = 1f;
+                        PoseText[id].Text.GetComponent<Text>().color = c;
+                        PoseText[id].t = 0f;
                     }
                     //else
                     //{
@@ -1519,16 +1537,14 @@ namespace RosSharp.RosBridgeClient
                     m.SetFloat("_MKGlowPower", 0.0f);
                 }
 
-                int count = 0;
                 foreach (KeyValuePair<int, PoseText> pose in PoseText)
                 {
                     PoseText pt = pose.Value;
                     //RectTransform rt = pt.Text.GetComponent<RectTransform>();
                     //rt.localPosition = new Vector3(0f, -10 * count, 0f);
                     pt.t += Time.deltaTime / TEXT_DURATION;
-                    if (pt.Text.GetComponent<Text>().color != Color.clear)
+                    if (pt.Text.GetComponent<Text>().color.a > MIN_ALPHA)
                     {
-                        Debug.Log("lerping");
                         pt.Text.GetComponent<Text>().color = Color.Lerp(pt.Text.GetComponent<Text>().color, Color.clear, pt.t);
                     }
                 }
@@ -1538,7 +1554,7 @@ namespace RosSharp.RosBridgeClient
             List<int> keyList = new List<int>(PoseText.Keys);
             foreach (int key in keyList)
             {
-                if (PoseText[key].Text.GetComponent<Text>().color == Color.clear)
+                if (PoseText[key].Text.GetComponent<Text>().color.a < MIN_ALPHA)
                 {
                     Destroy(PoseText[key].Text);
                     PoseText.Remove(key);
