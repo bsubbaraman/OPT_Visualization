@@ -23,6 +23,12 @@ namespace RosSharp.RosBridgeClient
         private bool isMessageReceived;
         public Dictionary<int, string> poseData = new Dictionary<int, string>();
 
+
+        //for system health averages
+        private float beginTime = 0f;
+        private int count = 0;
+        public float poseRate = 0f;
+
         protected override void Start()
         {
             base.Start();
@@ -31,7 +37,10 @@ namespace RosSharp.RosBridgeClient
         private void Update()
         {
             if (isMessageReceived)
+            {
                 ProcessMessage();
+                MessageRate();
+            }
         }
 
         protected override void ReceiveMessage(Messages.OPT.PoseRecognitionArray message)
@@ -63,6 +72,20 @@ namespace RosSharp.RosBridgeClient
 
             }
 
+        }
+
+        private void MessageRate()
+        {
+            if (Time.time - beginTime < 1f)
+            {
+                count += 1;
+            }
+            else
+            {
+                poseRate = count / (Time.time - beginTime);
+                beginTime = Time.time;
+                count = 0;
+            }
         }
     }
 }

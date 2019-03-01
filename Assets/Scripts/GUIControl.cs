@@ -26,6 +26,9 @@ namespace RosSharp.RosBridgeClient
         public CentroidSubscriber centroidSub;
         public SkeletonSubscriber skeletonSub;
         public ObjectsSubscriber objectSub;
+        public FaceSubscriber faceSub;
+        public PoseSubscriber poseSub;
+        public PoseStampedSubscriber poseStampedSub;
         //public UDPSubscriber_Pose poseSub;
         
 
@@ -224,16 +227,24 @@ namespace RosSharp.RosBridgeClient
         void DoMyWindow(int windowID)
         {
             GUI.DragWindow(new Rect(0, 0, 10000, 50));
-            GUI.Label(new Rect(10, 20, 200, 20), "IP Address", systemHealthStyle);
-            GUI.Label(new Rect(Screen.width / 3 - 100, 20, 100, 20), rosConnector.RosBridgeServerUrl, systemHealthStyle);
-            GUI.Label(new Rect(10, 50, 200, 20), "Topic Name", systemHealthStyle);
-            GUI.Label(new Rect(Screen.width / 3 - 80, 50, 50, 20), "f (hz)", systemHealthStyle);
-            GUI.Label(new Rect(10, 80, 200, 20), "/tracker/tracks_smoothed:", systemHealthStyle);
-            GUI.Label(new Rect(Screen.width / 3 - 80, 80, 50, 20), centroidSub.centroidRate.ToString("F1"), systemHealthStyle);
-            GUI.Label(new Rect(10, 110, 200, 20), "/tracker/skeleton_tracks:", systemHealthStyle);
-            GUI.Label(new Rect(Screen.width / 3 - 80, 110, 50, 20), skeletonSub.skeletonRate.ToString("F1"), systemHealthStyle);
-            GUI.Label(new Rect(10, 140, 200, 20), "/tracker/object_tracks:", systemHealthStyle);
-            GUI.Label(new Rect(Screen.width / 3 - 80, 140, 50, 20), objectSub.objectRate.ToString("F1"), systemHealthStyle);
+            GUI.Label(new Rect(10, 20, 200, 20), "Topic Name", systemHealthStyle);
+            GUI.Label(new Rect(Screen.width / 3 - 80, 20, 50, 20), "f (hz)", systemHealthStyle);
+            GUI.Label(new Rect(10, 50, 200, 20), "/tracker/tracks_smoothed:", systemHealthStyle);
+            GUI.Label(new Rect(Screen.width / 3 - 80, 50, 50, 20), centroidSub.centroidRate.ToString("F1"), systemHealthStyle);
+            GUI.Label(new Rect(10, 80, 200, 20), "/tracker/skeleton_tracks:", systemHealthStyle);
+            GUI.Label(new Rect(Screen.width / 3 - 80, 80, 50, 20), skeletonSub.skeletonRate.ToString("F1"), systemHealthStyle);
+            GUI.Label(new Rect(10, 110, 200, 20), "/tracker/object_tracks:", systemHealthStyle);
+            GUI.Label(new Rect(Screen.width / 3 - 80, 110, 50, 20), objectSub.objectRate.ToString("F1"), systemHealthStyle);
+            GUI.Label(new Rect(10, 140, 200, 20), "/face_recognition/people_tracks:", systemHealthStyle);
+            GUI.Label(new Rect(Screen.width / 3 - 80, 140, 50, 20), faceSub.faceRate.ToString("F1"), systemHealthStyle);
+            GUI.Label(new Rect(10, 170, 200, 20), "/recognizer/poses:", systemHealthStyle);
+            GUI.Label(new Rect(Screen.width / 3 - 80, 170, 50, 20), poseSub.poseRate.ToString("F1"), systemHealthStyle);
+            GUI.Label(new Rect(10, 200, 200, 20), "/optar/arcore_pose:", systemHealthStyle);
+            GUI.Label(new Rect(Screen.width / 3 - 80, 200, 50, 20), poseStampedSub.mobileRate.ToString("F1"), systemHealthStyle);
+
+
+            GUI.Label(new Rect(10, windowRect.height - 40, 200, 20), "IP Address", systemHealthStyle);
+            GUI.Label(new Rect(Screen.width / 3 - 375, windowRect.height - 40, 100, 20), rosConnector.RosBridgeServerUrl, systemHealthStyle);
 
             //GUI.Label(new Rect(10, 140, 200, 20), "UDP: Recognized Poses", systemHealthStyle);
             //GUI.Label(new Rect(Screen.width / 3 - 80, 140, 50, 20), poseSub.recognizedPoseRate.ToString("F1"), systemHealthStyle);

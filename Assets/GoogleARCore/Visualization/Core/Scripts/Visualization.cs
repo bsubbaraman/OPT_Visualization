@@ -1494,7 +1494,7 @@ namespace RosSharp.RosBridgeClient
                             Text = Instantiate(PoseTextPrefab, GUICanvas.transform, false)
                         };
                         RectTransform rt = pt.Text.GetComponent<RectTransform>();
-                        rt.localPosition = new Vector2(rt.localPosition.x, rt.localPosition.y - 100f * count);
+                        rt.localPosition = new Vector2(rt.localPosition.x, rt.localPosition.y - 50f * count);
                         count += 1;
                         Debug.Log(rt.localPosition.x + " " + rt.localPosition.y);
                         pt.Text.GetComponent<Text>().text = "Skeleton " + id.ToString() + ": " + dataFromPoseRecognitionSub[id];

@@ -1656,7 +1656,7 @@ MonoBehaviour:
   v: {fileID: 1055780065}
   iS: {fileID: 1533692832}
   tfSub: {fileID: 1533692834}
-  poseStamped: {fileID: 0}
+  poseStamped: {fileID: 1533692837}
   ButtonPrefab: {fileID: 1922904767082502, guid: 9d5e75976ac7c418394873b07f54a039,
     type: 2}
   activeColour: {r: 0.33333334, g: 0.78431374, b: 0.33333334, a: 1}
@@ -1665,6 +1665,9 @@ MonoBehaviour:
   centroidSub: {fileID: 1533692830}
   skeletonSub: {fileID: 1533692827}
   objectSub: {fileID: 1533692831}
+  faceSub: {fileID: 1533692835}
+  poseSub: {fileID: 1533692836}
+  poseStampedSub: {fileID: 1533692837}
   font: {fileID: 12800000, guid: f66655b38428d40769e9e41ee237cbdc, type: 3}
 --- !u!1 &1029081169
 GameObject:
@@ -3023,6 +3026,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Topic: /face_recognition/people_tracks
   TimeStep: 0
+  faceRate: 0
 --- !u!114 &1533692836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3036,6 +3040,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Topic: /recognizer/poses
   TimeStep: 0
+  poseRate: 0
 --- !u!114 &1533692837
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3053,6 +3058,7 @@ MonoBehaviour:
     type: 2}
   phoneInScene: 0
   ARCoreWorldFiltered: {fileID: 97330192}
+  mobileRate: 0
   showPhones: 0
 --- !u!114 &1533692838
 MonoBehaviour:

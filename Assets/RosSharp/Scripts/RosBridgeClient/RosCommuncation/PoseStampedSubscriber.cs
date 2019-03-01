@@ -29,6 +29,11 @@ namespace RosSharp.RosBridgeClient
         public bool phoneInScene = false; // for now, there is only capability for 1 phone in optar mobile 
         public GameObject ARCoreWorldFiltered;
 
+        //for system health averages
+        private float beginTime = 0f;
+        private int count = 0;
+        public float mobileRate = 0f;
+
         public bool showPhones = false;  // bool to show the phone position.  value change from gui control script on button click
         protected override void Start()
         {
@@ -40,11 +45,11 @@ namespace RosSharp.RosBridgeClient
             if (showPhones)
             {
                 if (isMessageReceived)
+                {
                     ProcessMessage();
+                    MessageRate();
+                }
             }
-
-          
-
         }
 
         protected override void ReceiveMessage(Messages.Geometry.PoseStamped message)
@@ -96,5 +101,20 @@ namespace RosSharp.RosBridgeClient
                 message.pose.orientation.z,
                 message.pose.orientation.w);
         }
+
+        private void MessageRate()
+        {
+            if (Time.time - beginTime < 1f)
+            {
+                count += 1;
+            }
+            else
+            {
+                mobileRate = count / (Time.time - beginTime);
+                beginTime = Time.time;
+                count = 0;
+            }
+        }
     }
+
 }
