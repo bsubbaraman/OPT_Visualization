@@ -29,6 +29,7 @@ namespace RosSharp.RosBridgeClient
         public bool phoneInScene = false; // for now, there is only capability for 1 phone in optar mobile 
         public GameObject ARCoreWorldFiltered;
 
+        public bool showPhones = false;  // bool to show the phone position.  value change from gui control script on button click
         protected override void Start()
         {
 			base.Start();
@@ -36,8 +37,11 @@ namespace RosSharp.RosBridgeClient
 		
         private void Update()
         {
-            if (isMessageReceived)
-                ProcessMessage();
+            if (showPhones)
+            {
+                if (isMessageReceived)
+                    ProcessMessage();
+            }
 
           
 
@@ -49,7 +53,9 @@ namespace RosSharp.RosBridgeClient
             //position = new Vector3(message.pose.position.x, -message.pose.position.y, message.pose.position.z);
             position = new Vector3(message.pose.position.z, -message.pose.position.y, -message.pose.position.x);
             //rotation = new Quaternion(message.pose.orientation.x, message.pose.orientation.y, message.pose.orientation.z, message.pose.orientation.w);
-            rotation = new Quaternion(message.pose.orientation.z, message.pose.orientation.y, -message.pose.orientation.x, message.pose.orientation.w);
+            rotation = new Quaternion(message.pose.orientation.z, message.pose.orientation.y, message.pose.orientation.x, message.pose.orientation.w);
+
+            rotation *= Quaternion.Euler(0f, 90f, 0f); //trying to rotate cell phone model correctly
             isMessageReceived = true;
         }
 
