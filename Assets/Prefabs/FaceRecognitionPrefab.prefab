@@ -19,6 +19,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4705053009403866}
+  - component: {fileID: 114790743145061480}
   m_Layer: 0
   m_Name: FaceRecognitionPrefab
   m_TagString: Untagged
@@ -39,3 +40,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114790743145061480
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1972563761301396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b03aae1e567b94909bd0cfff433c1036, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  faceImages: []
+  recognizedFacesSub: {fileID: 0}
+  visualization: {fileID: 0}

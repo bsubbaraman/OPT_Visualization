@@ -300,6 +300,34 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!1 &97330192
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 97330193}
+  m_Layer: 0
+  m_Name: ARCoreWorldFiltered
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &97330193
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 97330192}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 776284471}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &138366539
 GameObject:
   m_ObjectHideFlags: 0
@@ -1385,6 +1413,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 654027742}
+  - {fileID: 97330193}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2725,6 +2754,7 @@ GameObject:
   - component: {fileID: 1533692835}
   - component: {fileID: 1533692836}
   - component: {fileID: 1533692837}
+  - component: {fileID: 1533692838}
   m_Layer: 0
   m_Name: RosConnector
   m_TagString: Untagged
@@ -2767,6 +2797,7 @@ MonoBehaviour:
   tfSubscriber: {fileID: 1533692834}
   poseSubscriber: {fileID: 1533692836}
   mobilePhonePosSub: {fileID: 1533692837}
+  tFStatic: {fileID: 1533692838}
   Timeout: 10
   Protocol: 0
   RosBridgeServerUrl: ws://131.179.142.108:9090
@@ -2860,6 +2891,7 @@ MonoBehaviour:
   main: {fileID: 534669904}
   sensors:
   - /kinect01
+  - /kinect02
   PartsManager: {fileID: 776284470}
   SensorPrefab: {fileID: 1787235910035938, guid: f5290ac69769a4422a4639619225e747,
     type: 2}
@@ -2902,9 +2934,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Topic: /optar/arcore_pose
   TimeStep: 0
-  MobilePhonePrefab: {fileID: 1050049885203312, guid: cc2f697e599064095a0e4276a8ad9592,
+  MobilePhonePrefab: {fileID: 1315926965929454, guid: 86c0d94a558324d76b0eea3630f52066,
     type: 2}
   phoneInScene: 0
+  ARCoreWorldFiltered: {fileID: 97330192}
+--- !u!114 &1533692838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1533692826}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7aaf0d281b954c09bbe93c998cc99c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Topic: /tf_static
+  TimeStep: 0
+  ARCoreWorldFiltered: {fileID: 97330192}
 --- !u!1 &1548117385
 GameObject:
   m_ObjectHideFlags: 0

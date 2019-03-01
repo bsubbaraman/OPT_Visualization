@@ -53,9 +53,13 @@ namespace RosSharp.RosBridgeClient
             isMessageReceived = true;
         }
 
-        private void ProcessMessage()
-        {
+        private void ProcessMessage(){
             string sensorname = tf.transforms[0].child_frame_id;
+            //foreach (var child in tf.transforms)
+            //{
+            //    Debug.Log(child.child_frame_id);
+            //}
+            //Debug.Log(""+tf.transforms[2].transform.translation.x + ", " + tf.transforms[2].transform.translation.y + ", " + tf.transforms[2].transform.translation.z);
             //if(tf.transforms[0].child_frame_id == "/kinect01"){
             if (sensors_dict.ContainsKey(sensorname))
             {

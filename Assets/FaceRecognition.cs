@@ -8,7 +8,8 @@ public class FaceRecognition : MonoBehaviour {
     private Dictionary<string, Material> faceMaterials = new Dictionary<string, Material>();
     public RosSharp.RosBridgeClient.FaceSubscriber recognizedFacesSub; //drop face subscriber here from the RosConnector
     public RosSharp.RosBridgeClient.Visualization visualization; //drop the visualization script here
-    // Use this for initialization
+                                                                 // Use this for initialization
+
     void Start () {
         // create materials from each face image
         foreach (Texture2D face in faceImages)

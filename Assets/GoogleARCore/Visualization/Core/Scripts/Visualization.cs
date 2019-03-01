@@ -169,14 +169,14 @@ namespace RosSharp.RosBridgeClient
             {
                 RemoveAllObjects();
             }
-            //if (facesView)
-            //{
-            //    FaceRecognition();
-            //}
-            //else
-            //{
-            //    RemoveAllFaceData();
-            //}
+            if (facesView)
+            {
+                FaceRecognition();
+            }
+            else
+            {
+                RemoveAllFaceData();
+            }
 
             RotateLabels(labels);
             RecognizePoseGlow();
@@ -1494,7 +1494,8 @@ namespace RosSharp.RosBridgeClient
                             Text = Instantiate(PoseTextPrefab, GUICanvas.transform, false)
                         };
                         RectTransform rt = pt.Text.GetComponent<RectTransform>();
-                        rt.localPosition = new Vector2(rt.localPosition.x, rt.localPosition.y - 20f * count);
+                        rt.localPosition = new Vector2(rt.localPosition.x, rt.localPosition.y - 100f * count);
+                        count += 1;
                         Debug.Log(rt.localPosition.x + " " + rt.localPosition.y);
                         pt.Text.GetComponent<Text>().text = "Skeleton " + id.ToString() + ": " + dataFromPoseRecognitionSub[id];
                         PoseText.Add(id, pt);

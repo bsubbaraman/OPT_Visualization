@@ -27,6 +27,7 @@ namespace RosSharp.RosBridgeClient
 
         public GameObject MobilePhonePrefab;
         public bool phoneInScene = false; // for now, there is only capability for 1 phone in optar mobile 
+        public GameObject ARCoreWorldFiltered;
 
         protected override void Start()
         {
@@ -38,8 +39,25 @@ namespace RosSharp.RosBridgeClient
             if (isMessageReceived)
                 ProcessMessage();
 
-            if (!phoneInScene){
-                GameObject newPhone = Instantiate(MobilePhonePrefab, position, rotation);
+          
+
+        }
+
+        protected override void ReceiveMessage(Messages.Geometry.PoseStamped message)
+        {
+            //Debug.Log(message.header.frame_id);
+            //position = new Vector3(message.pose.position.x, -message.pose.position.y, message.pose.position.z);
+            position = new Vector3(message.pose.position.z, -message.pose.position.y, -message.pose.position.x);
+            //rotation = new Quaternion(message.pose.orientation.x, message.pose.orientation.y, message.pose.orientation.z, message.pose.orientation.w);
+            rotation = new Quaternion(message.pose.orientation.z, message.pose.orientation.y, -message.pose.orientation.x, message.pose.orientation.w);
+            isMessageReceived = true;
+        }
+
+        private void ProcessMessage()
+        {
+            if (!phoneInScene)
+            {
+                GameObject newPhone = Instantiate(MobilePhonePrefab, position, rotation, ARCoreWorldFiltered.transform);
                 PublishedTransforms.Add(0, newPhone.transform);
                 phoneInScene = true;
             }
@@ -47,27 +65,7 @@ namespace RosSharp.RosBridgeClient
             PublishedTransforms[0].position = position;
             PublishedTransforms[0].rotation = rotation;
 
-        }
-
-        protected override void ReceiveMessage(Messages.Geometry.PoseStamped message)
-        {
-            position = new Vector3(message.pose.position.x, message.pose.position.y, message.pose.position.z);
-            rotation = new Quaternion(message.pose.orientation.x, message.pose.orientation.y, message.pose.orientation.z, message.pose.orientation.w);
-            isMessageReceived = true;
-        }
-
-        private void ProcessMessage()
-        {
-            //PublishedTransform.position = position;
-            //PublishedTransform.rotation = rotation;
-
-            //Debug.Log(PublishedTransform.position);
-            //Debug.Log(PublishedTransform.rotation);
-
-            //if (!phoneInScene){
-            //    Instantiate(MobilePhonePrefab, GetPosition(), PublishedTransform.rotation);
-            //    phoneInScene = true;
-            //}
+            isMessageReceived = false;
         }
 
         public Vector3 GetPosition(Messages.Geometry.PoseStamped message)
