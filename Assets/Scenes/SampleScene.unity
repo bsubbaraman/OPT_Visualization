@@ -2873,6 +2873,7 @@ GameObject:
   - component: {fileID: 1533692836}
   - component: {fileID: 1533692837}
   - component: {fileID: 1533692838}
+  - component: {fileID: 1533692839}
   m_Layer: 0
   m_Name: RosConnector
   m_TagString: Untagged
@@ -2916,6 +2917,8 @@ MonoBehaviour:
   poseSubscriber: {fileID: 1533692836}
   mobilePhonePosSub: {fileID: 1533692837}
   tFStatic: {fileID: 1533692838}
+  listener: {fileID: 1533692839}
+  phone: {fileID: 1986954090}
   Timeout: 10
   Protocol: 0
   RosBridgeServerUrl: ws://131.179.142.108:9090
@@ -3009,7 +3012,6 @@ MonoBehaviour:
   main: {fileID: 534669904}
   sensors:
   - /kinect01
-  - /kinect02
   PartsManager: {fileID: 776284470}
   SensorPrefab: {fileID: 1787235910035938, guid: f5290ac69769a4422a4639619225e747,
     type: 2}
@@ -3074,6 +3076,19 @@ MonoBehaviour:
   Topic: /tf_static
   TimeStep: 0
   ARCoreWorldFiltered: {fileID: 97330192}
+--- !u!114 &1533692839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1533692826}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 538f7cb85f1deea43aaeba6651091d9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rosConnector: {fileID: 1533692828}
+  timespanNano: 60000000000
 --- !u!1 &1548117385
 GameObject:
   m_ObjectHideFlags: 0
@@ -3336,6 +3351,67 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1560947023}
   m_CullTransparentMesh: 0
+--- !u!1001 &1596601063
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4653906473762718, guid: 86c0d94a558324d76b0eea3630f52066, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4653906473762718, guid: 86c0d94a558324d76b0eea3630f52066, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4653906473762718, guid: 86c0d94a558324d76b0eea3630f52066, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 1.5232358e-10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4653906473762718, guid: 86c0d94a558324d76b0eea3630f52066, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4653906473762718, guid: 86c0d94a558324d76b0eea3630f52066, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4653906473762718, guid: 86c0d94a558324d76b0eea3630f52066, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4653906473762718, guid: 86c0d94a558324d76b0eea3630f52066, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4653906473762718, guid: 86c0d94a558324d76b0eea3630f52066, type: 2}
+      propertyPath: m_RootOrder
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 114655046802275452, guid: 86c0d94a558324d76b0eea3630f52066,
+        type: 2}
+      propertyPath: rosConnector
+      value: 
+      objectReference: {fileID: 1533692828}
+    - target: {fileID: 114655046802275452, guid: 86c0d94a558324d76b0eea3630f52066,
+        type: 2}
+      propertyPath: TfListener
+      value: 
+      objectReference: {fileID: 1533692839}
+    - target: {fileID: 114655046802275452, guid: 86c0d94a558324d76b0eea3630f52066,
+        type: 2}
+      propertyPath: listener
+      value: 
+      objectReference: {fileID: 1533692839}
+    - target: {fileID: 1315926965929454, guid: 86c0d94a558324d76b0eea3630f52066, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 86c0d94a558324d76b0eea3630f52066, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1 &1603255598
 GameObject:
   m_ObjectHideFlags: 0
@@ -4337,6 +4413,11 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!1 &1986954090 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1315926965929454, guid: 86c0d94a558324d76b0eea3630f52066,
+    type: 2}
+  m_PrefabInternal: {fileID: 1596601063}
 --- !u!1 &2023772835
 GameObject:
   m_ObjectHideFlags: 0

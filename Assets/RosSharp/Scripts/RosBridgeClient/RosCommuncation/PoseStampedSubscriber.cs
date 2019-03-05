@@ -15,6 +15,7 @@ limitations under the License.
 
 using UnityEngine;
 using System.Collections.Generic;
+using OpenPTrack;
 
 namespace RosSharp.RosBridgeClient
 {
@@ -54,13 +55,11 @@ namespace RosSharp.RosBridgeClient
 
         protected override void ReceiveMessage(Messages.Geometry.PoseStamped message)
         {
-            //Debug.Log(message.header.frame_id);
-            //position = new Vector3(message.pose.position.x, -message.pose.position.y, message.pose.position.z);
+            // old way
+            Debug.Log("Got phone estimation!");
             position = new Vector3(message.pose.position.z, -message.pose.position.y, -message.pose.position.x);
-            //rotation = new Quaternion(message.pose.orientation.x, message.pose.orientation.y, message.pose.orientation.z, message.pose.orientation.w);
             rotation = new Quaternion(message.pose.orientation.z, message.pose.orientation.y, message.pose.orientation.x, message.pose.orientation.w);
 
-            rotation *= Quaternion.Euler(0f, 90f, 0f); //trying to rotate cell phone model correctly
             isMessageReceived = true;
         }
 
@@ -115,6 +114,7 @@ namespace RosSharp.RosBridgeClient
                 count = 0;
             }
         }
+
     }
 
 }

@@ -1266,7 +1266,10 @@ namespace RosSharp.RosBridgeClient
 
             angle = Mathf.Acos(adjacent / hip_Length) * Mathf.Rad2Deg;
 
-            startJoint.RotateAround(startJoint.position, cross, -angle);
+            if (!float.IsNaN(startJoint.position.x)){ //lerp will sometimes generate nans- skip if so
+                startJoint.RotateAround(startJoint.position, cross, -angle);
+            }
+
 
             midJoint.LookAt(target, cross);
             midJoint.Rotate(midJoint_OffsetRotation);

@@ -112,14 +112,14 @@ namespace OpenPTrack
 		}
 
 		public RosSharp.RosBridgeClient.RosConnector rosConnector;
-		//private static string tfTopicName = "/tf";
+		private static string tfTopicName = "/tf";
 		private static string tfStaticTopicName = "/tf_static";
 
 		private const int MUTEX_TIMEOUT_MILLIS = 5000;
 		private System.Collections.Generic.SortedSet<TransformStampedMsg> transforms;
 		private System.Collections.Generic.Dictionary<FrameCouple,TransformStampedMsg> staticTransforms;
 
-		//private GenericSubscriber<TfMessageMsg> tfSubscriber;
+		private GenericSubscriber<TfMessageMsg> tfSubscriber;
 		private GenericSubscriber<TfMessageMsg> tfStaticSubscriber;
 		public long timespanNano = 60*1000000000L;
 
@@ -134,8 +134,8 @@ namespace OpenPTrack
 		{
 			transforms = new System.Collections.Generic.SortedSet<TransformStampedMsg>(new ByTime());
 			staticTransforms = new System.Collections.Generic.Dictionary<FrameCouple,TransformStampedMsg>();
-			//tfSubscriber = new GenericSubscriber<TfMessageMsg>(rosConnector,tfTopicName);
-			//tfSubscriber.addCallback(onTfMessageReceived);
+			tfSubscriber = new GenericSubscriber<TfMessageMsg>(rosConnector,tfTopicName);
+			tfSubscriber.addCallback(onTfMessageReceived);
 			tfStaticSubscriber = new GenericSubscriber<TfMessageMsg>(rosConnector,tfStaticTopicName);
 			tfStaticSubscriber.addCallback(onTfStaticMessageReceived);	
 			
@@ -145,32 +145,32 @@ namespace OpenPTrack
         ///<summary>
         ///Called when a /tf message is received
         ///</summary>
-  //      void onTfMessageReceived (TfMessageMsg message)
-		//{
+        void onTfMessageReceived (TfMessageMsg message)
+		{
 			
-  //      	bool gotResource = mutex.WaitOne(MUTEX_TIMEOUT_MILLIS);
-		//	if(!gotResource)
-		//	{
-		//		OptLogger.warn("Failed to get mutex (held by "+mutexHeldBy+"), dropping tf message from "+tfTopicName);
-		//		return;
-		//	}
-		//	mutexHeldBy = "onTfMessageReceived";
-		//	//OptarLogger.info("received tf message");
-		//	foreach(TransformStampedMsg transformStamped in message.transforms)
-		//	{
-		//		transforms.Add(transformStamped);
-		//	}
-		//	//remove old data
-		//	TransformStampedMsg firstElement = System.Linq.Enumerable.First(transforms);
-		//	while(firstElement.header.getTimeNano() < (Utils.getTimeNano() - timespanNano))
-		//	{
-		//		transforms.Remove(firstElement);
-		//		firstElement = System.Linq.Enumerable.First(transforms);
-		//	}
+        	bool gotResource = mutex.WaitOne(MUTEX_TIMEOUT_MILLIS);
+			if(!gotResource)
+			{
+				OptLogger.warn("Failed to get mutex (held by "+mutexHeldBy+"), dropping tf message from "+tfTopicName);
+				return;
+			}
+			mutexHeldBy = "onTfMessageReceived";
+			Debug.Log("received tf message");
+			foreach(TransformStampedMsg transformStamped in message.transforms)
+			{
+				transforms.Add(transformStamped);
+			}
+			//remove old data
+			TransformStampedMsg firstElement = System.Linq.Enumerable.First(transforms);
+			while(firstElement.header.getTimeNano() < (Utils.getTimeNano() - timespanNano))
+			{
+				transforms.Remove(firstElement);
+				firstElement = System.Linq.Enumerable.First(transforms);
+			}
 
-		//	mutexHeldBy = "none";
-		//	mutex.ReleaseMutex();
-		//}
+			mutexHeldBy = "none";
+			mutex.ReleaseMutex();
+		}
 
         ///<summary>
         ///Called when a /tf_static message is received
@@ -302,12 +302,13 @@ namespace OpenPTrack
 			}
 			mutexHeldBy = "none";
 			mutex.ReleaseMutex();
-            /*
-			if(result==null)
-				OptarLogger.info("lookup result is null");
-			else
-				OptarLogger.info("lookup result is good");
-			*/
+
+            if (result == null)
+            {
+                OptLogger.error("lookup result is null, this should not happen");
+                throw new TransformException("unknown error");
+            }
+			
 			return result;
 		}
 
@@ -331,6 +332,26 @@ namespace OpenPTrack
             Vector3Msg positionRosArcoreFrame = new Vector3Msg(m.inverse.MultiplyPoint(pointRos.asVector3()));
             //OptarLogger.info("positionRosArcore = " + positionRosArcoreFrame);
             return positionRosArcoreFrame;
+        }
+        /*
+        public static void trasformObject(TransformMsg transform, GameObject gameObject)
+        {
+            gameObject.transform.rotation = gameObject.transform.rotation * transform.getOrientation();
+            gameObject.transform.position = gameObject.transform.position + transform.getTranslationVector3();
+        }
+        */
+        public static OptarPoseStampedMsg transformPose(TransformMsg transform, OptarPoseStampedMsg pose, string target_Frame_name)
+        {
+            Matrix4x4 m = Matrix4x4.TRS(transform.getTranslationVector3(),
+                                transform.getOrientation(), new Vector3(1, 1, 1));
+            
+            Quaternion poseOrientation = new Quaternion(pose.pose.orientation.x, pose.pose.orientation.y, pose.pose.orientation.z, pose.pose.orientation.w);
+            poseOrientation = poseOrientation * m.inverse.rotation;
+            Vector3 poseTranslation = new Vector3(pose.pose.position.x, pose.pose.position.y, pose.pose.position.z);
+            Vector3 invertedTransformTranslation = new Vector3(-transform.getTranslationVector3().x, -transform.getTranslationVector3().y, -transform.getTranslationVector3().z);
+            poseTranslation = poseTranslation + transform.getTranslationVector3();
+
+            return new OptarPoseStampedMsg(poseTranslation, poseOrientation, target_Frame_name);
         }
     }
 }

@@ -34,6 +34,10 @@ namespace RosSharp.RosBridgeClient
         public PoseSubscriber poseSubscriber;
         public PoseStampedSubscriber mobilePhonePosSub;
         public TFStaticSubscriber tFStatic;
+        public OpenPTrack.TfListener listener;
+
+        //TEST for phone
+        public GameObject phone;
         //
         public int Timeout = 10;
 
@@ -136,6 +140,10 @@ namespace RosSharp.RosBridgeClient
                     poseSubscriber.enabled = true;
                     mobilePhonePosSub.enabled = true;
                     tFStatic.enabled = true;
+
+                    // trying tf listener
+                    listener.enabled = true;
+                    phone.SetActive(true);
 
                     subscribersEnabled = false;
                 }

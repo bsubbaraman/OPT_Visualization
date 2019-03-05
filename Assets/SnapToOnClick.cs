@@ -1,22 +1,32 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using OpenPTrack;
 using UnityEngine;
 
-//namespace OpenPTrack
-namespace RosSharp.RosBridgeClient
+namespace OpenPTrack
+//namespace RosSharp.RosBridgeClient
 {
     public class SnapToOnClick : MonoBehaviour
     {
         private Camera main;
-        public PoseStampedSubscriber sub;
+        //public PoseStampedSubscriber sub;
 
-        //private TfListener TfListener;
+        public RosSharp.RosBridgeClient.RosConnector rosConnector;
+        public TfListener listener;
+
+        private GenericSubscriber<OptarPoseStampedMsg> poseSub;
+        private OptarPoseStampedMsg transformedPose;
     // Use this for initialization
     void Start()
         {
             main = GameObject.Find("Main Camera").GetComponent<Camera>();
+
+            poseSub = new GenericSubscriber<OptarPoseStampedMsg>(rosConnector, "/optar/arcore_pose");
+            poseSub.addCallback(ReceiveMessage);
+
+
             //TfListener = GameObject.Find("RosConnector").GetComponent<TfListener>();
-            sub = GameObject.Find("RosConnector").GetComponent<PoseStampedSubscriber>();
+            //sub = GameObject.Find("RosConnector").GetComponent<PoseStampedSubscriber>();
         }
 
 
@@ -24,13 +34,38 @@ namespace RosSharp.RosBridgeClient
         void Update()
         {
             //TfListener.lookupTransform("");
-            transform.position = sub.PublishedTransforms[0].position;
-            transform.rotation = sub.PublishedTransforms[0].rotation;
+            //transform.position = sub.PublishedTransforms[0].position;
+            //transform.rotation = sub.PublishedTransforms[0].rotation;
+            try{
+                transform.position = new Vector3(transformedPose.pose.position.x, transformedPose.pose.position.y, transformedPose.pose.position.z);
+                transform.rotation = new Quaternion(transformedPose.pose.orientation.x, transformedPose.pose.orientation.y, transformedPose.pose.orientation.z, transformedPose.pose.orientation.w);
+            }
+            catch{
+                Debug.Log("didn't move/orient phone");
+            }
+
+        }
+
+        private void ReceiveMessage(OptarPoseStampedMsg message){
+            TransformMsg transformMsg;
+            Debug.Log("Got Message");
+            try{
+                transformMsg = listener.lookupTransform(message.header.frame_id, "/world", Utils.getRosTime(0));
+                //Instantiate(MobilePhonePrefab, transformMsg.getTranslationVector3(), transformMsg.getOrientation());
+            }
+            catch (TfListener.TransformException e){
+                Debug.Log(e);
+                Debug.Log("Got Message BUT problem");
+                return;
+            }
+
+            transformedPose = TfListener.transformPose(transformMsg, message, "/world");
+
         }
 
         private void OnMouseOver()
         {
-            Debug.Log("OVer");
+            Debug.Log("Over");
             if (Input.GetMouseButtonDown(0))
             {
                 main.transform.position = transform.position;

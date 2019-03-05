@@ -8,7 +8,7 @@ namespace OpenPTrack
 
     ///<author>
     /// Carlo Rizzardo
-    ///</author>
+    ///</author> 
     ///C# representation of the geometry_msgs/TransformStamped message
     ///
     public class TransformStampedMsg : RosSharp.RosBridgeClient.Message

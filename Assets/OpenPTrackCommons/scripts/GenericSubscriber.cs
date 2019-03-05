@@ -53,9 +53,9 @@ namespace OpenPTrack
 
         protected void ReceiveMessage(T message)
 		{
-			//OptarLogger.info("received message on topic "+topicName+", invoking "+onMessageReceived.getListenersCount()+" callbacks");
+			OptLogger.info("received message on topic "+topicName+", invoking "+onMessageReceived.getListenersCount()+" callbacks");
 			onMessageReceived.Invoke(message);
-			//OptarLogger.info("callbacks ran successfully");
+			OptLogger.info("callbacks ran successfully");
 		}
 
 		public void addCallback(UnityEngine.Events.UnityAction<T> callback)
