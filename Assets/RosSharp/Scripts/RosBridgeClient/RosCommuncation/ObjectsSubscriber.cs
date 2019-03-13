@@ -81,7 +81,16 @@ namespace RosSharp.RosBridgeClient
 
                     };
                     //objectTrackData.Add(track.id, new Vector3(track.x, track.height, track.y));
-                    objectTrackData.Add(track.id, o);
+                    if (o.pos.z < -5f || o.pos.z >5f || o.pos.x < -6f || o.pos.x > 2f)
+                    //if (o.pos.z < -0.5f || o.pos.z > 0.5f || o.pos.x < -0.5f || o.pos.x > 0.5f)
+                    {
+                        Debug.Log("outside of active region");
+                    }
+                    else {
+
+                        objectTrackData.Add(track.id, o);
+                    }
+
                 }
                 else
                 {

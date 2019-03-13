@@ -28,7 +28,7 @@ namespace RosSharp.RosBridgeClient
 
         //for system health averages
         private float beginTime = 0f;
-        private int count  = 0;
+        private int count = 0;
         public float centroidRate = 0f;
 
         protected override void Start()
@@ -39,7 +39,8 @@ namespace RosSharp.RosBridgeClient
         private void Update()
         {
 
-            if (isMessageReceived){
+            if (isMessageReceived)
+            {
                 MessageRate();
                 ProcessMessage();
             }
@@ -55,13 +56,20 @@ namespace RosSharp.RosBridgeClient
         private void ProcessMessage()
         {
             processedTrackData.Clear();
-            foreach(Messages.OPT.Track track in trackArray.tracks){
+            foreach (Messages.OPT.Track track in trackArray.tracks)
+            {
                 Vector3 v = new Vector3(track.x, track.y, track.height);
-                if(!processedTrackData.ContainsKey(track.id)){
+                if (v.z < -5f || v.z > 5f || v.x < -6f || v.x > 2f)
+                {
+                    return;
+                }
+                if (!processedTrackData.ContainsKey(track.id))
+                {
                     //processedTrackData.Add(track.id, new Vector3(track.x, track.height, track.y));
                     processedTrackData.Add(track.id, RHtoLHTransform(v));
                 }
-                else{
+                else
+                {
                     //processedTrackData[track.id] = new Vector3(track.x, track.height, track.y);
                     processedTrackData[track.id] = RHtoLHTransform(v);
                 }
@@ -72,15 +80,18 @@ namespace RosSharp.RosBridgeClient
             isMessageReceived = false;
         }
 
-        private void MessageRate(){
-            if (Time.time - beginTime < 1f){
+        private void MessageRate()
+        {
+            if (Time.time - beginTime < 1f)
+            {
                 count += 1;
             }
-            else{
+            else
+            {
                 centroidRate = count / (Time.time - beginTime);
                 beginTime = Time.time;
                 count = 0;
-            } 
+            }
         }
     }
 }

@@ -92,7 +92,12 @@ namespace RosSharp.RosBridgeClient
                 if (!infinityFound)
                 {
                     Vector3 v = new Vector3(track.x, track.y, track.height);
-                    if (!centroidPose.ContainsKey(track.id))
+                    Vector3 chest = new Vector3(jointDetected[14].x, jointDetected[14].y, jointDetected[14].x);
+                    if (chest.z < -5f || chest.z > 5f || chest.x < -6f || chest.x > 2f){
+                        Debug.Log("skeleton not in active region");
+                        return;
+                    }
+                        if (!centroidPose.ContainsKey(track.id))
                     {
                         centroidPose.Add(track.id, RHtoLHTransform(v));
                         //centroidPose.Add(track.id, new Vector3(track.y, track.height, -track.x));

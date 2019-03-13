@@ -44,6 +44,7 @@ namespace RosSharp.RosBridgeClient
         public GameObject objectPrefab;
         public GameObject LabelTemplate;
         public GameObject GUIPanel;
+        public GameObject gravField;
         public Camera main;
 
         // OBJECT PREFABS
@@ -1358,10 +1359,12 @@ namespace RosSharp.RosBridgeClient
                     {
                         GameObject newObject = Instantiate(objectPrefabs[track.Value.objectID]);
                         PlaceObject(newObject, track, color);
+                        Instantiate(gravField, newObject.transform);
                     }
                     else if (track.Value.objectID != "person")
                     { // guessing we don't want double person tracking?
                         GameObject newObject = Instantiate(objectPrefab);
+                        Instantiate(gravField, newObject.transform);
                         //newCentroid.transform.SetParent(anchorOrigin.transform);
                         newObject.transform.localPosition = track.Value.pos;
                         newObject.name = "object_" + track.Key;
@@ -1487,6 +1490,20 @@ namespace RosSharp.RosBridgeClient
                 Material m = r2.GetComponent<Renderer>().material;
                 if (dataFromPoseRecognitionSub.ContainsKey(id))
                 {
+                    switch (dataFromPoseRecognitionSub[id]){
+                        case "arms_mid":
+                            m.SetColor("_MKGlowColor", new Color(1f, 0f, 0f));
+                            break;
+                        case "left_arm_pointing":
+                            m.SetColor("_MKGlowColor", new Color(0f, 1f, 0f));
+                            break;
+                        case "arms_up":
+                            m.SetColor("_MKGlowColor", new Color(0f, 0f, 1f));
+                            break;
+                        default:
+                            m.SetColor("_MKGlowColor", new Color(1f, .6f, 0f));
+                            break;
+                    }
                     m.SetFloat("_MKGlowPower", 0.5f);
                     if (!PoseText.ContainsKey(id))
                     {

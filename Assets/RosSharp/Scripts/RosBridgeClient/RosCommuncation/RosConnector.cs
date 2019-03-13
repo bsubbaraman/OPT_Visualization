@@ -35,6 +35,7 @@ namespace RosSharp.RosBridgeClient
         public PoseStampedSubscriber mobilePhonePosSub;
         public TFStaticSubscriber tFStatic;
         public OpenPTrack.TfListener listener;
+        public SkeletonCentroidsSubscriber skeletonCentroidsSub;
 
         //TEST for phone
         public GameObject phone;
@@ -138,12 +139,12 @@ namespace RosSharp.RosBridgeClient
                     faceSubscriber.enabled = true;
                     imageSubscriber.enabled = true;
                     poseSubscriber.enabled = true;
-                    mobilePhonePosSub.enabled = true;
+                    //mobilePhonePosSub.enabled = true;
                     tFStatic.enabled = true;
-
+                    skeletonCentroidsSub.enabled = true;
                     // trying tf listener
                     listener.enabled = true;
-                    phone.SetActive(true);
+                    //phone.SetActive(true);
 
                     subscribersEnabled = false;
                 }

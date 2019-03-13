@@ -7,9 +7,11 @@ namespace RosSharp.RosBridgeClient
 
     public class GUIControl : MonoBehaviour
     {
-        public Button m_CentroidButton, m_SkeletonButton, m_ObjectButton, m_FacesButton, m_ShowImageButton, m_GetSnapButton, m_LabelButton, m_SystemHealth, m_MobilePhones; //SnapToButton
+        public Button m_CentroidButton, m_SkeletonButton, m_ObjectButton, m_FacesButton, m_ShowImageButton, m_GetSnapButton, m_LabelButton, m_SystemHealth, m_ParticleBeams; //SnapToButton
+        public Button m_MobilePhones;
         public Camera main;
         public GameObject theConnector, theController, theImage, Panel, PanelText, PartsManager;
+        public CentroidBeam BeamsScript;
         public Visualization v;
         public ImageSubscriber iS;
         public TFSubscriber tfSub;
@@ -46,6 +48,7 @@ namespace RosSharp.RosBridgeClient
             m_LabelButton.onClick.AddListener(() => TaskOnClick(m_LabelButton));
             m_SystemHealth.onClick.AddListener(() => TaskOnClick(m_SystemHealth));
             m_MobilePhones.onClick.AddListener(() => TaskOnClick(m_MobilePhones));
+            m_ParticleBeams.onClick.AddListener(() => TaskOnClick(m_ParticleBeams));
             //m_SnapToButton.onClick.AddListener(() => TaskOnClick(m_SnapToButton));
 
             // add as many 'snap-to camera' buttons as there are sensors 
@@ -97,10 +100,13 @@ namespace RosSharp.RosBridgeClient
             rT.localPosition = new Vector2(rT.localPosition.x, -50f - 7 * (Screen.height / 25f));
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
 
-            rT = m_MobilePhones.GetComponent<RectTransform>();
+            //rT = m_MobilePhones.GetComponent<RectTransform>();
+            //rT.localPosition = new Vector2(rT.localPosition.x, -50f - 8 * (Screen.height / 25f));
+            //rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
+
+            rT = m_ParticleBeams.GetComponent<RectTransform>();
             rT.localPosition = new Vector2(rT.localPosition.x, -50f - 8 * (Screen.height / 25f));
             rT.sizeDelta = new Vector2(Screen.width / 8f - 20f, Screen.height / 25f);
-
 
 
             int p = 9;
@@ -185,6 +191,10 @@ namespace RosSharp.RosBridgeClient
                     break;
                 case "MobilePhones":
                     poseStamped.showPhones = !poseStamped.showPhones;
+                    break;
+                case "ParticleBeams":
+                    BeamsScript.reset();
+                    BeamsScript.enabled = !BeamsScript.enabled;
                     break;
                default:
                     foreach (var sensor in tfSub.sensors)

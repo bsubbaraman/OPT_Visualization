@@ -55,7 +55,6 @@ namespace RosSharp.RosBridgeClient
             foreach (Messages.OPT.Track track in trackArray.tracks)
             {
                 string face_name = track.face_name;
-                Debug.Log(face_name);
                 int id = track.id;
                 if (!string.IsNullOrEmpty(face_name)){
                     if (!faceData.ContainsKey(track.id))
